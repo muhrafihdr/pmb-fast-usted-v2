@@ -13,7 +13,7 @@
    untuk panduan lengkap pembuatannya).
    Contoh: "https://script.google.com/macros/s/ABCDEF.../exec"
    ========================================================= */
-const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz_qoEpfx4G6DAx2fu5UisW0DECqSioLL51Ml-JJkNX4KFK7KV1CLK82lDiKJIw0VPQ-Q/exec";
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzo4MNSZGeEEzdg__fVjMid78eChazuJJ0RWMUPQdK3jMCyOs9r5O1BYlnyIZFesGcO/exec";
 
 /* =========================================================
    1. NAVBAR
