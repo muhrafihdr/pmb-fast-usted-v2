@@ -56,6 +56,9 @@ function doPost(e) {
     const data = JSON.parse(e.postData.contents);
     const sheet = getSheet_();
 
+    // Pastikan baris header selalu ada sebelum data baru masuk
+    ensureHeaders_();
+
     sheet.appendRow([
       new Date(),                                    // Timestamp
       data.namaLengkap || "",
@@ -101,20 +104,41 @@ function doGet() {
 
 /**
  * Membuat header kolom pada sheet (jalankan sekali dari editor).
- * Aman dijalankan berulang — tidak akan menduplikasi header.
+ * Aman dijalankan berulang — tidak akan menduplikasi header dan
+ * TIDAK menghapus data yang sudah ada (header disisipkan di atas).
  */
 function setupHeaders() {
+  ensureHeaders_();
+  Logger.log("Header siap di sheet: " + getSheet_().getName());
+}
+
+/**
+ * Memastikan baris header ada di baris 1.
+ * - Jika sheet kosong → buat baris header.
+ * - Jika baris 1 sudah berisi data (bukan header) → sisipkan header di atas.
+ * - Jika header sudah ada → tidak mengubah apa pun.
+ */
+function ensureHeaders_() {
   const sheet = getSheet_();
+
   if (sheet.getLastRow() === 0) {
+    // Sheet kosong → langsung buat header
     sheet.appendRow(HEADERS);
+  } else {
+    const firstCell = sheet.getRange(1, 1).getValue();
+    if (firstCell !== HEADERS[0]) {
+      // Baris 1 berisi data → sisipkan header di atas, data bergeser ke bawah
+      sheet.insertRowsBefore(1, 1);
+      sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+    }
   }
-  // Format header agar tebal & berwarna
+
+  // Format header: tebal, latar biru, teks putih, baris beku
   const headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
   headerRange.setFontWeight("bold");
   headerRange.setBackground("#0d3b8c");
   headerRange.setFontColor("#ffffff");
   sheet.setFrozenRows(1);
-  Logger.log("Header siap di sheet: " + sheet.getName());
 }
 
 /**
