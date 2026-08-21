@@ -1,0 +1,131 @@
+# 🌐 Landing Page PMB — Fakultas Sains dan Teknologi USTEDI
+
+Landing page pendaftaran mahasiswa baru (PMB) FAST USTEDI. Responsif (mobile & desktop), memakai logo FAST, logo USTEDI, dan foto gedung USTEDI, serta menyimpan data pendaftar ke **Google Spreadsheet**.
+
+## 📁 Struktur File
+
+| File | Fungsi |
+|------|--------|
+| `index.html` | Halaman utama (struktur & konten) |
+| `style.css` | Seluruh styling, responsif mobile-first |
+| `script.js` | Navigasi, validasi form, kirim data ke Google Sheets |
+| `Code.gs` | Google Apps Script — penerima data & penulis ke spreadsheet |
+| `netlify.toml` | Konfigurasi deploy Netlify (publish directory & header keamanan) |
+| `Logo Ustedi.png` | Logo USTEDI (navbar kiri atas) |
+| `gedung ustedi.jpeg` | Foto gedung USTEDI (background hero) |
+| `LOGO FAST.png` | Cadangan (tidak dipakai di halaman saat ini) |
+
+---
+
+## ⚙️ Langkah 1 — Pasang Google Apps Script (wajib agar data tersimpan)
+
+1. Buka **https://script.google.com** → klik **New project**.
+2. Hapus kode bawaan di `Code.gs`, lalu **tempel seluruh isi file `Code.gs`** dari folder ini.
+3. Pastikan `SHEET_ID` di dalamnya sudah benar:
+   ```
+   SHEET_ID = "1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0"
+   ```
+   > Spreadsheet tujuan: https://docs.google.com/spreadsheets/d/1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0/edit
+
+4. Jalankan fungsi **`setupHeaders`** sekali:
+   - Pilih fungsi `setupHeaders` di dropdown atas → klik **Run**.
+   - Saat diminta izin, pilih akun Google yang punya akses ke spreadsheet → **Allow**.
+   - (Opsional) ubah nama sheet/tab, misalnya `Pendaftar`, di bagian `SHEET_NAME`.
+
+5. **Deploy sebagai Web App:**
+   - Klik **Deploy** → **New deployment** → ikon ⚙️ → **Web app**.
+   - `Description`: bebas, mis. `PMB FAST`.
+   - `Execute as`: **Me**
+   - `Who has access`: **Anyone** (agar formulir di website bisa mengirim)
+   - Klik **Deploy** → salin **Web app URL** (berakhiran `/exec`).
+
+6. **Hubungkan ke landing page:**
+   Buka `script.js`, tempel URL tersebut di bagian paling atas:
+   ```js
+   const GAS_WEB_APP_URL = "https://script.google.com/macros/s/PASTE_URL_DISINI/exec";
+   ```
+
+7. Tes: buka halaman web → isi formulir → kirim → cek spreadsheet (baris baru muncul, kolom `Timestamp` terisi).
+
+> 💡 Jika deploy versi baru setelah mengubah `Code.gs`, gunakan **Deploy → Manage deployments → ✏️ Edit → New version → Deploy** agar URL tetap sama.
+
+---
+
+## 🚀 Langkah 2 — Menjalankan Website
+
+### 🌐 Publikasi online ke Netlify (disarankan)
+
+> **PENTING:** Pastikan `GAS_WEB_APP_URL` di `script.js` **sudah terisi** sebelum deploy, karena file statis tidak bisa diedit setelah online — jika belum, formulir akan menampilkan pesan konfigurasi belum lengkap.
+
+**Cara A — Netlify Drop (paling cepat, tanpa Git):**
+1. Buka https://app.netlify.com/drop dan masuk/login (daftar gratis).
+2. **Seret (drag & drop) seluruh folder website ini** (berisi `index.html`, `style.css`, `script.js`, `netlify.toml`, dan file gambar) ke halaman tersebut.
+3. Tunggu proses deploy ±1 menit. Website langsung online di alamat seperti `https://nama-acak.netlify.app`.
+
+**Cara B — Lewat GitHub (untuk update rutin):**
+1. Upload folder website ke repository GitHub.
+2. Buka https://app.netlify.com → **Add new site** → **Import an existing project** → pilih GitHub → pilih repository.
+3. Netlify otomatis membaca `netlify.toml` (publish directory = root). Setiap push ke GitHub akan otomatis ter-deploy.
+
+**Mengganti domain:**
+- **Domain default**: gratis, format `https://namasite.netlify.app` (bisa diubah di **Site settings → Change site name**).
+- **Domain custom**: beli domain lalu atur di **Domain settings → Add custom domain** (ikuti petunjuk DNS Netlify).
+
+**Uji setelah online:**
+1. Buka website, isi formulir percobaan, kirim.
+2. Cek spreadsheet — baris baru harus muncul.
+3. Kalau muncul error, lihat tabel Troubleshooting di bawah.
+
+### Jalankan lokal (untuk pratinjau)
+Buka langsung di browser:
+
+```bash
+open index.html
+```
+
+Atau dengan server lokal:
+
+```bash
+python3 -m http.server 8080
+# lalu buka http://localhost:8080
+```
+
+---
+
+## ✏️ Hal yang Bisa Disesuaikan
+
+Cari penanda `✏️` di `index.html` untuk:
+
+- **Daftar Program Studi** — sesuaikan dengan prodi resmi FAST USTEDI (ada di bagian *Program Studi* dan *dropdown formulir*).
+- **Jalur Pendaftaran** — sesuaikan di dropdown formulir.
+- **Kontak** — nomor WhatsApp, email, dan alamat kampus (bagian *Kontak* dan *Footer*).
+
+Ganti juga:
+- **Warna tema** di `style.css` bagian `:root` (`--primary`, `--accent`, dll).
+- **Tahun akademik** di badge hero (`index.html`).
+
+---
+
+## 📊 Format Data di Spreadsheet
+
+Setiap pendaftar menjadi **satu baris** dengan kolom:
+
+`Timestamp, Nama Lengkap, NIK, Tempat Lahir, Tanggal Lahir, Jenis Kelamin, Email, No HP/WA, Alamat, Provinsi, Kota/Kabupaten, Kecamatan, Kelurahan/Desa, Kode Pos, Asal Sekolah, Jurusan, Tahun Lulus, Jalur Pendaftaran, Program Studi`
+
+> Ingin menambah/mengubah kolom? Sesuaikan **`HEADERS`** di `Code.gs` **dan** kolom `appendRow` di fungsi `doPost`, lalu ulangi deploy (New version).
+
+---
+
+## 🛠️ Troubleshooting
+
+| Masalah | Solusi |
+|--------|--------|
+| Data tidak masuk ke spreadsheet | Pastikan Web App di-deploy dengan `Execute as: Me` + `Anyone` dan URL di `script.js` sudah benar (akhiran `/exec`). |
+| Muncul pesan "URL Web App belum dikonfigurasi" | Isi `GAS_WEB_APP_URL` di `script.js`. |
+| CORS/error saat kirim | Pastikan memakai `Content-Type: text/plain` (sudah diatur di `script.js`) dan akses Web App = **Anyone**. |
+| Spreadsheet tidak muncul di editor Apps Script | Buka spreadsheet tersebut di browser terlebih dahulu dengan akun yang sama. |
+| Ingin ubah nama tab/sheet | Ubah `SHEET_NAME` di `Code.gs`, lalu deploy versi baru. |
+
+---
+
+Selamat mencoba! 🎓 Jika ada pertanyaan, buka bagian **Kontak** di halaman atau hubungi pengembang/panitia PMB.

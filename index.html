@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Pendaftaran Mahasiswa Baru (PMB) Fakultas Sains dan Teknologi USTEDI — Daftar online mudah, cepat, dan aman." />
+  <title>PMB Fakultas Sains dan Teknologi USTEDI — Daftar Sekarang</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <header class="navbar" id="navbar">
+    <div class="container nav-inner">
+      <a href="#beranda" class="brand" aria-label="Beranda">
+        <img src="Logo Ustedi.png" alt="Logo USTEDI" class="brand-logo" />
+      </a>
+
+      <nav class="nav-links" id="navLinks" aria-label="Navigasi utama">
+        <a href="#beranda">Beranda</a>
+        <a href="#tentang">Tentang</a>
+        <a href="#program-studi">Program Studi</a>
+        <a href="#alur">Alur Pendaftaran</a>
+        <a href="#faq">FAQ</a>
+        <a href="#kontak">Kontak</a>
+        <a href="#formulir" class="btn btn-accent btn-sm nav-cta">Daftar Sekarang</a>
+      </nav>
+
+      <button class="hamburger" id="hamburger" aria-label="Buka menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="beranda">
+    <div class="hero-bg" role="img" aria-label="Gedung USTEDI"></div>
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+      <p class="hero-eyebrow">Penerimaan Mahasiswa Baru</p>
+      <h1 class="hero-title">Fakultas Sains &amp; Teknologi <span>USTEDI</span></h1>
+      <p class="hero-subtitle">
+        Wujudkan masa depanmu bersama kami. Kuliah di lingkungan modern, tenaga pengajar profesional,
+        dan fasilitas lengkap untuk mencetak lulusan unggul di bidang sains dan teknologi.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#formulir" class="btn btn-accent btn-lg">Daftar Sekarang</a>
+        <a href="#tentang" class="btn btn-outline btn-lg">Pelajari Lebih Lanjut</a>
+      </div>
+
+      <div class="hero-badge">
+        <span class="badge-item">
+          <strong>Tahun Akademik</strong>
+          <small>2026/2027</small>
+        </span>
+        <span class="badge-item">
+          <strong>Pendaftaran</strong>
+          <small>Online &amp; Offline</small>
+        </span>
+        <span class="badge-item">
+          <strong>Beasiswa</strong>
+          <small>Banyak Pilihan</small>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TENTANG ===== -->
+  <section class="section" id="tentang">
+    <div class="container">
+      <div class="section-head">
+        <p class="section-eyebrow">Tentang Kami</p>
+        <h2 class="section-title">Mengapa Memilih FAST USTEDI?</h2>
+        <p class="section-desc">
+          Fakultas Sains dan Teknologi USTEDI berkomitmen menghadirkan pendidikan tinggi
+          yang relevan dengan kebutuhan industri dan perkembangan zaman.
+        </p>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🎓</div>
+          <h3>Dosen Berkualitas</h3>
+          <p>Diajar langsung oleh dosen berpengalaman dengan latar belakang akademik dan industri.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💻</div>
+          <h3>Kurikulum Modern</h3>
+          <p>Kurikulum berbasis kompetensi yang selalu diperbarui mengikuti perkembangan teknologi.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🏢</div>
+          <h3>Fasilitas Lengkap</h3>
+          <p>Laboratorium, ruang praktik, dan lingkungan kampus yang nyaman untuk belajar.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🤝</div>
+          <h3>Kerja Sama Industri</h3>
+          <p>Jaringan mitra industri untuk magang, praktik kerja, dan peluang karier lulusan.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🏅</div>
+          <h3>Beasiswa</h3>
+          <p>Tersedia berbagai jalur beasiswa prestasi akademik, non-akademik, dan KIP.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>Pendaftaran Mudah</h3>
+          <p>Proses pendaftaran 100% online — cukup isi formulir, tanpa harus datang ke kampus.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROGRAM STUDI ===== -->
+  <section class="section section-alt" id="program-studi">
+    <div class="container">
+      <div class="section-head">
+        <p class="section-eyebrow">Program Studi</p>
+        <h2 class="section-title">Pilihan Program Studi</h2>
+        <p class="section-desc">Pilih program studi yang sesuai dengan minat dan bakatmu.</p>
+      </div>
+
+      <!-- ✏️ Daftar program studi resmi FAST USTEDI -->
+      <div class="prodi-grid">
+        <div class="prodi-card">
+          <span class="prodi-icon">📊</span>
+          <h3>S1 Sains Data</h3>
+          <p>Mengolah data besar, statistika, dan machine learning untuk pengambilan keputusan.</p>
+        </div>
+        <div class="prodi-card">
+          <span class="prodi-icon">🖥️</span>
+          <h3>S1 Informatika</h3>
+          <p>Menguasai pemrograman, kecerdasan buatan, dan pengembangan perangkat lunak.</p>
+        </div>
+        <div class="prodi-card">
+          <span class="prodi-icon">🏭</span>
+          <h3>S1 Teknik Industri</h3>
+          <p>Optimalisasi sistem produksi, manajemen operasi, dan perbaikan proses industri.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ALUR PENDAFTARAN ===== -->
+  <section class="section" id="alur">
+    <div class="container">
+      <div class="section-head">
+        <p class="section-eyebrow">Alur Pendaftaran</p>
+        <h2 class="section-title">4 Langkah Mudah Mendaftar</h2>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Isi Formulir</h3>
+          <p>Lengkapi data diri pada formulir pendaftaran online di halaman ini.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Verifikasi Data</h3>
+          <p>Panitia PMB akan memverifikasi data pendaftaranmu melalui email/WhatsApp.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Seleksi</h3>
+          <p>Ikuti proses seleksi sesuai jalur pendaftaran yang kamu pilih.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <h3>Daftar Ulang</h3>
+          <p>Lakukan daftar ulang setelah dinyatakan lulus seleksi. Selamat! 🎉</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FORMULIR ===== -->
+  <section class="section section-form" id="formulir">
+    <div class="container">
+      <div class="section-head">
+        <p class="section-eyebrow">Formulir Online</p>
+        <h2 class="section-title">Formulir Pendaftaran Mahasiswa Baru</h2>
+        <p class="section-desc">
+          Isi data dengan benar dan lengkap. Data yang kamu kirim akan tersimpan aman
+          di sistem panitia PMB FAST USTEDI.
+        </p>
+      </div>
+
+      <div class="form-card">
+        <!-- Pesan sukses -->
+        <div class="form-success" id="formSuccess" hidden>
+          <div class="success-icon">✅</div>
+          <h3>Pendaftaran Berhasil!</h3>
+          <p id="successMessage">Terima kasih, data pendaftaranmu telah kami terima. Panitia PMB akan menghubungi kamu segera.</p>
+          <button type="button" class="btn btn-primary" id="btnDaftarLagi">Daftar Lagi</button>
+        </div>
+
+        <!-- Pesan error global -->
+        <div class="form-alert form-alert-error" id="formError" hidden></div>
+
+        <form id="pmbForm" novalidate>
+          <fieldset>
+            <legend>Data Pribadi</legend>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="namaLengkap">Nama Lengkap <span class="req">*</span></label>
+                <input type="text" id="namaLengkap" name="namaLengkap" placeholder="Sesuai akta/identitas" autocomplete="name" />
+                <small class="error-msg"></small>
+              </div>
+              <div class="form-group">
+                <label for="nik">NIK <span class="req">*</span></label>
+                <input type="text" id="nik" name="nik" placeholder="16 digit NIK" inputmode="numeric" maxlength="16" />
+                <small class="error-msg"></small>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="tempatLahir">Tempat Lahir <span class="req">*</span></label>
+                <input type="text" id="tempatLahir" name="tempatLahir" placeholder="Contoh: Jayapura" />
+                <small class="error-msg"></small>
+              </div>
+              <div class="form-group">
+                <label for="tanggalLahir">Tanggal Lahir <span class="req">*</span></label>
+                <input type="date" id="tanggalLahir" name="tanggalLahir" />
+                <small class="error-msg"></small>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Jenis Kelamin <span class="req">*</span></label>
+                <div class="radio-group">
+                  <label class="radio-pill">
+                    <input type="radio" name="jenisKelamin" value="Laki-laki" />
+                    <span>Laki-laki</span>
+                  </label>
+                  <label class="radio-pill">
+                    <input type="radio" name="jenisKelamin" value="Perempuan" />
+                    <span>Perempuan</span>
+                  </label>
+                </div>
+                <small class="error-msg"></small>
+              </div>
+              <div class="form-group">
+                <label for="email">Email Aktif <span class="req">*</span></label>
+                <input type="email" id="email" name="email" placeholder="nama@email.com" autocomplete="email" />
+                <small class="error-msg"></small>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="noHp">No. HP / WhatsApp <span class="req">*</span></label>
+                <input type="tel" id="noHp" name="noHp" placeholder="08xxxxxxxxxx" inputmode="tel" />
+                <small class="error-msg"></small>
+              </div>
+              <div class="form-group">
+                <label for="asalSekolah">Asal Sekolah <span class="req">*</span></label>
+                <input type="text" id="asalSekolah" name="asalSekolah" placeholder="Nama SMA/SMK/MA" />
+                <small class="error-msg"></small>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="jurusanSekolah">Jurusan <span class="req">*</span></label>
+                <input type="text" id="jurusanSekolah" name="jurusanSekolah" placeholder="IPA / IPS / TKJ / RPL / dll." />
+                <small class="error-msg"></small>
+              </div>
+              <div class="form-group">
+                <label for="tahunLulus">Tahun Lulus <span class="req">*</span></label>
+                <select id="tahunLulus" name="tahunLulus">
+                  <option value="">— Pilih Tahun —</option>
+                  <!-- diisi otomatis oleh script.js -->
+                </select>
+                <small class="error-msg"></small>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Alamat Tempat Tinggal</legend>
+
+            <div class="form-group">
+              <label for="alamat">Alamat Lengkap <span class="req">*</span></label>
+              <textarea id="alamat" name="alamat" rows="3" placeholder="Nama jalan, nomor rumah, RT/RW, nama kampung/kompleks"></textarea>
+              <small class="error-msg"></small>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="provinsi">Provinsi <span class="req">*</span></label>
+                <input type="text" id="provinsi" name="provinsi" placeholder="Provinsi" />
+                <small class="error-msg"></small>
+              </div>
+              <div class="form-group">
+                <label for="kabupaten">Kota / Kabupaten <span class="req">*</span></label>
+                <input type="text" id="kabupaten" name="kabupaten" placeholder="Kota/Kabupaten" />
+                <small class="error-msg"></small>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="kecamatan">Kecamatan <span class="req">*</span></label>
+                <input type="text" id="kecamatan" name="kecamatan" placeholder="Kecamatan" />
+                <small class="error-msg"></small>
+              </div>
+              <div class="form-group">
+                <label for="kelurahan">Kelurahan / Desa <span class="req">*</span></label>
+                <input type="text" id="kelurahan" name="kelurahan" placeholder="Kelurahan/Desa" />
+                <small class="error-msg"></small>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="kodePos">Kode Pos</label>
+                <input type="text" id="kodePos" name="kodePos" placeholder="Kode pos" inputmode="numeric" maxlength="5" />
+                <small class="error-msg"></small>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Pilihan Pendaftaran</legend>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="jalur">Jalur Pendaftaran <span class="req">*</span></label>
+                <select id="jalur" name="jalur">
+                  <option value="">— Pilih Jalur —</option>
+                  <!-- ✏️ Sesuaikan daftar jalur dengan ketentuan resmi -->
+                  <option value="Reguler">Reguler</option>
+                  <option value="Beasiswa Prestasi">Beasiswa Prestasi</option>
+                  <option value="Beasiswa Hafidz Quran">Beasiswa Hafidz Quran</option>
+                  <option value="KIP Kuliah">KIP Kuliah</option>
+                  <option value="Mandiri">Mandiri</option>
+                </select>
+                <small class="error-msg"></small>
+              </div>
+              <div class="form-group">
+                <label for="programStudi">Program Studi Pilihan <span class="req">*</span></label>
+                <select id="programStudi" name="programStudi">
+                  <option value="">— Pilih Program Studi —</option>
+                  <!-- ✏️ Daftar prodi resmi FAST USTEDI -->
+                  <option value="S1 Sains Data">S1 Sains Data</option>
+                  <option value="S1 Informatika">S1 Informatika</option>
+                  <option value="S1 Teknik Industri">S1 Teknik Industri</option>
+                </select>
+                <small class="error-msg"></small>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="form-note">
+            <p>🔒 Data kamu aman. Informasi hanya digunakan untuk keperluan administrasi pendaftaran PMB FAST USTEDI.</p>
+          </div>
+
+          <button type="submit" class="btn btn-accent btn-lg btn-block" id="btnSubmit">
+            <span class="btn-text">Kirim Pendaftaran</span>
+            <span class="btn-loader" hidden></span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section class="section section-alt" id="faq">
+    <div class="container container-narrow">
+      <div class="section-head">
+        <p class="section-eyebrow">FAQ</p>
+        <h2 class="section-title">Pertanyaan yang Sering Diajukan</h2>
+      </div>
+
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>Apakah pendaftaran ini dipungut biaya?</summary>
+          <p>Pendaftaran PMB Fakultas Sains dan Teknologi (FAST) USTEDI dilakukan secara online dan offline. Biaya registrasi dikenakan ketika mendaftar sebagai mahasiswa. Biaya hanya dibayarkan sekali tanpa uang gedung. Terdapat diskon 50% SPP khusus FAST.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Kapan batas akhir pendaftaran?</summary>
+          <p>Pendaftaran mahasiswa Fakultas Sains dan Teknologi USTEDI dibuka setiap hari. Tidak terdapat gelombang pendaftaran. Kuliah fleksibel dan terjangkau.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Berkas apa saja yang perlu disiapkan?</summary>
+          <p>Siapkan scan ijazah/surat keterangan lulus, rapor, KTP/KK, dan pas foto. Detail berkas akan diminta panitia setelah data pendaftaran diverifikasi.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Bagaimana jika saya mengisi data yang salah?</summary>
+          <p>Hubungi panitia PMB melalui kontak di bawah untuk perbaikan data. Pastikan data yang diisi sudah benar sebelum menekan tombol kirim.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== KONTAK ===== -->
+  <section class="section" id="kontak">
+    <div class="container">
+      <div class="section-head">
+        <p class="section-eyebrow">Kontak</p>
+        <h2 class="section-title">Hubungi Panitia PMB</h2>
+      </div>
+
+      <div class="contact-grid">
+        <a class="contact-card" href="https://wa.me/6288228995205" target="_blank" rel="noopener">
+          <span class="contact-icon">💬</span>
+          <h3>WhatsApp</h3>
+          <p>0882-2899-5205</p>
+          <small>Klik untuk chat</small>
+        </a>
+        <a class="contact-card" href="mailto:fast.ustedi@gmail.com">
+          <span class="contact-icon">📧</span>
+          <h3>Email</h3>
+          <p>fast.ustedi@gmail.com</p>
+          <small>Klik untuk kirim email</small>
+        </a>
+        <div class="contact-card">
+          <span class="contact-icon">📍</span>
+          <h3>Alamat Kampus</h3>
+          <p>JL. MR. Koesbiyono Tjondrowibowo, Gunungpati, Semarang</p>
+          <small>Senin–Jumat, 08.00–16.00</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <p>Penerimaan Mahasiswa Baru<br />Fakultas Sains dan Teknologi USTEDI</p>
+      </div>
+      <div class="footer-links">
+        <h4>Navigasi</h4>
+        <a href="#beranda">Beranda</a>
+        <a href="#tentang">Tentang</a>
+        <a href="#program-studi">Program Studi</a>
+        <a href="#formulir">Formulir Pendaftaran</a>
+      </div>
+      <div class="footer-contact">
+        <h4>Kontak</h4>
+        <p>💬 0882-2899-5205</p>
+        <p>📧 fast.ustedi@gmail.com</p>
+        <p>📍 Gunungpati, Semarang</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>© <span id="year"></span> Fakultas Sains dan Teknologi USTEDI. Seluruh hak cipta dilindungi.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
