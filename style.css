@@ -330,6 +330,16 @@ a {
   color: var(--accent);
 }
 
+.hero-university {
+  margin: -10px auto 18px;
+  max-width: 680px;
+  font-size: clamp(0.8rem, 2vw, 1rem);
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
 .hero-subtitle {
   max-width: 680px;
   margin: 0 auto 30px;
