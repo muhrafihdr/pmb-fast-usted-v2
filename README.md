@@ -68,8 +68,26 @@ Landing page pendaftaran mahasiswa baru (PMB) FAST USTEDI. Responsif (mobile & d
 3. Netlify otomatis membaca `netlify.toml` (publish directory = root). Setiap push ke GitHub akan otomatis ter-deploy.
 
 **Mengganti domain:**
-- **Domain default**: gratis, format `https://namasite.netlify.app` (bisa diubah di **Site settings → Change site name**).
-- **Domain custom**: beli domain lalu atur di **Domain settings → Add custom domain** (ikuti petunjuk DNS Netlify).
+- **Domain utama**: `https://fastustedi.web.id` (custom domain — sudah disambungkan ke situs Netlify ini, SSL otomatis aktif setelah nameserver diganti).
+- **Domain cadangan**: `https://pmb-fast-usted-v2.netlify.app` tetap aktif sebagai alias.
+
+**Mengarahkan domain dari SumoPOD (wajib, sekali saja):**
+1. Login ke panel SumoPOD → menu **Domain** → pilih `fastustedi.web.id` → **Manage DNS / Nameservers**.
+2. Ubah **nameserver** domain menjadi milik Netlify berikut:
+   ```
+   dns1.p09.nsone.net
+   dns2.p09.nsone.net
+   dns3.p09.nsone.net
+   dns4.p09.nsone.net
+   ```
+3. Simpan, lalu tunggu propagasi DNS (biasanya 1–24 jam).
+4. Netlify otomatis menerbitkan sertifikat SSL, dan website bisa diakses di `https://fastustedi.web.id`.
+   > Status SSL bisa dicek di Netlify → **Site settings → Domain management**.
+
+   *Alternatif (tanpa ganti nameserver):* biarkan DNS di SumoPOD, lalu tambahkan record:
+   - `A` record `@` → `75.2.60.5`
+   - `CNAME` record `www` → `pmb-fast-usted-v2.netlify.app`
+   (nama record bisa berbeda tergantung panel SumoPOD, mis. `@` untuk root dan `www` untuk subdomain).
 
 **Uji setelah online:**
 1. Buka website, isi formulir percobaan, kirim.
