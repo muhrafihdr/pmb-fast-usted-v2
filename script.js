@@ -67,8 +67,9 @@ const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzo4MNSZGeEEzdg
   const select = document.getElementById("tahunLulus");
   if (!select) return;
 
-  const tahunSekarang = new Date().getFullYear();
-  for (let tahun = tahunSekarang; tahun >= tahunSekarang - 6; tahun--) {
+  const tahunMulai = 2016;
+  const tahunAkhir = 2026;
+  for (let tahun = tahunAkhir; tahun >= tahunMulai; tahun--) {
     const option = document.createElement("option");
     option.value = tahun;
     option.textContent = tahun;
