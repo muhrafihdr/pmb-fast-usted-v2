@@ -302,8 +302,10 @@ async function loadData(silent) {
 
     RAW.headers = json.headers || [];
     RAW.rows = json.rows || [];
-    RAW.total = RAW.rows.length;
     RAW.list = normalizeRows(RAW.rows);
+    // Terapkan overlay CRUD lokal (tambah/edit/hapus)
+    RAW.list = mergePendRows(RAW.list);
+    RAW.total = RAW.list.length;
 
     // Inisialisasi kolom yang tampil (default) agar toggle checkbox konsisten
     if (!state.data.visibleCols.length) {
@@ -930,6 +932,7 @@ function renderDataTable() {
       const arrow = active ? (state.data.sortDir === "asc" ? " ▲" : " ▼") : "";
       return `<th class="sortable" data-sort="${k}" title="Urutkan: ${esc(label)}">${esc(label)}${arrow}</th>`;
     }).join("")}
+    <th class="th-aksi">Aksi</th>
   </tr>`;
 
   // Badan tabel
@@ -938,7 +941,7 @@ function renderDataTable() {
   const tbody = $("#dataTbody");
 
   if (!pageRows.length) {
-    tbody.innerHTML = `<tr><td colspan="${keys.length}" style="text-align:center;color:#64748b;padding:30px">Tidak ada data yang cocok dengan filter.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="${keys.length + 1}" style="text-align:center;color:#64748b;padding:30px">Tidak ada data yang cocok dengan filter.</td></tr>`;
   } else {
     tbody.innerHTML = pageRows.map((r) => `
       <tr>
@@ -950,6 +953,10 @@ function renderDataTable() {
           if (k === "email") return `<td><a href="mailto:${esc(val(r, k))}" style="color:#0d3b8c">${esc(val(r, k))}</a></td>`;
           return `<td>${esc(fullNumber(val(r, k)))}</td>`;
         }).join("")}
+        <td class="row-actions">
+          <button class="btn-icon" data-act="edit" data-key="${esc(r.__key)}" title="Edit">✏️</button>
+          <button class="btn-icon danger" data-act="del" data-key="${esc(r.__key)}" title="Hapus">🗑️</button>
+        </td>
       </tr>
     `).join("");
   }
@@ -1108,6 +1115,310 @@ const KEG_COLS = {
 
 const KEG_LOCAL_KEY = "fast_kegiatan_v1";
 
+/* =========================================================
+   LAPISAN CRUD LOKAL (overlay)
+   Edit / hapus / tambah tanpa backend disimpan di localStorage
+   sebagai OVERLAY di atas data spreadsheet (basis baca tetap utuh).
+   ========================================================= */
+const KEG_OVL_KEY = "fast_kegiatan_overlay_v1";
+const PEND_OVL_KEY = "fast_pendaftar_overlay_v1";
+
+let kegEditingKey = null;    // null = tambah; string (__key) = edit kegiatan
+let pendEditingKey = null;   // null = tambah; string (__key) = edit pendaftar
+let uid = Date.now() % 1e7;
+
+function rowHash(r) {
+  const s = Object.keys(r).sort().map((k) => k + "=" + r[k]).join("|");
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return "h" + (h >>> 0).toString(36);
+}
+function newUid() { return "new:" + (++uid) + ":" + Date.now().toString(36); }
+
+function loadOverlay(key) {
+  try { return JSON.parse(localStorage.getItem(key) || "{}"); }
+  catch (_) { return {}; }
+}
+function saveOverlay(key, ov) {
+  try { localStorage.setItem(key, JSON.stringify(ov)); } catch (_) { /* kuota penuh */ }
+}
+
+/* ---------- Overlay KEGIATAN ---------- */
+function kegKey(r) {
+  const id = String(kegVal(r, "id") || "").trim();
+  return id ? "id:" + id : rowHash(r);
+}
+function kegOverlay() { return loadOverlay(KEG_OVL_KEY); }
+function saveKegOverlay(ov) { saveOverlay(KEG_OVL_KEY, ov); }
+
+function mergeKegRows(base) {
+  const ov = kegOverlay();
+  const deleted = ov.deleted || {};
+  const edited = ov.edited || {};
+  const out = [];
+  base.forEach((r) => {
+    const k = kegKey(r);
+    if (deleted[k]) return;
+    const row = edited[k] || r;
+    row.__key = k;
+    out.push(row);
+  });
+  (ov.created || []).forEach((r) => {
+    if (!r.__key) r.__key = newUid();
+    out.push(r);
+  });
+  return out;
+}
+
+/* Migrasi data lama fast_kegiatan_v1 → overlay.created (sekali saja) */
+function migrateLegacyKeg() {
+  try {
+    const legacy = JSON.parse(localStorage.getItem(KEG_LOCAL_KEY) || "[]");
+    if (!legacy.length) return;
+    const ov = kegOverlay();
+    ov.created = ov.created || [];
+    legacy.forEach((r) => {
+      if (!(ov.created || []).some((c) => kegKey(c) === kegKey(r))) ov.created.push(r);
+    });
+    saveKegOverlay(ov);
+    localStorage.removeItem(KEG_LOCAL_KEY);
+  } catch (_) { /* abaikan */ }
+}
+
+/* ---------- Overlay PENDAFTAR ---------- */
+function pendOverlay() { return loadOverlay(PEND_OVL_KEY); }
+function savePendOverlay(ov) { saveOverlay(PEND_OVL_KEY, ov); }
+
+function mergePendRows(base) {
+  const ov = pendOverlay();
+  const deleted = ov.deleted || {};
+  const edited = ov.edited || {};
+  const out = [];
+  const tsH = colIndex("timestamp") >= 0 ? RAW.headers[colIndex("timestamp")] : "Timestamp";
+  const norm = (row) => {
+    const ts = parseDate(row[tsH] || "");
+    row._ts = ts;
+    row._day = ts ? toDayStr(ts) : null;
+    return row;
+  };
+  base.forEach((r) => {
+    const k = rowHash(r);
+    if (deleted[k]) return;
+    const row = edited[k] ? norm(edited[k]) : r;
+    row.__key = k;
+    out.push(row);
+  });
+  (ov.created || []).forEach((r) => {
+    if (!r.__key) r.__key = newUid();
+    out.push(norm(r));
+  });
+  return out;
+}
+
+/* =========================================================
+   CRUD UI — KEGIATAN (form menjadi mode tambah/edit)
+   ========================================================= */
+const KEG_FORM_MAP = [
+  ["kegNama", "nama"], ["kegTanggal", "tanggal"], ["kegProgram", "program"],
+  ["kegKategori", "kategori"], ["kegProgres", "progres"], ["kegPic", "pic"],
+  ["kegTempat", "tempat"], ["kegPeserta", "peserta"], ["kegPrioritas", "prioritas"],
+  ["kegBulanLaporan", "bulan"], ["kegTahunLaporan", "tahun"], ["kegTarget", "target"],
+  ["kegStatusTarget", "statusTarget"], ["kegTindakLanjut", "tindakLanjut"],
+  ["kegHasilOutput", "output"], ["kegLink", "link"],
+  ["kegDeskripsi", "catatan"], ["kegEvaluasi", "evaluasi"],
+];
+
+function fillKegForm(row) {
+  KEG_FORM_MAP.forEach(([fid, alias]) => {
+    const el = document.getElementById(fid);
+    if (!el) return;
+    let v = kegVal(row, alias);
+    if (fid === "kegTanggal" && v) {
+      const d = parseDate(v);
+      v = d ? toDayStr(d) : "";
+    }
+    el.value = v;
+  });
+}
+
+function setKegEditing(key, row) {
+  kegEditingKey = key;
+  $("#kegFormTitle").textContent = "✏️ Edit Kegiatan";
+  $("#kegEditBanner").hidden = false;
+  $("#kegEditName").textContent = kegVal(row, "nama") || "";
+  $("#btnKegSubmit").textContent = "💾 Simpan Perubahan";
+  $("#kegFormCard").classList.add("editing");
+  $("#kegFormCard").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function resetKegForm() {
+  kegEditingKey = null;
+  $("#kegForm").reset();
+  $("#kegFormTitle").textContent = "➕ Catat Kegiatan Baru";
+  $("#kegEditBanner").hidden = true;
+  $("#btnKegSubmit").textContent = "💾 Simpan Kegiatan";
+  $("#kegFormCard").classList.remove("editing");
+}
+
+function editKegiatan(key) {
+  const row = KEG.list.find((r) => r.__key === key);
+  if (!row) return;
+  fillKegForm(row);
+  setKegEditing(key, row);
+}
+
+function deleteKegiatan(key) {
+  const row = KEG.list.find((r) => r.__key === key);
+  if (!row) return;
+  const nama = kegVal(row, "nama") || "kegiatan ini";
+  if (!confirm('Hapus kegiatan "' + nama + '"?\n(Perubahan tersimpan di perangkat ini — tanpa backend)')) return;
+  const ov = kegOverlay();
+  if (String(key).startsWith("new:")) {
+    ov.created = (ov.created || []).filter((c) => c.__key !== key);
+  } else {
+    ov.deleted = ov.deleted || {};
+    ov.deleted[key] = true;
+    delete (ov.edited || {})[key];
+  }
+  saveKegOverlay(ov);
+  if (kegEditingKey === key) resetKegForm();
+  loadKegiatan(true);
+}
+
+/* =========================================================
+   CRUD UI — PENDAFTAR (modal tambah/edit + hapus)
+   ========================================================= */
+const PEND_FIELDS = [
+  { key: "nama", label: "Nama Lengkap", required: true, type: "text", ph: "Nama calon mahasiswa" },
+  { key: "nik", label: "NIK", type: "text" },
+  { key: "tempatLahir", label: "Tempat Lahir", type: "text" },
+  { key: "tanggalLahir", label: "Tanggal Lahir", type: "date" },
+  { key: "gender", label: "Jenis Kelamin", type: "select", options: ["Laki-laki", "Perempuan"] },
+  { key: "email", label: "Email", type: "email" },
+  { key: "hp", label: "No HP/WA", type: "text" },
+  { key: "alamat", label: "Alamat", type: "textarea" },
+  { key: "provinsi", label: "Provinsi", type: "text" },
+  { key: "kabupaten", label: "Kota/Kabupaten", type: "text" },
+  { key: "kecamatan", label: "Kecamatan", type: "text" },
+  { key: "kelurahan", label: "Kelurahan/Desa", type: "text" },
+  { key: "kodePos", label: "Kode Pos", type: "text" },
+  { key: "sekolah", label: "Asal Sekolah", type: "text" },
+  { key: "jurusanSekolah", label: "Jurusan", type: "text" },
+  { key: "tahunLulus", label: "Tahun Lulus", type: "text" },
+  { key: "jalur", label: "Jalur Pendaftaran", type: "select", dynamic: true },
+  { key: "prodi", label: "Program Studi", type: "select", dynamic: true },
+];
+
+function renderPendFormFields() {
+  const wrap = $("#pendFormFields");
+  const jalurSet = new Set(["Reguler", "Beasiswa", "KIP", "Mandiri"]);
+  countBy(RAW.list, "jalur").forEach((x) => jalurSet.add(x.label));
+  const prodiSet = new Set(countBy(RAW.list, "prodi").map((x) => x.label));
+  wrap.innerHTML = PEND_FIELDS.map((f) => {
+    const req = f.required ? ' <span class="req">*</span>' : "";
+    let input = "";
+    if (f.type === "select") {
+      const opts = f.dynamic
+        ? (f.key === "jalur" ? [...jalurSet] : [...prodiSet])
+        : (f.options || []);
+      input = `<select id="pend_${f.key}"><option value="">— Pilih —</option>` +
+        opts.map((o) => `<option>${esc(o)}</option>`).join("") + `</select>`;
+    } else if (f.type === "textarea") {
+      input = `<textarea id="pend_${f.key}" rows="2" placeholder="${f.ph || ""}"></textarea>`;
+    } else {
+      input = `<input type="${f.type}" id="pend_${f.key}" placeholder="${f.ph || ""}" />`;
+    }
+    return `<div class="filter-item ${f.type === "textarea" ? "filter-search" : ""}">
+      <label for="pend_${f.key}">${esc(f.label)}${req}</label>${input}
+    </div>`;
+  }).join("");
+}
+
+function openPendModal(mode, key) {
+  pendEditingKey = mode === "edit" ? key : null;
+  $("#pendModalTitle").textContent = pendEditingKey ? "✏️ Edit Pendaftar" : "➕ Tambah Pendaftar";
+  $("#pendModalSave").textContent = pendEditingKey ? "💾 Simpan Perubahan" : "💾 Simpan";
+  renderPendFormFields();
+  if (pendEditingKey) {
+    const row = RAW.list.find((r) => r.__key === pendEditingKey);
+    if (row) {
+      PEND_FIELDS.forEach((f) => {
+        const el = document.getElementById("pend_" + f.key);
+        if (!el) return;
+        let v = val(row, f.key);
+        if (f.key === "tanggalLahir" && v) {
+          const d = parseDate(v);
+          v = d ? toDayStr(d) : "";
+        }
+        el.value = v;
+      });
+    }
+  }
+  $("#modalBackdrop").hidden = false;
+}
+
+function closePendModal() {
+  $("#modalBackdrop").hidden = true;
+  pendEditingKey = null;
+}
+
+function submitPendForm(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  const nama = String($("#pend_nama").value || "").trim();
+  if (!nama) { alert("⚠️ Nama Lengkap wajib diisi."); $("#pend_nama").focus(); return; }
+
+  const headerFor = (aliasKey) => {
+    const i = colIndex(aliasKey);
+    return i >= 0 ? RAW.headers[i] : aliasKey;
+  };
+
+  const row = {};
+  PEND_FIELDS.forEach((f) => {
+    const el = document.getElementById("pend_" + f.key);
+    row[headerFor(f.key)] = el ? String(el.value || "").trim() : "";
+  });
+  if (!row[headerFor("timestamp")]) row[headerFor("timestamp")] = fmtDateTime(new Date());
+
+  const ov = pendOverlay();
+  if (pendEditingKey) {
+    const key = pendEditingKey;
+    const existing = RAW.list.find((r) => r.__key === key);
+    if (existing) {
+      RAW.headers.forEach((h) => { if (row[h] === undefined) row[h] = existing[h] || ""; });
+    }
+    row.__key = key;
+    ov.edited = ov.edited || {};
+    ov.edited[key] = row;
+    ov.created = (ov.created || []).map((c) => (c.__key === key ? row : c));
+  } else {
+    row.__key = newUid();
+    ov.created = ov.created || [];
+    ov.created.push(row);
+  }
+  savePendOverlay(ov);
+  closePendModal();
+  loadData(true);
+}
+
+function editPendaftar(key) { openPendModal("edit", key); }
+
+function deletePendaftar(key) {
+  const row = RAW.list.find((r) => r.__key === key);
+  if (!row) return;
+  const nm = val(row, "nama") || "data ini";
+  if (!confirm('Hapus data pendaftar "' + nm + '"?\n(Perubahan tersimpan di perangkat ini — tanpa backend)')) return;
+  const ov = pendOverlay();
+  if (String(key).startsWith("new:")) {
+    ov.created = (ov.created || []).filter((c) => c.__key !== key);
+  } else {
+    ov.deleted = ov.deleted || {};
+    ov.deleted[key] = true;
+    delete (ov.edited || {})[key];
+  }
+  savePendOverlay(ov);
+  loadData(true);
+}
+
 /* Sumber baca utama kegiatan — spreadsheet "MONITORING FAST TERBARU" (sheet Monitoring_FAST) */
 const KEGIATAN_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1HG1H9-_VZBBoml_WXpMqJ7aHuIQCRHH0545q94LqOls/export?format=csv&gid=841580046";
@@ -1153,6 +1464,7 @@ function kegBulanKey(r) {
 /* ---- Ambil data kegiatan ---- */
 async function loadKegiatan(silent) {
   let ok = false;
+  let base = [];
 
   // 1) Mode cloud via Apps Script
   if (DATA_SOURCE.gasUrl) {
@@ -1165,8 +1477,7 @@ async function loadKegiatan(silent) {
       const json = JSON.parse(text);
       if (json && json.ok === true) {
         KEG.headers = json.headers || [];
-        KEG.rows = json.rows || [];
-        KEG.list = KEG.rows;
+        base = json.rows || [];
         KEG.mode = "cloud";
         KEG.local = false;
         ok = true;
@@ -1190,8 +1501,7 @@ async function loadKegiatan(silent) {
           return obj;
         });
         KEG.headers = headers;
-        KEG.rows = rows;
-        KEG.list = rows;
+        base = rows;
         KEG.mode = "csv";
         KEG.local = false;
         ok = true;
@@ -1201,20 +1511,20 @@ async function loadKegiatan(silent) {
     }
   }
 
-  // 3) Mode lokal — localStorage
+  // 3) Mode lokal — localStorage (basis kosong; data ada di overlay.created)
   if (!ok) {
-    const headers = ["Timestamp", "ID Monitoring", "Nama Kegiatan", "Tanggal Kegiatan", "Kategori",
+    KEG.headers = ["Timestamp", "ID Monitoring", "Nama Kegiatan", "Tanggal Kegiatan", "Kategori",
       "Program", "Program Studi", "Bulan Laporan", "Tahun Laporan", "Periode", "Progres",
       "Penanggung Jawab", "Tempat", "Jumlah Peserta", "Prioritas", "Target", "Status Target",
       "Tindak Lanjut", "Hasil Output", "Catatan", "Evaluasi Feedback", "Link Dokumentasi"];
-    let arr = [];
-    try { arr = JSON.parse(localStorage.getItem(KEG_LOCAL_KEY) || "[]"); } catch (_) { arr = []; }
-    KEG.headers = headers;
-    KEG.rows = arr;
-    KEG.list = arr;
+    base = [];
     KEG.mode = "local";
     KEG.local = true;
   }
+
+  migrateLegacyKeg();
+  KEG.list = mergeKegRows(base);
+  KEG.rows = KEG.list;
 
   refreshKegSelects();
   renderKegMode();
@@ -1459,10 +1769,12 @@ function renderKegTable() {
     { key: "target", label: "Target" },
     { key: "statusTarget", label: "Status Target" },
     { key: "output", label: "Hasil / Output" },
+    { key: "_aksi", label: "Aksi" },
   ];
 
   $("#kegThead").innerHTML = `<tr>
     ${cols.map((c) => {
+      if (c.key === "_aksi") return `<th class="th-aksi">Aksi</th>`;
       const arrow = kegState.sortKey === c.key ? (kegState.sortDir === "asc" ? " ▲" : " ▼") : "";
       return `<th class="sortable" data-sort="${c.key}">${c.label}${arrow}</th>`;
     }).join("")}
@@ -1492,6 +1804,10 @@ function renderKegTable() {
         <td style="max-width:220px">${esc(kegVal(r, "target"))}</td>
         <td>${esc(kegVal(r, "statusTarget"))}</td>
         <td>${out ? `<a href="${esc(out)}" target="_blank" rel="noopener" style="color:#0d3b8c">🔗 Lihat</a>` : "—"}</td>
+        <td class="row-actions">
+          <button class="btn-icon" data-act="edit" data-key="${esc(r.__key)}" title="Edit">✏️</button>
+          <button class="btn-icon danger" data-act="del" data-key="${esc(r.__key)}" title="Hapus">🗑️</button>
+        </td>
       </tr>`;
     }).join("");
   }
@@ -1547,6 +1863,8 @@ async function submitKegiatan(e) {
 
   const data = {
     _tipe: "kegiatan",
+    _aksi: kegEditingKey ? "update" : "create",
+    _key: kegEditingKey || "",
     namaKegiatan: nama,
     tanggalKegiatan: $("#kegTanggal").value,
     kategori: $("#kegKategori").value,
@@ -1594,35 +1912,55 @@ async function submitKegiatan(e) {
   }
 
   if (!saved) {
-    const arr = JSON.parse(localStorage.getItem(KEG_LOCAL_KEY) || "[]");
-    arr.push({
-      Timestamp: new Date().toISOString(),
-      "Nama Kegiatan": data.namaKegiatan,
-      "Tanggal Kegiatan": data.tanggalKegiatan,
-      Kategori: data.kategori,
-      Program: data.program,
-      "Bulan Laporan": data.bulanLaporan,
-      "Tahun Laporan": data.tahunLaporan,
-      Periode: data.periode,
-      Progres: data.progres,
-      "Penanggung Jawab": data.pic,
-      Tempat: data.tempat,
-      "Jumlah Peserta": data.jumlahPeserta,
-      Prioritas: data.prioritas,
-      Target: data.target,
-      "Status Target": data.statusTarget,
-      "Tindak Lanjut": data.tindakLanjut,
-      "Hasil Output": data.hasilOutput,
-      Catatan: data.catatan,
-      "Evaluasi Feedback": data.evaluasiFeedback,
-      "Link Dokumentasi": data.linkDokumentasi,
-    });
-    localStorage.setItem(KEG_LOCAL_KEY, JSON.stringify(arr));
+    const ov = kegOverlay();
+    // Gunakan nama kolom asli dari spreadsheet (mis. "Kegiatan" bukan "Nama Kegiatan")
+    const H = (alias, fallback) => kegCol(alias) || fallback;
+    const row = {
+      [H("timestamp", "Timestamp")]: new Date().toISOString(),
+      [H("nama", "Nama Kegiatan")]: data.namaKegiatan,
+      [H("tanggal", "Tanggal Kegiatan")]: data.tanggalKegiatan,
+      [H("kategori", "Kategori")]: data.kategori,
+      [H("program", "Program")]: data.program,
+      [H("bulan", "Bulan Laporan")]: data.bulanLaporan,
+      [H("tahun", "Tahun Laporan")]: data.tahunLaporan,
+      [H("periode", "Periode")]: data.periode,
+      [H("progres", "Progres")]: data.progres,
+      [H("pic", "Penanggung Jawab")]: data.pic,
+      [H("tempat", "Tempat")]: data.tempat,
+      [H("peserta", "Jumlah Peserta")]: data.jumlahPeserta,
+      [H("prioritas", "Prioritas")]: data.prioritas,
+      [H("target", "Target")]: data.target,
+      [H("statusTarget", "Status Target")]: data.statusTarget,
+      [H("tindakLanjut", "Tindak Lanjut")]: data.tindakLanjut,
+      [H("output", "Hasil Output")]: data.hasilOutput,
+      [H("catatan", "Catatan")]: data.catatan,
+      [H("evaluasi", "Evaluasi Feedback")]: data.evaluasiFeedback,
+      [H("link", "Link Dokumentasi")]: data.linkDokumentasi,
+    };
+
+    if (kegEditingKey) {
+      // UPDATE — timpa baris yang sama (key dipertahankan agar tetap cocok)
+      const key = kegEditingKey;
+      const existing = KEG.list.find((r) => r.__key === key);
+      const idH = kegCol("id");
+      if (existing && idH && kegVal(existing, "id")) row[idH] = kegVal(existing, "id");
+      row.__key = key;
+      ov.edited = ov.edited || {};
+      ov.edited[key] = row;
+      ov.created = (ov.created || []).map((c) => (c.__key === key ? row : c));
+      saveKegOverlay(ov);
+    } else {
+      // CREATE — tambah baris baru
+      row.__key = newUid();
+      ov.created = ov.created || [];
+      ov.created.push(row);
+      saveKegOverlay(ov);
+    }
   }
 
   btn.disabled = false;
   btn.textContent = "💾 Simpan Kegiatan";
-  $("#kegForm").reset();
+  resetKegForm();
   kegState.page = 1;
   await loadKegiatan(true);
   $("#kegTable").scrollIntoView({ behavior: "smooth", block: "center" });
@@ -1988,6 +2326,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     kegState.page = 1;
     renderKegTable();
+  });
+
+  // CRUD Kegiatan — tombol aksi baris (delegasi)
+  $("#kegTbody").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-act]");
+    if (!btn) return;
+    const key = btn.dataset.key;
+    if (btn.dataset.act === "edit") editKegiatan(key);
+    else if (btn.dataset.act === "del") deleteKegiatan(key);
+  });
+  $("#btnKegCancelEdit").addEventListener("click", resetKegForm);
+
+  // CRUD Pendaftar — modal tambah/edit + tombol aksi baris (delegasi)
+  $("#btnAddPend").addEventListener("click", () => openPendModal("add", null));
+  $("#pendModalClose").addEventListener("click", closePendModal);
+  $("#pendModalCancel").addEventListener("click", closePendModal);
+  $("#pendForm").addEventListener("submit", submitPendForm);
+  $("#modalBackdrop").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) closePendModal();
+  });
+  $("#dataTbody").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-act]");
+    if (!btn) return;
+    const key = btn.dataset.key;
+    if (btn.dataset.act === "edit") editPendaftar(key);
+    else if (btn.dataset.act === "del") deletePendaftar(key);
   });
 
   // Muat data awal

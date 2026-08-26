@@ -190,10 +190,14 @@
         <section class="section" id="kegiatan" hidden>
           <div class="card filter-card" id="kegFormCard">
             <div class="filter-head">
-              <h3>➕ Catat Kegiatan Baru</h3>
+              <h3 id="kegFormTitle">➕ Catat Kegiatan Baru</h3>
               <span class="keg-mode" id="kegMode">⏳ …</span>
             </div>
             <form id="kegForm" novalidate>
+              <div class="form-banner" id="kegEditBanner" hidden>
+                <span>✏️ Mengedit: <strong id="kegEditName"></strong></span>
+                <button type="button" class="btn-ghost btn-sm" id="btnKegCancelEdit">✖ Batal</button>
+              </div>
               <div class="keg-form-section">
                 <h4>📌 Informasi Kegiatan</h4>
                 <div class="filter-grid">
@@ -439,6 +443,7 @@
               <h3>🔍 Cari &amp; Filter Data</h3>
               <div class="filter-actions">
                 <button class="btn-ghost" id="btnResetData">Reset</button>
+                <button class="btn-primary" id="btnAddPend">➕ Tambah Pendaftar</button>
                 <button class="btn-primary" id="btnExport">⬇️ Export CSV</button>
               </div>
             </div>
@@ -493,6 +498,23 @@
           </div>
         </section>
 
+      </div>
+
+      <!-- Modal CRUD Pendaftar -->
+      <div class="modal-backdrop" id="modalBackdrop" hidden>
+        <div class="modal">
+          <div class="modal-head">
+            <h3 id="pendModalTitle">➕ Tambah Pendaftar</h3>
+            <button class="modal-close" id="pendModalClose" aria-label="Tutup">✕</button>
+          </div>
+          <form id="pendForm" novalidate>
+            <div class="filter-grid" id="pendFormFields"></div>
+            <div class="modal-foot">
+              <button type="button" class="btn-ghost" id="pendModalCancel">Batal</button>
+              <button type="submit" class="btn-primary" id="pendModalSave">💾 Simpan</button>
+            </div>
+          </form>
+        </div>
       </div>
 
       <!-- Footer -->

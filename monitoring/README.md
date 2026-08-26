@@ -9,6 +9,7 @@ Dashboard pemantauan **Pencatatan Kegiatan** dan data **PMB (Penerimaan Mahasisw
 - KPI: total kegiatan, bulan ini, selesai/belum, total peserta, kategori teratas
 - Grafik: per kategori, per status, tren 6 bulan
 - Rekap tabel: cari, filter kategori/status/bulan, sortir, export CSV
+- **CRUD lengkap**: tambah, edit (✏️), dan hapus (🗑️) kegiatan langsung dari tabel
 - **Export PDF**: unduh rekap kegiatan (mengikuti filter aktif) sebagai PDF rapi + fallback cetak
 - Mode lokal (tanpa backend) & mode cloud (tersinkron spreadsheet)
 
@@ -17,6 +18,7 @@ Dashboard pemantauan **Pencatatan Kegiatan** dan data **PMB (Penerimaan Mahasisw
 - Grafik: pendaftar per program studi, per jalur, tren 14 hari, jenis kelamin
 - Statistik lanjutan dengan filter rentang tanggal/prodi/jalur (tren, top 10 provinsi, hari tersibuk)
 - Tabel data lengkap: pencarian, filter, sortir, pilih kolom, paginasi
+- **CRUD pendaftar**: tombol ➕ Tambah Pendaftar (modal), edit (✏️) & hapus (🗑️) per baris
 - Export CSV (kompatibel Excel)
 
 **⏱️ Penyegaran otomatis** (mati / 30 dtk / 1 mnt / 5 mnt) • **📱 Responsif penuh**
@@ -81,6 +83,13 @@ Fitur **Pencatatan Kegiatan** menyimpan data baru ke spreadsheet **"MONITORING F
 - Data lama (35 kegiatan) sudah berada di spreadsheet yang sama → otomatis terbaca, tanpa impor terpisah.
 
 > 🔁 Setelah mengubah `Code.gs`, lakukan **Deploy → Manage deployments → ✏️ Edit → New version → Deploy** agar URL tetap sama.
+
+### 💾 CRUD tanpa backend (mode lokal)
+Jika `gasUrl` kosong, data **tambah/edit/hapus** disimpan di `localStorage` perangkat sebagai *overlay* di atas data spreadsheet:
+- Edit & hapus menimpa/menyembunyikan baris asli **tanpa mengubah spreadsheet**.
+- Data hasil CRUD ikut dalam KPI, grafik, tabel, serta Export CSV/PDF.
+- Untuk menulis langsung ke spreadsheet, hubungkan backend (`gasUrl`) — maka perubahan dikirim ke Apps Script.
+> ⚠️ Data lokal hanya ada di browser/perangkat yang melakukan CRUD. Gunakan backend agar perubahan tersimpan di spreadsheet untuk semua pengguna.
 
 ---
 
