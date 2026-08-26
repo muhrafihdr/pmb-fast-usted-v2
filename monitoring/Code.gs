@@ -3,26 +3,28 @@
  *  Monitoring FAST USTEDI — Google Apps Script (Backend)
  *  ------------------------------------------------------------
  *  MELAYANI DATA untuk dashboard Monitoring FAST:
- *   1. Baca data PMB (sheet "Pendaftar")  → doGet?action=getAll
- *   2. Baca data Kegiatan (sheet "Kegiatan") → doGet?action=getKegiatan
- *   3. Simpan kegiatan baru → doPost (body JSON dengan _tipe:"kegiatan")
- *   4. (Backward-compatible) Simpan PMB → doPost (body JSON PMB lama)
+ *   1. Baca data PMB (sheet "Pendaftar")       → doGet?action=getAll
+ *   2. Baca data Kegiatan (sheet "Kegiatan")   → doGet?action=getKegiatan
+ *      - Jika sheet Kegiatan masih kosong, OTOMATIS mengimpor
+ *        data dari spreadsheet lama "MONITORING FAST TERBARU".
+ *   3. Simpan kegiatan baru → doPost (JSON dengan _tipe:"kegiatan")
+ *   4. (Backward-compatible) Simpan PMB → doPost (JSON PMB lama)
  *
- *  CARA MEMASANG (dua pilihan):
- *  A. Pasang sebagai script BARU:
- *     1. https://script.google.com → New project → tempel file ini
- *     2. Deploy → New deployment → ⚙️ Web app
- *        - Execute as : Me | Who has access : Anyone
- *     3. Salin URL /exec → tempel ke DATA_SOURCE.gasUrl di script.js
- *  B. Perbarui script PMB yang SUDAH berjalan (URL tidak berubah):
- *     1. Buka project Apps Script PMB (yang ber-URL AKfycbzo4MNSZGeE...)
- *     2. Ganti Code.gs dengan file ini
- *     3. Deploy → Manage deployments → ✏️ Edit → New version → Deploy
+ *  CARA MEMASANG:
+ *   1. https://script.google.com → New project → tempel file ini
+ *   2. Deploy → New deployment → ⚙️ Web app
+ *      - Execute as : Me | Who has access : Anyone
+ *   3. Salin URL /exec → tempel ke DATA_SOURCE.gasUrl di script.js
+ *   (Atau: ganti Code.gs project PMB yang sudah berjalan lalu
+ *    Deploy → Manage deployments → ✏️ New version → Deploy)
  * ============================================================
  */
 
-/** ID spreadsheet tujuan (dari URL pada tautan yang dibagikan) */
+/** ID spreadsheet tujuan (utama — data PMB & Kegiatan baru) */
 const SHEET_ID = "1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0";
+
+/** ID spreadsheet LAMA (MONITORING FAST TERBARU — data kegiatan historis) */
+const SPREADSHEET_LAMA_ID = "1HG1H9-_VZBBoml_WXpMqJ7aHuIQCRHH0545q94LqOls";
 
 /** Nama sheet/tab */
 const PMB_SHEET = "Pendaftar";
@@ -36,11 +38,13 @@ const PMB_HEADERS = [
   "Asal Sekolah", "Jurusan", "Tahun Lulus", "Jalur Pendaftaran", "Program Studi",
 ];
 
-/** Urutan header kolom Kegiatan */
+/** Urutan header kolom Kegiatan (skema lengkap monitoring) */
 const KEGIATAN_HEADERS = [
-  "Timestamp", "Nama Kegiatan", "Tanggal Kegiatan", "Kategori",
-  "Penanggung Jawab", "Tempat", "Jumlah Peserta", "Deskripsi",
-  "Status", "Link Dokumentasi",
+  "Timestamp", "ID Monitoring", "Nama Kegiatan", "Tanggal Kegiatan", "Kategori",
+  "Program", "Program Studi", "Bulan Laporan", "Tahun Laporan", "Periode",
+  "Progres", "Penanggung Jawab", "Tempat", "Jumlah Peserta", "Prioritas",
+  "Target", "Status Target", "Tindak Lanjut", "Hasil Output",
+  "Catatan", "Evaluasi Feedback", "Link Dokumentasi",
 ];
 
 /** Batas maksimum baris yang dikirim ke dashboard */
@@ -77,15 +81,27 @@ function doPost(e) {
     if (data._tipe === "kegiatan") {
       const sheet = getSheet_(KEGIATAN_SHEET, KEGIATAN_HEADERS);
       sheet.appendRow([
-        new Date(),                            // Timestamp
+        new Date(),                              // Timestamp
+        data.idMonitoring || buatIdMonitoring_(sheet), // ID Monitoring
         data.namaKegiatan || "",
         data.tanggalKegiatan || "",
         data.kategori || "",
+        data.program || "",
+        data.programStudi || "",
+        data.bulanLaporan || "",
+        data.tahunLaporan || "",
+        data.periode || "Bulanan",
+        data.progres || "",
         data.pic || "",
         data.tempat || "",
         data.jumlahPeserta || "",
-        data.deskripsi || "",
-        data.status || "",
+        data.prioritas || "",
+        data.target || "",
+        data.statusTarget || "",
+        data.tindakLanjut || "",
+        data.hasilOutput || "",
+        data.catatan || "",
+        data.evaluasiFeedback || "",
         data.linkDokumentasi || "",
       ]);
       return jsonOutput_({ status: "success", message: "Kegiatan berhasil dicatat." });
@@ -109,16 +125,105 @@ function doPost(e) {
 }
 
 /* ============================================================
+   MIGRASI DATA LAMA (dari "MONITORING FAST TERBARU")
+   ------------------------------------------------------------
+   Jalankan sekali dari editor: pilih fungsi importKegiatanLama
+   → Run. Atau biarkan otomatis: saat sheet Kegiatan kosong dan
+   doGet?action=getKegiatan dipanggil, data lama ikut diimpor.
+   ============================================================ */
+function importKegiatanLama() {
+  const ssLama = SpreadsheetApp.openById(SPREADSHEET_LAMA_ID);
+  const sheetLama = ssLama.getSheetByName("Monitoring_FAST");
+  if (!sheetLama) {
+    // coba berdasarkan gid jika nama berbeda
+    const byGid = ssLama.getSheets().filter(function (s) { return s.getSheetId() === 841580046; });
+    if (!byGid.length) throw new Error("Sheet Monitoring_FAST tidak ditemukan di spreadsheet lama.");
+    sheetLama = byGid[0];
+  }
+
+  const values = sheetLama.getDataRange().getValues();
+  if (values.length < 2) {
+    Logger.log("Spreadsheet lama kosong — tidak ada yang diimpor.");
+    return 0;
+  }
+
+  const headers = values[0].map(function (h) { return String(h).trim(); });
+  const target = getSheet_(KEGIATAN_SHEET, KEGIATAN_HEADERS);
+
+  // Hindari duplikat berdasarkan ID Monitoring
+  const existingIds = {};
+  const targetData = target.getDataRange().getValues();
+  targetData.forEach(function (row) { existingIds[String(row[1]).trim()] = true; });
+
+  let count = 0;
+  for (let i = 1; i < values.length; i++) {
+    const r = values[i];
+    const o = {};
+    headers.forEach(function (h, j) { o[h] = r[j] == null ? "" : r[j]; });
+
+    const id = String(o["ID_Monitoring"] || "").trim();
+    if (id && existingIds[id]) continue; // sudah ada
+
+    target.appendRow([
+      o["Timestamp_Input"] instanceof Date ? o["Timestamp_Input"] : new Date(o["Timestamp_Input"]),
+      id,
+      o["Kegiatan"] || "",
+      "",
+      "",
+      o["Program"] || "",
+      o["Program_Studi"] || "",
+      o["Bulan_Laporan"] || "",
+      o["Tahun_Laporan"] || "",
+      o["Periode"] || "",
+      o["Progres"] || "",
+      o["Penanggung_Jawab"] || "",
+      "",
+      "",
+      o["Prioritas"] || "",
+      o["Target"] || "",
+      o["Status_Target"] || "",
+      o["Tindak_Lanjut"] || "",
+      o["Hasil_Output"] || "",
+      o["Catatan"] || "",
+      o["Evaluasi_Feedback"] || "",
+      "",
+    ]);
+    existingIds[id] = true;
+    count++;
+  }
+
+  Logger.log("Impor selesai: " + count + " kegiatan ditambahkan.");
+  return count;
+}
+
+/* Auto-impor saat sheet Kegiatan kosong (dipanggil dari getSheetData_) */
+function autoImportKegiatan_() {
+  try {
+    importKegiatanLama();
+  } catch (err) {
+    Logger.log("Auto-impor dilewati: " + err.message);
+  }
+}
+
+/* ============================================================
    Helper
    ============================================================ */
 function getSheetData_(sheetName, defaultHeaders) {
   const sheet = getSheet_(sheetName, defaultHeaders);
   const lastRow = sheet.getLastRow();
-  if (lastRow < 1) {
+
+  // Auto-impor data lama sekali saja (hanya jika sheet baru & kosong)
+  if (sheetName === KEGIATAN_SHEET && lastRow <= 1) {
+    autoImportKegiatan_();
+    // muat ulang setelah impor
+  }
+
+  const rows2 = sheet.getLastRow();
+  if (rows2 < 1) {
     return jsonOutput_({ ok: true, total: 0, headers: [], rows: [] });
   }
   const lastCol = sheet.getLastColumn();
-  const values = sheet.getRange(1, 1, Math.min(lastRow, MAX_ROWS + 1), lastCol).getValues();
+  const values = sheet.getRange(1, 1, Math.min(rows2, MAX_ROWS + 1), lastCol).getValues();
   const headers = values[0].map(function (h) { return String(h).trim(); });
   const rows = values.slice(1).map(function (r) {
     const obj = {};
@@ -153,7 +258,24 @@ function formatHeader_(sheet, headers) {
   sheet.setFrozenRows(1);
 }
 
-/** Jalankan sekali (opsional) untuk menyiapkan header kedua sheet */
+/** Membuat ID Monitoring otomatis: FAST-YYYYMMDD-NNN */
+function buatIdMonitoring_(sheet) {
+  const now = new Date();
+  const ymd = now.getFullYear() + pad2_(now.getMonth() + 1) + pad2_(now.getDate());
+  const prefix = "FAST-" + ymd + "-";
+  const data = sheet.getDataRange().getValues();
+  let max = 0;
+  for (let i = 1; i < data.length; i++) {
+    const m = String(data[i][1]).match(new RegExp("^" + prefix + "(\\d+)$"));
+    if (m) max = Math.max(max, Number(m[1]));
+  }
+  return prefix + pad3_(max + 1);
+}
+
+function pad2_(n) { return String(n).padStart(2, "0"); }
+function pad3_(n) { return String(n).padStart(3, "0"); }
+
+/** Jalankan sekali (opsional) untuk menyiapkan header */
 function setupHeaders() {
   getSheet_(PMB_SHEET, PMB_HEADERS);
   getSheet_(KEGIATAN_SHEET, KEGIATAN_HEADERS);

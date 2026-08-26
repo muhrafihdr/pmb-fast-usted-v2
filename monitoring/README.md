@@ -30,6 +30,7 @@ Dashboard pemantauan **Pencatatan Kegiatan** dan data **PMB (Penerimaan Mahasisw
 | `style.css` | Seluruh styling (sidebar, kartu, grafik, tabel) |
 | `script.js` | Logika: ambil data (CSV/Apps Script), statistik, grafik, tabel, export CSV |
 | `Code.gs` | (Opsional) Google Apps Script — untuk spreadsheet privat |
+| `kegiatan-import.csv` | Data 35 kegiatan lama — siap tempel ke sheet `Kegiatan` (fallback) |
 | `README.md` | Dokumen ini |
 | `LOGO FAST.png`, `Logo Ustedi.png` | Aset visual |
 
@@ -49,7 +50,7 @@ Dashboard memakai **CSV publik** dari Google Spreadsheet untuk data PMB — tida
 
 ## 🔒 Cara B — Apps Script (untuk Pencatatan Kegiatan)
 
-Fitur **Pencatatan Kegiatan** butuh backend Apps Script agar data tersimpan bersama di spreadsheet (sheet `Kegiatan` dibuat otomatis). Tanpa backend, kegiatan tersimpan **lokal di browser** (mode lokal).
+Fitur **Pencatatan Kegiatan** butuh backend Apps Script agar data tersimpan bersama di spreadsheet (sheet `Kegiatan` dibuat otomatis). Tanpa backend, dashboard otomatis menampilkan **arsip 35 kegiatan lama** (read-only dari spreadsheet "MONITORING FAST TERBARU") atau menyimpan lokal di browser.
 
 1. Buka **https://script.google.com** → klik **New project**.
 2. Tempel seluruh isi `Code.gs` dari folder ini ke editor.
@@ -66,6 +67,15 @@ Fitur **Pencatatan Kegiatan** butuh backend Apps Script agar data tersimpan bers
    };
    ```
 6. Selesai. Badge di seksi Kegiatan berubah menjadi **"☁️ Tersinkron dengan spreadsheet"**.
+
+### 📥 Migrasi 35 kegiatan lama (otomatis)
+
+`Code.gs` sudah berisi fungsi **`importKegiatanLama()`** yang membaca spreadsheet lama
+(`MONITORING FAST TERBARU` → sheet `Monitoring_FAST`) dan menyalin semua kegiatan ke sheet `Kegiatan`.
+
+- **Otomatis**: saat sheet `Kegiatan` masih kosong dan dashboard memanggil `getKegiatan`, data lama ikut diimpor sekali.
+- **Manual**: jalankan fungsi `importKegiatanLama()` dari editor Apps Script (Run).
+- **Manual alternatif**: tempel isi `kegiatan-import.csv` ke sheet `Kegiatan`.
 
 > 🔁 Setelah mengubah `Code.gs`, lakukan **Deploy → Manage deployments → ✏️ Edit → New version → Deploy** agar URL tetap sama.
 

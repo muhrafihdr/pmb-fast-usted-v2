@@ -1075,28 +1075,47 @@ function csvCell(v) {
 
 /* =========================================================
    MODUL KEGIATAN — Pencatatan Kegiatan FAST
-   (Sumber: Apps Script ?action=getKegiatan, fallback localStorage)
+   Sumber data (prioritas):
+     1. Apps Script  ?action=getKegiatan  (mode cloud)
+     2. Arsip CSV spreadsheet lama         (mode arsip, read-only)
+     3. localStorage                       (mode lokal)
    ========================================================= */
 const KEG_COLS = {
-  timestamp: ["timestamp", "waktu", "dicatat"],
+  timestamp: ["timestamp", "timestamp input", "waktu", "dicatat"],
+  id: ["id monitoring", "id", "id_monitoring", "no", "nomor"],
   nama: ["nama kegiatan", "kegiatan", "nama"],
   tanggal: ["tanggal kegiatan", "tanggal", "tgl", "hari"],
   kategori: ["kategori", "jenis kegiatan", "jenis"],
+  program: ["program"],
+  prodi: ["program studi", "prodi"],
+  bulan: ["bulan laporan", "bulan"],
+  tahun: ["tahun laporan", "tahun"],
+  periode: ["periode"],
+  progres: ["progres", "progres kegiatan"],
   pic: ["penanggung jawab", "pic", "pj", "penanggungjawab"],
   tempat: ["tempat", "lokasi"],
   peserta: ["jumlah peserta", "peserta", "jumlah"],
-  deskripsi: ["deskripsi", "keterangan", "rincian"],
-  status: ["status"],
+  prioritas: ["prioritas"],
+  target: ["target"],
+  statusTarget: ["status target", "status_target"],
+  tindakLanjut: ["tindak lanjut", "tindak_lanjut", "tl"],
+  output: ["hasil output", "hasil_output", "output"],
+  catatan: ["catatan", "keterangan"],
+  evaluasi: ["evaluasi feedback", "evaluasi_feedback", "evaluasi", "feedback"],
   link: ["link dokumentasi", "link", "dokumentasi", "tautan"],
 };
 
 const KEG_LOCAL_KEY = "fast_kegiatan_v1";
 
-let KEG = { headers: [], rows: [], list: [], local: true };
+/* Arsip data lama (spreadsheet "MONITORING FAST TERBARU" — sheet Monitoring_FAST) */
+const LEGACY_KEGIATAN_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/1HG1H9-_VZBBoml_WXpMqJ7aHuIQCRHH0545q94LqOls/export?format=csv&gid=841580046";
+
+let KEG = { headers: [], rows: [], list: [], local: true, mode: "local" };
 
 const kegState = {
-  search: "", kategori: "", status: "", bulan: "",
-  sortKey: "tanggal", sortDir: "desc", page: 1, perPage: 10,
+  search: "", program: "", progres: "", bulan: "",
+  sortKey: "bulan", sortDir: "desc", page: 1, perPage: 10,
 };
 
 function kegColIndex(name) {
@@ -1111,13 +1130,28 @@ function kegVal(r, name) {
   const c = kegCol(name);
   return c ? (r[c] == null ? "" : r[c]) : "";
 }
+
+/* Tanggal acuan: Tanggal Kegiatan jika ada, else Bulan+Tahun Laporan */
 function kegDate(r) {
-  return parseDate(kegVal(r, "tanggal")) || parseDate(kegVal(r, "timestamp"));
+  const tgl = parseDate(kegVal(r, "tanggal"));
+  if (tgl) return tgl;
+  const bulan = String(kegVal(r, "bulan")).toLowerCase();
+  const tahun = Number(kegVal(r, "tahun")) || new Date().getFullYear();
+  const months = { "januari":0,"februari":1,"maret":2,"april":3,"mei":4,"juni":5,
+    "juli":6,"agustus":7,"september":8,"oktober":9,"november":10,"desember":11 };
+  if (months[bulan] !== undefined) return new Date(tahun, months[bulan], 1);
+  return parseDate(kegVal(r, "timestamp"));
+}
+function kegBulanKey(r) {
+  const d = kegDate(r);
+  return d ? d.getFullYear() + "-" + pad2(d.getMonth() + 1) : "";
 }
 
 /* ---- Ambil data kegiatan ---- */
 async function loadKegiatan(silent) {
   let ok = false;
+
+  // 1) Mode cloud via Apps Script
   if (DATA_SOURCE.gasUrl) {
     try {
       const sep = DATA_SOURCE.gasUrl.includes("?") ? "&" : "?";
@@ -1130,24 +1164,52 @@ async function loadKegiatan(silent) {
         KEG.headers = json.headers || [];
         KEG.rows = json.rows || [];
         KEG.list = KEG.rows;
+        KEG.mode = "cloud";
         KEG.local = false;
         ok = true;
       }
     } catch (err) {
-      console.warn("getKegiatan gagal, pakai mode lokal:", err);
+      console.warn("getKegiatan gagal:", err);
     }
   }
 
+  // 2) Mode arsip — baca CSV spreadsheet lama (read-only)
   if (!ok) {
-    const headers = ["Timestamp", "Nama Kegiatan", "Tanggal Kegiatan", "Kategori",
-      "Penanggung Jawab", "Tempat", "Jumlah Peserta", "Deskripsi", "Status", "Link Dokumentasi"];
-    let arr = [];
     try {
-      arr = JSON.parse(localStorage.getItem(KEG_LOCAL_KEY) || "[]");
-    } catch (_) { arr = []; }
+      const res = await fetch(LEGACY_KEGIATAN_CSV_URL + "&_=" + Date.now(), { redirect: "follow" });
+      const text = await res.text();
+      const parsed = parseCSV(text);
+      if (parsed.length > 1) {
+        const headers = parsed[0].map((h) => String(h).trim());
+        const rows = parsed.slice(1).map((r) => {
+          const obj = {};
+          headers.forEach((h, i) => { obj[h] = r[i] == null ? "" : String(r[i]).trim(); });
+          return obj;
+        });
+        KEG.headers = headers;
+        KEG.rows = rows;
+        KEG.list = rows;
+        KEG.mode = "archive";
+        KEG.local = false;
+        ok = true;
+      }
+    } catch (err) {
+      console.warn("Arsip CSV gagal:", err);
+    }
+  }
+
+  // 3) Mode lokal — localStorage
+  if (!ok) {
+    const headers = ["Timestamp", "ID Monitoring", "Nama Kegiatan", "Tanggal Kegiatan", "Kategori",
+      "Program", "Program Studi", "Bulan Laporan", "Tahun Laporan", "Periode", "Progres",
+      "Penanggung Jawab", "Tempat", "Jumlah Peserta", "Prioritas", "Target", "Status Target",
+      "Tindak Lanjut", "Hasil Output", "Catatan", "Evaluasi Feedback", "Link Dokumentasi"];
+    let arr = [];
+    try { arr = JSON.parse(localStorage.getItem(KEG_LOCAL_KEY) || "[]"); } catch (_) { arr = []; }
     KEG.headers = headers;
     KEG.rows = arr;
     KEG.list = arr;
+    KEG.mode = "local";
     KEG.local = true;
   }
 
@@ -1160,40 +1222,43 @@ async function loadKegiatan(silent) {
 
 function renderKegMode() {
   const el = $("#kegMode");
-  if (KEG.local) {
-    el.textContent = "📁 Mode lokal — backend belum terhubung";
-    el.className = "keg-mode local";
-  } else {
+  if (KEG.mode === "cloud") {
     el.textContent = "☁️ Tersinkron dengan spreadsheet";
     el.className = "keg-mode cloud";
+  } else if (KEG.mode === "archive") {
+    el.textContent = "📚 Mode arsip — menampilkan data lama (hubungkan backend untuk menambah)";
+    el.className = "keg-mode archive";
+  } else {
+    el.textContent = "📁 Mode lokal — backend belum terhubung";
+    el.className = "keg-mode local";
   }
 }
 
 /* ---- KPI Kegiatan ---- */
 function renderKegKpi() {
   const list = KEG.list;
-  const today = new Date();
-  const monthStr = today.getFullYear() + "-" + pad2(today.getMonth() + 1);
+  const now = new Date();
+  const bulanIniKey = now.getFullYear() + "-" + pad2(now.getMonth() + 1);
 
-  const bulanIni = list.filter((r) => String(kegVal(r, "tanggal")).startsWith(monthStr)).length;
-  const selesai = list.filter((r) => String(kegVal(r, "status")).toLowerCase() === "selesai").length;
-  const aktif = list.length - selesai;
+  const selesai = list.filter((r) => String(kegVal(r, "progres")).toLowerCase() === "selesai").length;
+  const proses = list.filter((r) => {
+    const p = String(kegVal(r, "progres")).toLowerCase();
+    return p && p !== "selesai";
+  }).length;
+  const bulanIni = list.filter((r) => kegBulanKey(r) === bulanIniKey).length;
+  const prioritasTinggi = list.filter((r) => String(kegVal(r, "prioritas")).toLowerCase() === "tinggi").length;
   const totalPeserta = list.reduce((s, r) => s + (Number(kegVal(r, "peserta")) || 0), 0);
 
-  const counts = {};
-  list.forEach((r) => {
-    const k = String(kegVal(r, "kategori") || "Lainnya").trim() || "Lainnya";
-    counts[k] = (counts[k] || 0) + 1;
-  });
-  const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0] || ["—", 0];
+  const prog = countByKeg(list, "program");
+  const topProg = prog.length ? prog[0] : { label: "—", count: 0 };
 
   const kpis = [
     { cls: "", label: "🗓️ Total Kegiatan", value: list.length.toLocaleString("id-ID"), sub: "Semua periode" },
-    { cls: "kpi-accent", label: "📅 Bulan Ini", value: bulanIni.toLocaleString("id-ID"), sub: monthStr },
     { cls: "kpi-green", label: "✅ Selesai", value: selesai.toLocaleString("id-ID"), sub: (list.length ? Math.round((selesai / list.length) * 100) : 0) + "% dari total" },
-    { cls: "kpi-orange", label: "⏳ Belum Selesai", value: aktif.toLocaleString("id-ID"), sub: "Rencana + Berlangsung" },
-    { cls: "kpi-teal", label: "👥 Total Peserta", value: totalPeserta.toLocaleString("id-ID"), sub: "Akumulasi peserta" },
-    { cls: "kpi-accent", label: "🏷️ Kategori Teratas", value: esc(top[0]), sub: top[1] + " kegiatan", small: true },
+    { cls: "kpi-orange", label: "⏳ Dalam Proses", value: proses.toLocaleString("id-ID"), sub: "Rencana + Berlangsung + Proses" },
+    { cls: "kpi-accent", label: "📅 Bulan Ini", value: bulanIni.toLocaleString("id-ID"), sub: bulanIniKey },
+    { cls: "kpi-teal", label: "🚨 Prioritas Tinggi", value: prioritasTinggi.toLocaleString("id-ID"), sub: "Kegiatan prioritas" },
+    { cls: "kpi-accent", label: "🏷️ Program Teratas", value: esc(topProg.label), sub: topProg.count + " kegiatan", small: true },
   ];
 
   $("#kegKpi").innerHTML = kpis.map((k) => `
@@ -1209,16 +1274,16 @@ function renderKegKpi() {
 function renderKegCharts() {
   const list = KEG.list;
 
-  // Per kategori (bar)
-  const kat = countByKeg(list, "kategori");
+  // Per Program (bar)
+  const prog = countByKeg(list, "program").slice(0, 10);
   makeChart("chartKegKategori", {
     type: "bar",
     data: {
-      labels: kat.map((p) => p.label),
+      labels: prog.map((p) => p.label),
       datasets: [{
         label: "Kegiatan",
-        data: kat.map((p) => p.count),
-        backgroundColor: kat.map((_, i) => PALETTE[i % PALETTE.length]),
+        data: prog.map((p) => p.count),
+        backgroundColor: prog.map((_, i) => PALETTE[i % PALETTE.length]),
         borderRadius: 8,
         maxBarThickness: 40,
       }],
@@ -1226,12 +1291,13 @@ function renderKegCharts() {
     options: { ...CHART_OPTS, plugins: { ...CHART_OPTS.plugins, legend: { display: false } } },
   });
 
-  // Per status (doughnut)
-  const st = countByKeg(list, "status");
+  // Per Progres (doughnut)
+  const st = countByKeg(list, "progres");
   const stColor = (label) => {
     const l = String(label).toLowerCase();
     if (l.includes("selesai")) return "#16a34a";
     if (l.includes("berlangsung")) return "#2563eb";
+    if (l.includes("proses")) return "#f59e0b";
     if (l.includes("rencana")) return "#f5b301";
     return "#94a3b8";
   };
@@ -1257,11 +1323,8 @@ function renderKegCharts() {
     months[d.getFullYear() + "-" + pad2(d.getMonth() + 1)] = 0;
   }
   list.forEach((r) => {
-    const d = kegDate(r);
-    if (d) {
-      const key = d.getFullYear() + "-" + pad2(d.getMonth() + 1);
-      if (key in months) months[key]++;
-    }
+    const key = kegBulanKey(r);
+    if (key && key in months) months[key]++;
   });
   const mKeys = Object.keys(months);
   const mLabels = mKeys.map((k) => {
@@ -1305,11 +1368,11 @@ function countByKeg(list, field) {
 function kegFiltered() {
   const q = kegState.search.toLowerCase().trim();
   return KEG.list.filter((r) => {
-    if (kegState.kategori && kegVal(r, "kategori") !== kegState.kategori) return false;
-    if (kegState.status && kegVal(r, "status") !== kegState.status) return false;
-    if (kegState.bulan && !String(kegVal(r, "tanggal")).startsWith(kegState.bulan)) return false;
+    if (kegState.program && kegVal(r, "program") !== kegState.program) return false;
+    if (kegState.progres && kegVal(r, "progres") !== kegState.progres) return false;
+    if (kegState.bulan && !kegBulanKey(r).startsWith(kegState.bulan)) return false;
     if (q) {
-      const hay = ["nama", "pic", "tempat", "deskripsi", "kategori", "status"]
+      const hay = ["nama", "program", "pic", "tempat", "catatan", "target", "id"]
         .map((k) => String(kegVal(r, k)).toLowerCase()).join(" ");
       if (!hay.includes(q)) return false;
     }
@@ -1325,7 +1388,7 @@ function renderKegTable() {
   const { sortKey, sortDir } = kegState;
   rows.sort((a, b) => {
     let cmp = 0;
-    if (sortKey === "tanggal") {
+    if (sortKey === "bulan" || sortKey === "tanggal") {
       const da = kegDate(a), db = kegDate(b);
       cmp = (da ? da.getTime() : 0) - (db ? db.getTime() : 0);
     } else {
@@ -1335,14 +1398,16 @@ function renderKegTable() {
   });
 
   const cols = [
-    { key: "tanggal", label: "Tanggal" },
+    { key: "id", label: "ID" },
     { key: "nama", label: "Nama Kegiatan" },
-    { key: "kategori", label: "Kategori" },
+    { key: "program", label: "Program" },
+    { key: "bulan", label: "Bulan" },
+    { key: "progres", label: "Progres" },
+    { key: "prioritas", label: "Prioritas" },
     { key: "pic", label: "Penanggung Jawab" },
-    { key: "tempat", label: "Tempat" },
-    { key: "peserta", label: "Peserta" },
-    { key: "status", label: "Status" },
-    { key: "link", label: "Dokumentasi" },
+    { key: "target", label: "Target" },
+    { key: "statusTarget", label: "Status Target" },
+    { key: "output", label: "Hasil / Output" },
   ];
 
   $("#kegThead").innerHTML = `<tr>
@@ -1361,17 +1426,21 @@ function renderKegTable() {
   } else {
     tbody.innerHTML = pageRows.map((r) => {
       const d = kegDate(r);
-      const status = String(kegVal(r, "status"));
-      const stCls = "badge-status " + status.toLowerCase();
+      const progres = String(kegVal(r, "progres"));
+      const pCls = "badge-status " + progres.toLowerCase().replace(/ /g, "_");
+      const bulanLabel = d ? d.toLocaleDateString("id-ID", { month: "short", year: "numeric" }) : kegVal(r, "bulan");
+      const out = kegVal(r, "output") || kegVal(r, "link");
       return `<tr>
-        <td style="white-space:nowrap">${esc(d ? fmtDate(d) : kegVal(r, "tanggal"))}</td>
+        <td style="white-space:nowrap;font-size:11px;color:#64748b">${esc(kegVal(r, "id"))}</td>
         <td><strong>${esc(kegVal(r, "nama"))}</strong></td>
-        <td><span class="badge badge-prodi">${esc(kegVal(r, "kategori"))}</span></td>
+        <td>${esc(kegVal(r, "program"))}</td>
+        <td style="white-space:nowrap">${esc(bulanLabel)}</td>
+        <td><span class="badge ${pCls}">${esc(progres)}</span></td>
+        <td>${esc(kegVal(r, "prioritas"))}</td>
         <td>${esc(kegVal(r, "pic"))}</td>
-        <td>${esc(kegVal(r, "tempat"))}</td>
-        <td>${esc(kegVal(r, "peserta"))}</td>
-        <td><span class="badge ${stCls}">${esc(status)}</span></td>
-        <td>${kegVal(r, "link") ? `<a href="${esc(kegVal(r, "link"))}" target="_blank" rel="noopener" style="color:#0d3b8c">🔗 Lihat</a>` : "—"}</td>
+        <td style="max-width:220px">${esc(kegVal(r, "target"))}</td>
+        <td>${esc(kegVal(r, "statusTarget"))}</td>
+        <td>${out ? `<a href="${esc(out)}" target="_blank" rel="noopener" style="color:#0d3b8c">🔗 Lihat</a>` : "—"}</td>
       </tr>`;
     }).join("");
   }
@@ -1412,33 +1481,40 @@ function refreshKegSelects() {
     values.forEach((v) => el.appendChild(new Option(v, v)));
     el.value = values.includes(current) ? current : "";
   };
-  fill("#kegFilterKategori", "kategori", kegState.kategori);
-  fill("#kegFilterStatus", "status", kegState.status);
+  fill("#kegFilterProgram", "program", kegState.program);
+  fill("#kegFilterProgres", "progres", kegState.progres);
 }
 
 /* ---- Simpan kegiatan ---- */
 async function submitKegiatan(e) {
   e.preventDefault();
   const nama = $("#kegNama").value.trim();
-  const tanggal = $("#kegTanggal").value;
-  const kategori = $("#kegKategori").value;
-  const status = $("#kegStatus").value;
+  const progres = $("#kegProgres").value;
 
   if (!nama) { alert("⚠️ Nama kegiatan wajib diisi."); $("#kegNama").focus(); return; }
-  if (!tanggal) { alert("⚠️ Tanggal kegiatan wajib diisi."); $("#kegTanggal").focus(); return; }
-  if (!kategori) { alert("⚠️ Kategori wajib dipilih."); $("#kegKategori").focus(); return; }
-  if (!status) { alert("⚠️ Status wajib dipilih."); $("#kegStatus").focus(); return; }
+  if (!progres) { alert("⚠️ Progres wajib dipilih."); $("#kegProgres").focus(); return; }
 
   const data = {
     _tipe: "kegiatan",
     namaKegiatan: nama,
-    tanggalKegiatan: tanggal,
-    kategori: kategori,
+    tanggalKegiatan: $("#kegTanggal").value,
+    kategori: $("#kegKategori").value,
+    program: $("#kegProgram").value.trim(),
+    programStudi: "",
+    bulanLaporan: $("#kegBulanLaporan").value,
+    tahunLaporan: $("#kegTahunLaporan").value.trim(),
+    periode: "Bulanan",
+    progres: progres,
     pic: $("#kegPic").value.trim(),
     tempat: $("#kegTempat").value.trim(),
     jumlahPeserta: $("#kegPeserta").value.trim(),
-    deskripsi: $("#kegDeskripsi").value.trim(),
-    status: status,
+    prioritas: $("#kegPrioritas").value,
+    target: $("#kegTarget").value.trim(),
+    statusTarget: $("#kegStatusTarget").value,
+    tindakLanjut: $("#kegTindakLanjut").value.trim(),
+    hasilOutput: $("#kegHasilOutput").value.trim(),
+    catatan: $("#kegDeskripsi").value.trim(),
+    evaluasiFeedback: $("#kegEvaluasi").value.trim(),
     linkDokumentasi: $("#kegLink").value.trim(),
   };
 
@@ -1473,11 +1549,21 @@ async function submitKegiatan(e) {
       "Nama Kegiatan": data.namaKegiatan,
       "Tanggal Kegiatan": data.tanggalKegiatan,
       Kategori: data.kategori,
+      Program: data.program,
+      "Bulan Laporan": data.bulanLaporan,
+      "Tahun Laporan": data.tahunLaporan,
+      Periode: data.periode,
+      Progres: data.progres,
       "Penanggung Jawab": data.pic,
       Tempat: data.tempat,
       "Jumlah Peserta": data.jumlahPeserta,
-      Deskripsi: data.deskripsi,
-      Status: data.status,
+      Prioritas: data.prioritas,
+      Target: data.target,
+      "Status Target": data.statusTarget,
+      "Tindak Lanjut": data.tindakLanjut,
+      "Hasil Output": data.hasilOutput,
+      Catatan: data.catatan,
+      "Evaluasi Feedback": data.evaluasiFeedback,
       "Link Dokumentasi": data.linkDokumentasi,
     });
     localStorage.setItem(KEG_LOCAL_KEY, JSON.stringify(arr));
@@ -1676,10 +1762,10 @@ document.addEventListener("DOMContentLoaded", () => {
   $("#kegForm").addEventListener("submit", submitKegiatan);
   $("#btnExportKeg").addEventListener("click", exportKegCsv);
   $("#btnResetKeg").addEventListener("click", () => {
-    kegState.search = ""; kegState.kategori = ""; kegState.status = ""; kegState.bulan = "";
+    kegState.search = ""; kegState.program = ""; kegState.progres = ""; kegState.bulan = "";
     kegState.page = 1;
-    $("#kegSearch").value = ""; $("#kegFilterKategori").value = "";
-    $("#kegFilterStatus").value = ""; $("#kegFilterBulan").value = "";
+    $("#kegSearch").value = ""; $("#kegFilterProgram").value = "";
+    $("#kegFilterProgres").value = ""; $("#kegFilterBulan").value = "";
     refreshKegSelects();
     renderKegTable();
   });
@@ -1688,8 +1774,8 @@ document.addEventListener("DOMContentLoaded", () => {
     el.addEventListener("change", () => { kegState[key] = el.value; kegState.page = 1; renderKegTable(); });
   };
   bindKegFilter("search", $("#kegSearch"));
-  bindKegFilter("kategori", $("#kegFilterKategori"));
-  bindKegFilter("status", $("#kegFilterStatus"));
+  bindKegFilter("program", $("#kegFilterProgram"));
+  bindKegFilter("progres", $("#kegFilterProgres"));
   bindKegFilter("bulan", $("#kegFilterBulan"));
   $("#kegThead").addEventListener("click", (e) => {
     const th = e.target.closest("th.sortable");

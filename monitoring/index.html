@@ -174,63 +174,124 @@
               <span class="keg-mode" id="kegMode">⏳ …</span>
             </div>
             <form id="kegForm" novalidate>
-              <div class="filter-grid">
-                <div class="filter-item filter-search">
-                  <label for="kegNama">Nama Kegiatan <span class="req">*</span></label>
-                  <input type="text" id="kegNama" placeholder="Contoh: Seminar Nasional AI 2026" />
+              <div class="keg-form-section">
+                <h4>📌 Informasi Kegiatan</h4>
+                <div class="filter-grid">
+                  <div class="filter-item filter-search">
+                    <label for="kegNama">Nama Kegiatan <span class="req">*</span></label>
+                    <input type="text" id="kegNama" placeholder="Contoh: Sosialisasi PMB di SMAN 16 Semarang" />
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegTanggal">Tanggal Kegiatan</label>
+                    <input type="date" id="kegTanggal" />
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegProgram">Program</label>
+                    <input type="text" id="kegProgram" placeholder="Contoh: Sosialisasi PMB" />
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegKategori">Kategori</label>
+                    <select id="kegKategori">
+                      <option value="">— Pilih —</option>
+                      <option>Sosialisasi &amp; Kerja Sama</option>
+                      <option>Pengajaran</option>
+                      <option>Penelitian</option>
+                      <option>Pengabdian Masyarakat</option>
+                      <option>Seminar &amp; Webinar</option>
+                      <option>Pelatihan &amp; Workshop</option>
+                      <option>Akreditasi &amp; Kurikulum</option>
+                      <option>Rapat &amp; Koordinasi</option>
+                      <option>Kegiatan Mahasiswa</option>
+                      <option>Lainnya</option>
+                    </select>
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegProgres">Progres <span class="req">*</span></label>
+                    <select id="kegProgres">
+                      <option value="">— Pilih —</option>
+                      <option>Rencana</option>
+                      <option>Berlangsung</option>
+                      <option>Dalam Proses</option>
+                      <option>Selesai</option>
+                    </select>
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegPic">Penanggung Jawab</label>
+                    <input type="text" id="kegPic" placeholder="Nama dosen/staf" />
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegTempat">Tempat / Lokasi</label>
+                    <input type="text" id="kegTempat" placeholder="Ruang/Lab/Sekolah" />
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegPeserta">Jumlah Peserta</label>
+                    <input type="number" id="kegPeserta" min="0" placeholder="0" />
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegPrioritas">Prioritas</label>
+                    <select id="kegPrioritas">
+                      <option value="">— Pilih —</option>
+                      <option>Tinggi</option>
+                      <option>Sedang</option>
+                      <option>Rendah</option>
+                    </select>
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegBulanLaporan">Bulan Laporan</label>
+                    <select id="kegBulanLaporan">
+                      <option value="">— Pilih —</option>
+                      <option>Januari</option><option>Februari</option><option>Maret</option>
+                      <option>April</option><option>Mei</option><option>Juni</option>
+                      <option>Juli</option><option>Agustus</option><option>September</option>
+                      <option>Oktober</option><option>November</option><option>Desember</option>
+                    </select>
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegTahunLaporan">Tahun Laporan</label>
+                    <input type="number" id="kegTahunLaporan" min="2020" max="2100" placeholder="2026" />
+                  </div>
                 </div>
-                <div class="filter-item">
-                  <label for="kegTanggal">Tanggal <span class="req">*</span></label>
-                  <input type="date" id="kegTanggal" />
-                </div>
-                <div class="filter-item">
-                  <label for="kegKategori">Kategori <span class="req">*</span></label>
-                  <select id="kegKategori">
-                    <option value="">— Pilih —</option>
-                    <option>Pengajaran</option>
-                    <option>Penelitian</option>
-                    <option>Pengabdian Masyarakat</option>
-                    <option>Seminar &amp; Webinar</option>
-                    <option>Pelatihan &amp; Workshop</option>
-                    <option>Lomba &amp; Kompetisi</option>
-                    <option>Rapat &amp; Koordinasi</option>
-                    <option>Kunjungan &amp; Studi Banding</option>
-                    <option>Kerja Sama</option>
-                    <option>Kegiatan Mahasiswa</option>
-                    <option>Lainnya</option>
-                  </select>
-                </div>
-                <div class="filter-item">
-                  <label for="kegPic">Penanggung Jawab / PIC</label>
-                  <input type="text" id="kegPic" placeholder="Nama dosen/staf" />
-                </div>
-                <div class="filter-item">
-                  <label for="kegTempat">Tempat / Lokasi</label>
-                  <input type="text" id="kegTempat" placeholder="Ruang/Lab/Aula" />
-                </div>
-                <div class="filter-item">
-                  <label for="kegPeserta">Jumlah Peserta</label>
-                  <input type="number" id="kegPeserta" min="0" placeholder="0" />
-                </div>
-                <div class="filter-item">
-                  <label for="kegStatus">Status <span class="req">*</span></label>
-                  <select id="kegStatus">
-                    <option value="">— Pilih —</option>
-                    <option>Rencana</option>
-                    <option>Berlangsung</option>
-                    <option>Selesai</option>
-                  </select>
-                </div>
-                <div class="filter-item filter-search">
-                  <label for="kegLink">Link Dokumentasi (opsional)</label>
-                  <input type="url" id="kegLink" placeholder="https://drive.google.com/…" />
-                </div>
-                <div class="filter-item filter-search">
-                  <label for="kegDeskripsi">Deskripsi / Keterangan</label>
-                  <textarea id="kegDeskripsi" rows="2" placeholder="Rincian singkat kegiatan…"></textarea>
-                </div>
-                <div class="filter-item filter-btn">
-                  <button type="submit" class="btn-primary btn-block" id="btnKegSubmit">💾 Simpan Kegiatan</button>
+              </div>
+
+              <div class="keg-form-section">
+                <h4>🎯 Target &amp; Evaluasi</h4>
+                <div class="filter-grid">
+                  <div class="filter-item filter-search">
+                    <label for="kegTarget">Target</label>
+                    <input type="text" id="kegTarget" placeholder="Target yang ingin dicapai…" />
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegStatusTarget">Status Target</label>
+                    <select id="kegStatusTarget">
+                      <option value="">— Pilih —</option>
+                      <option>Tercapai</option>
+                      <option>Dalam Proses</option>
+                      <option>Belum Tercapai</option>
+                    </select>
+                  </div>
+                  <div class="filter-item filter-search">
+                    <label for="kegTindakLanjut">Tindak Lanjut</label>
+                    <input type="text" id="kegTindakLanjut" placeholder="Langkah tindak lanjut…" />
+                  </div>
+                  <div class="filter-item filter-search">
+                    <label for="kegHasilOutput">Hasil / Output (link)</label>
+                    <input type="url" id="kegHasilOutput" placeholder="https://drive.google.com/…" />
+                  </div>
+                  <div class="filter-item filter-search">
+                    <label for="kegLink">Link Dokumentasi (opsional)</label>
+                    <input type="url" id="kegLink" placeholder="https://drive.google.com/…" />
+                  </div>
+                  <div class="filter-item filter-search">
+                    <label for="kegDeskripsi">Catatan</label>
+                    <textarea id="kegDeskripsi" rows="2" placeholder="Catatan singkat…"></textarea>
+                  </div>
+                  <div class="filter-item filter-search">
+                    <label for="kegEvaluasi">Evaluasi / Feedback</label>
+                    <textarea id="kegEvaluasi" rows="2" placeholder="Evaluasi kegiatan…"></textarea>
+                  </div>
+                  <div class="filter-item filter-btn">
+                    <button type="submit" class="btn-primary btn-block" id="btnKegSubmit">💾 Simpan Kegiatan</button>
+                  </div>
                 </div>
               </div>
             </form>
@@ -263,19 +324,19 @@
             </div>
             <div class="filter-grid">
               <div class="filter-item filter-search">
-                <label for="kegSearch">Cari kegiatan, PIC, tempat…</label>
+                <label for="kegSearch">Cari kegiatan, program, PIC…</label>
                 <input type="search" id="kegSearch" placeholder="Ketik untuk mencari…" />
               </div>
               <div class="filter-item">
-                <label for="kegFilterKategori">Kategori</label>
-                <select id="kegFilterKategori"><option value="">Semua</option></select>
+                <label for="kegFilterProgram">Program</label>
+                <select id="kegFilterProgram"><option value="">Semua</option></select>
               </div>
               <div class="filter-item">
-                <label for="kegFilterStatus">Status</label>
-                <select id="kegFilterStatus"><option value="">Semua</option></select>
+                <label for="kegFilterProgres">Progres</label>
+                <select id="kegFilterProgres"><option value="">Semua</option></select>
               </div>
               <div class="filter-item">
-                <label for="kegFilterBulan">Bulan</label>
+                <label for="kegFilterBulan">Bulan Laporan</label>
                 <input type="month" id="kegFilterBulan" />
               </div>
             </div>

@@ -279,6 +279,24 @@ input, select, textarea { font-family: inherit; }
 
 .keg-mode.local { background: #fef3c7; color: #92400e; }
 .keg-mode.cloud { background: #dcfce7; color: #166534; }
+.keg-mode.archive { background: #dbeafe; color: #1d4ed8; }
+
+.keg-form-section {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 14px;
+  background: #fbfcfe;
+}
+
+.keg-form-section h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
 
 .badge-status { background: #e2e8f0; color: #334155; }
 .badge-status.rencana { background: #fef3c7; color: #92400e; }
