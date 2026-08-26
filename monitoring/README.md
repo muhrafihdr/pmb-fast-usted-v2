@@ -9,6 +9,7 @@ Dashboard pemantauan **Pencatatan Kegiatan** dan data **PMB (Penerimaan Mahasisw
 - KPI: total kegiatan, bulan ini, selesai/belum, total peserta, kategori teratas
 - Grafik: per kategori, per status, tren 6 bulan
 - Rekap tabel: cari, filter kategori/status/bulan, sortir, export CSV
+- **Export PDF**: unduh rekap kegiatan (mengikuti filter aktif) sebagai PDF rapi + fallback cetak
 - Mode lokal (tanpa backend) & mode cloud (tersinkron spreadsheet)
 
 **📊 Data PMB**:

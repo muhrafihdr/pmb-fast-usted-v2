@@ -233,6 +233,9 @@ input, select, textarea { font-family: inherit; }
 .btn-refresh:active, .btn-primary:active { transform: scale(0.97); }
 .btn-refresh:disabled { opacity: 0.6; cursor: not-allowed; }
 
+.btn-pdf { background: #b91c1c; }
+.btn-pdf:hover { background: #991b1b; }
+
 .refresh-ico.spin { display: inline-block; animation: spin 0.9s linear infinite; }
 
 .btn-ghost {

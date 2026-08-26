@@ -340,6 +340,7 @@
               <div class="filter-actions">
                 <button class="btn-ghost" id="btnResetKeg">Reset</button>
                 <button class="btn-primary" id="btnExportKeg">⬇️ Export CSV</button>
+                <button class="btn-primary btn-pdf" id="btnExportKegPdf">📄 Export PDF</button>
               </div>
             </div>
             <div class="filter-grid">
@@ -500,6 +501,10 @@
       </footer>
     </main>
   </div>
+
+  <!-- jsPDF + autoTable untuk Export PDF -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 
   <script src="script.js"></script>
 </body>
