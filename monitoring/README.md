@@ -20,40 +20,51 @@ Dashboard membaca data langsung dari **Google Spreadsheet** (sheet `Pendaftar`, 
 |------|--------|
 | `index.html` | Struktur halaman dashboard |
 | `style.css` | Seluruh styling (sidebar, kartu, grafik, tabel) |
-| `script.js` | Logika: ambil data, statistik, grafik, tabel, export CSV |
-| `Code.gs` | Google Apps Script — backend pembaca data spreadsheet |
+| `script.js` | Logika: ambil data (CSV/Apps Script), statistik, grafik, tabel, export CSV |
+| `Code.gs` | (Opsional) Google Apps Script — untuk spreadsheet privat |
 | `README.md` | Dokumen ini |
-| `LOGO FAST.png`, `Logo Ustedi.png`, `gedung ustedi.jpeg` | Aset visual |
+| `LOGO FAST.png`, `Logo Ustedi.png` | Aset visual |
 
 ---
 
-## ⚙️ Langkah 1 — Pasang Google Apps Script (wajib)
+## ⚙️ Cara A — Spreadsheet Publik (termudah, TANPA Apps Script) ✅
+
+Dashboard memakai **CSV publik** dari Google Spreadsheet — tidak perlu deploy apa pun.
+
+1. Buka spreadsheet data pendaftar di Google Sheets.
+2. Klik **Share / Bagikan** (kanan atas).
+3. Ubah akses menjadi **Anyone with the link → Viewer**.
+4. Selesai! Dashboard otomatis membaca data via:
+   ```
+   https://docs.google.com/spreadsheets/d/<SHEET_ID>/export?format=csv
+   ```
+   > `SHEET_ID` sudah diisi di `script.js` (`DATA_SOURCE.sheetId`). Ganti jika memakai spreadsheet lain.
+
+> ⚠️ **Perhatian**: dengan cara ini, siapa pun yang punya link bisa melihat isi spreadsheet (termasuk NIK). Jika tidak ingin data publik, gunakan **Cara B**.
+
+## 🔒 Cara B — Apps Script (spreadsheet privat)
 
 1. Buka **https://script.google.com** → klik **New project**.
-2. Hapus kode bawaan, lalu **tempel seluruh isi `Code.gs`** dari folder ini.
-3. Pastikan `SHEET_ID` dan `SHEET_NAME` sesuai spreadsheet pendaftar:
-   ```js
-   const SHEET_ID   = "1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0";
-   const SHEET_NAME = "Pendaftar";
-   ```
-4. **Deploy sebagai Web App:**
-   - Klik **Deploy** → **New deployment** → ikon ⚙️ → **Web app**.
-   - `Description`: bebas, mis. `Monitoring FAST`.
+2. Tempel seluruh isi `Code.gs` dari folder ini ke editor.
+3. **Deploy → New deployment → ikon ⚙️ → Web app**.
    - `Execute as`: **Me**
    - `Who has access`: **Anyone**
-   - Klik **Deploy** → salin **Web app URL** (berakhiran `/exec`).
-
-## ⚙️ Langkah 2 — Hubungkan ke Dashboard
-
-Buka `script.js`, tempel URL di bagian paling atas:
-
-```js
-const GAS_WEB_APP_URL = "https://script.google.com/macros/s/PASTE_URL_DISINI/exec";
-```
+4. Salin **Web app URL** (berakhiran `/exec`).
+5. Di `script.js`, atur:
+   ```js
+   const DATA_SOURCE = {
+     type: "apps-script",   // ubah dari "csv"
+     sheetId: "1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0",
+     gasUrl: "https://script.google.com/macros/s/PASTE_URL_DISINI/exec",
+   };
+   ```
+6. Selesai.
 
 > 🔁 Setelah mengubah `Code.gs`, lakukan **Deploy → Manage deployments → ✏️ Edit → New version → Deploy** agar URL tetap sama.
 
-## 🚀 Langkah 3 — Menjalankan / Publikasi
+---
+
+## 🚀 Menjalankan / Publikasi
 
 ### Lokal (pratinjau)
 ```bash
@@ -65,12 +76,11 @@ python3 -m http.server 8080
 # buka http://localhost:8080
 ```
 
-### Online (Netlify / GitHub Pages)
-- **Netlify Drop:** buka https://app.netlify.com/drop → seret folder ini → selesai.
-- **GitHub Pages:** push folder ini ke repo → aktifkan Pages di Settings → pilih branch & root.
-- Domain utama FAST: `https://fastustedi.web.id` (jika ingin, sambungkan custom domain di Netlify).
+### Online (GitHub Pages — sudah terpasang)
+Folder ini di-deploy ke **GitHub Pages** dari repo `pmb-fast-usted-v2`:
+- URL: `https://muhrafihdr.github.io/pmb-fast-usted-v2/monitoring/` atau `https://fastustedi.web.id/monitoring/`
 
-> ⚠️ Pastikan `GAS_WEB_APP_URL` **sudah terisi sebelum deploy online**, karena file statis tidak bisa diedit setelah online.
+Cukup push perubahan ke branch `main` — workflow `.github/workflows/pages.yml` otomatis deploy.
 
 ---
 
@@ -85,17 +95,16 @@ python3 -m http.server 8080
 
 ## ✏️ Penyesuaian
 
+- **Spreadsheet lain**: ubah `DATA_SOURCE.sheetId` di `script.js`.
 - **Warna tema**: ubah variabel di `:root` pada `style.css` (`--primary`, `--accent`, dll).
 - **Nama kolom**: jika header sheet berbeda, tambahkan alias di `COL_ALIAS` pada `script.js`.
 - **Kolom yang tampil default** di tabel: atur `DEFAULT_COLS` pada `script.js`.
-- **Jumlah baris maksimal** yang dikirim ke dashboard: ubah `MAX_ROWS` di `Code.gs`.
 - **Interval auto-refresh default**: ubah atribut `selected` pada `<option value="60">` di `index.html`.
 
 ## ⚠️ Catatan Penting
 
 - **NIK**: pastikan kolom NIK di spreadsheet berformat **teks**, bukan angka. Jika angka, digit ke-16 bisa berubah (presisi Excel). Dashboard menampilkan apa adanya.
-- **Timestamp**: Apps Script menulis waktu dalam UTC; dashboard menampilkan dalam zona waktu lokal (WIB).
-- Data yang dikirim dashboard maksimal `MAX_ROWS` baris teratas — cukup untuk ribuan pendaftar.
+- **Timestamp**: format `dd/MM/yyyy HH:mm:ss` (default Google Sheets id-ID) sudah didukung otomatis.
 
 ---
 

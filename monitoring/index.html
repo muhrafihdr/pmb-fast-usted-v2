@@ -288,41 +288,43 @@
         <section class="section" id="bantuan" hidden>
           <div class="section-intro">
             <h2>🛠️ Bantuan &amp; Setup</h2>
-            <p>Panduan singkat menghubungkan dashboard ini dengan Google Spreadsheet data pendaftar.</p>
+            <p>Dashboard membaca data langsung dari Google Spreadsheet. Ada 2 cara — pilih salah satu.</p>
           </div>
           <div class="help-grid">
             <div class="card help-card">
-              <h3>1️⃣ Siapkan Google Apps Script</h3>
+              <h3>✅ Cara A — Spreadsheet Publik (termudah, disarankan)</h3>
+              <ol>
+                <li>Buka spreadsheet data pendaftar di Google Sheets.</li>
+                <li>Klik tombol <strong>Share / Bagikan</strong> (kanan atas).</li>
+                <li>Ubah akses menjadi <strong>Anyone with the link → Viewer</strong>.</li>
+                <li>Selesai! Dashboard otomatis membaca data via CSV publik.</li>
+              </ol>
+              <p style="margin-top:8px;font-size:12px;color:#64748b">⚠️ Semua orang bisa melihat isi spreadsheet (termasuk NIK). Hanya lakukan jika sudah siap, atau gunakan Cara B.</p>
+            </div>
+            <div class="card help-card">
+              <h3>🔒 Cara B — Apps Script (spreadsheet privat)</h3>
               <ol>
                 <li>Buka <strong>script.google.com</strong> → New project.</li>
-                <li>Tempel seluruh isi file <code>Code.gs</code> dari folder ini.</li>
-                <li>Pastikan <code>SHEET_ID</code> dan <code>SHEET_NAME</code> sesuai spreadsheet pendaftar.</li>
+                <li>Tempel seluruh isi <code>Code.gs</code> dari folder ini.</li>
+                <li>Deploy → New deployment → ⚙️ <strong>Web app</strong>.</li>
+                <li><strong>Execute as:</strong> Me &nbsp;•&nbsp; <strong>Who has access:</strong> Anyone</li>
+                <li>Salin URL <code>/exec</code> → tempel di <code>DATA_SOURCE.gasUrl</code> pada <code>script.js</code> (ubah <code>type</code> menjadi <code>"apps-script"</code>).</li>
               </ol>
-            </div>
-            <div class="card help-card">
-              <h3>2️⃣ Deploy sebagai Web App</h3>
-              <ol>
-                <li>Deploy → New deployment → ⚙️ Web app.</li>
-                <li><strong>Execute as:</strong> Me</li>
-                <li><strong>Who has access:</strong> Anyone</li>
-                <li>Salin URL berakhiran <code>/exec</code>.</li>
-              </ol>
-            </div>
-            <div class="card help-card">
-              <h3>3️⃣ Hubungkan ke Dashboard</h3>
-              <ol>
-                <li>Buka <code>script.js</code>.</li>
-                <li>Tempel URL tadi di bagian paling atas:</li>
-              </ol>
-              <pre><code>const GAS_WEB_APP_URL =
-  "https://script.google.com/…/exec";</code></pre>
             </div>
             <div class="card help-card">
               <h3>4️⃣ Selesai &amp; Pantau</h3>
               <ol>
-                <li>Deploy ulang (New version) setiap kali mengubah <code>Code.gs</code>.</li>
                 <li>Dashboard memuat ulang otomatis sesuai pengaturan <strong>Auto</strong> di pojok kanan atas.</li>
                 <li>Gunakan <strong>Export CSV</strong> untuk unduh rekap data.</li>
+                <li>Data baru dari formulir PMB muncul otomatis dalam beberapa saat.</li>
+              </ol>
+            </div>
+            <div class="card help-card">
+              <h3>⚙️ Kustomisasi</h3>
+              <ol>
+                <li>Ganti <code>DATA_SOURCE.sheetId</code> di <code>script.js</code> jika memakai spreadsheet lain.</li>
+                <li>Atur kolom default tabel di <code>DEFAULT_COLS</code>.</li>
+                <li>Ubah warna tema di <code>:root</code> pada <code>style.css</code>.</li>
               </ol>
             </div>
           </div>

@@ -1,17 +1,44 @@
 /* =========================================================
    Monitoring FAST USTEDI — Dashboard Script
    ---------------------------------------------------------
-   ⚙️ KONFIGURASI — WAJIB DIISI
-   Isi URL Web App dari Google Apps Script (lihat README.md
-   atau bagian "Bantuan & Setup" di dashboard).
+   ⚙️ SUMBER DATA (pilih salah satu):
+
+   CARA A (DEFAULT — paling mudah, TANPA Apps Script):
+   Spreadsheet di-share "Anyone with the link can view",
+   lalu dashboard membaca CSV publik secara langsung.
+   Cukup isi SHEET_ID di bawah.
+
+   CARA B (opsional — jika spreadsheet PRIVAT):
+   Deploy Code.gs sebagai Web App (lihat README.md),
+   lalu isi gasUrl dengan URL deployment-nya.
    ========================================================= */
-// PASTE URL Web App Apps Script di sini, contoh:
-//   const GAS_WEB_APP_URL = "https://script.google.com/macros/s/XXXXX/exec";
-//
-// Alternatif: tempel URL di window.MONITORING_CONFIG (mis. di <script> terpisah):
-//   window.MONITORING_CONFIG = { gasUrl: "https://.../exec" };
-const GAS_WEB_APP_URL =
-  (typeof window !== "undefined" && window.MONITORING_CONFIG && window.MONITORING_CONFIG.gasUrl) || "";
+
+const DATA_SOURCE = {
+  // --- CARA A: CSV publik dari Google Spreadsheet ---
+  type: "csv", // "csv" (default) atau "apps-script"
+  sheetId: "1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0",
+
+  // --- CARA B: URL Web App Apps Script (kosongkan jika pakai CSV) ---
+  gasUrl: "",
+
+  // Alternatif: tempel konfigurasi di window.MONITORING_CONFIG
+  // (mis. di <script> terpisah) untuk menimpa nilai di atas:
+  //   window.MONITORING_CONFIG = { sheetId: "...", gasUrl: "..." };
+};
+
+(function resolveConfig() {
+  if (typeof window !== "undefined" && window.MONITORING_CONFIG) {
+    const c = window.MONITORING_CONFIG;
+    if (c.sheetId) DATA_SOURCE.sheetId = c.sheetId;
+    if (c.gasUrl) DATA_SOURCE.gasUrl = c.gasUrl;
+    if (c.type) DATA_SOURCE.type = c.type;
+  }
+})();
+
+function csvUrl() {
+  return "https://docs.google.com/spreadsheets/d/" +
+    DATA_SOURCE.sheetId + "/export?format=csv";
+}
 
 /* =========================================================
    STATE GLOBAL
@@ -151,8 +178,30 @@ function parseDate(v) {
   }
   const s = String(v).trim();
   if (!s) return null;
-  const d = new Date(s);
-  return isNaN(d) ? null : d;
+
+  // ISO 8601 (mis. 2026-08-21T10:00:00Z)
+  let d = new Date(s);
+  if (!isNaN(d) && !/^\d{1,2}\/\d{1,2}\/\d{4}/.test(s)) return d;
+
+  // Format Indonesia dd/MM/yyyy [HH:mm:ss] (format default Google Sheets id-ID)
+  let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  if (m) {
+    const day = +m[1], mon = +m[2] - 1, yr = +m[3];
+    d = new Date(yr, mon, day, +(m[4] || 0), +(m[5] || 0), +(m[6] || 0));
+    if (!isNaN(d) && d.getDate() === day && d.getMonth() === mon) return d;
+  }
+
+  // Format "d MMM yyyy" (mis. 21 Agu 2026)
+  m = s.match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+  if (m) {
+    const months = { jan:0, feb:1, mar:2, apr:3, mei:4, jun:5, jul:6, agu:7, sep:8, okt:9, nov:10, des:11 };
+    const mon = months[String(m[2]).toLowerCase().slice(0, 3)];
+    if (mon !== undefined) {
+      d = new Date(+m[3], mon, +m[1]);
+      if (!isNaN(d)) return d;
+    }
+  }
+  return null;
 }
 
 function normalizeRows(rows) {
@@ -169,14 +218,73 @@ function normalizeRows(rows) {
 }
 
 /* =========================================================
-   AMBIL DATA DARI GOOGLE SPREADSHEET
+   AMBIL DATA — CSV publik (Google Spreadsheet) atau Apps Script
    ========================================================= */
-async function loadData(silent) {
-  if (!GAS_WEB_APP_URL) {
-    showError("URL Web App belum dikonfigurasi. Buka script.js dan isi GAS_WEB_APP_URL — lihat bagian Bantuan & Setup.");
-    return;
+
+/* Parser CSV sederhana — mendukung kolom ber-quote, koma, dan baris baru */
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = "", inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else {
+      if (c === '"') inQuotes = true;
+      else if (c === ',') { row.push(field); field = ""; }
+      else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ""; }
+      else if (c === '\r') { /* abaikan */ }
+      else field += c;
+    }
+  }
+  if (field !== "" || row.length) { row.push(field); rows.push(row); }
+  return rows.filter((r) => r.some((c) => String(c).trim() !== ""));
+}
+
+/* Mengambil data mentah dari sumber yang dikonfigurasi */
+async function fetchData() {
+  // --- CARA A: CSV publik ---
+  if (DATA_SOURCE.type === "csv" && DATA_SOURCE.sheetId) {
+    const url = csvUrl() + "&_=" + Date.now();
+    const res = await fetch(url, { redirect: "follow" });
+    if (!res.ok) throw new Error("Gagal membaca spreadsheet (HTTP " + res.status + ").");
+    const text = await res.text();
+    const parsed = parseCSV(text);
+    if (!parsed.length) return { ok: true, total: 0, headers: [], rows: [] };
+    const headers = parsed[0].map((h) => String(h).trim());
+    const rows = parsed.slice(1).map((r) => {
+      const obj = {};
+      headers.forEach((h, i) => {
+        obj[h] = r[i] == null ? "" : String(r[i]).trim();
+      });
+      return obj;
+    });
+    return { ok: true, total: rows.length, headers, rows };
   }
 
+  // --- CARA B: Web App Apps Script ---
+  if (DATA_SOURCE.gasUrl) {
+    const sep = DATA_SOURCE.gasUrl.includes("?") ? "&" : "?";
+    const res = await fetch(DATA_SOURCE.gasUrl + sep + "action=getAll&_=" + Date.now(), {
+      method: "GET",
+      redirect: "follow",
+    });
+    const text = await res.text();
+    let json = null;
+    try { json = JSON.parse(text); } catch (_) { /* bukan JSON */ }
+    if (!json || json.ok !== true) {
+      throw new Error((json && json.error) || "Respons server tidak valid. Periksa deployment Apps Script.");
+    }
+    return json;
+  }
+
+  throw new Error("Sumber data belum dikonfigurasi. Isi DATA_SOURCE.sheetId (Cara A) atau DATA_SOURCE.gasUrl (Cara B) di script.js.");
+}
+
+async function loadData(silent) {
   if (!silent) {
     $("#content").hidden = true;
     $("#errorState").hidden = true;
@@ -190,18 +298,7 @@ async function loadData(silent) {
   ico.classList.add("spin");
 
   try {
-    const sep = GAS_WEB_APP_URL.includes("?") ? "&" : "?";
-    const res = await fetch(GAS_WEB_APP_URL + sep + "action=getAll&_=" + Date.now(), {
-      method: "GET",
-      redirect: "follow",
-    });
-    const text = await res.text();
-    let json = null;
-    try { json = JSON.parse(text); } catch (_) { /* respons bukan JSON */ }
-
-    if (!json || json.ok !== true) {
-      throw new Error((json && json.error) || "Respons server tidak valid. Pastikan Web App Apps Script sudah di-deploy dengan akses Anyone.");
-    }
+    const json = await fetchData();
 
     RAW.headers = json.headers || [];
     RAW.rows = json.rows || [];
