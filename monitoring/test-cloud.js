@@ -11,7 +11,7 @@ const server = http.createServer((req, res) => {
   res.setHeader("Content-Type", "application/json");
   if (req.method === "GET" && url.searchParams.get("action") === "getKegiatan") {
     res.end(JSON.stringify({ ok: true, total: STORE.kegiatan.length,
-      headers: ["Timestamp","Nama Kegiatan","Tanggal Kegiatan","Kategori","Penanggung Jawab","Tempat","Jumlah Peserta","Deskripsi","Status","Link Dokumentasi"],
+      headers: ["ID_Monitoring","Timestamp_Input","Bulan_Laporan","Tahun_Laporan","Periode","Program_Studi","Program","Kegiatan","Progres","Tindak_Lanjut","Target","Status_Target","Prioritas","Penanggung_Jawab","Hasil_Output","Catatan","Evaluasi_Feedback","Updated_At"],
       rows: STORE.kegiatan }));
     return;
   }
@@ -21,16 +21,24 @@ const server = http.createServer((req, res) => {
     req.on("end", () => {
       const data = JSON.parse(body);
       STORE.kegiatan.push({
-        Timestamp: "2026-08-26T10:00:00.000Z",
-        "Nama Kegiatan": data.namaKegiatan,
-        "Tanggal Kegiatan": data.tanggalKegiatan,
-        Kategori: data.kategori,
-        "Penanggung Jawab": data.pic,
-        Tempat: data.tempat,
-        "Jumlah Peserta": data.jumlahPeserta,
-        Deskripsi: data.deskripsi,
-        Status: data.status,
-        "Link Dokumentasi": data.linkDokumentasi,
+        ID_Monitoring: data.idMonitoring || "FAST-TEST-001",
+        Timestamp_Input: "2026-08-26T10:00:00.000Z",
+        Bulan_Laporan: data.bulanLaporan || "Agustus",
+        Tahun_Laporan: data.tahunLaporan || "2026",
+        Periode: data.periode || "Bulanan",
+        Program_Studi: data.programStudi || "Program Studi Digabung",
+        Program: data.program || "",
+        Kegiatan: data.namaKegiatan,
+        Progres: data.progres,
+        Tindak_Lanjut: data.tindakLanjut || "",
+        Target: data.target || "",
+        Status_Target: data.statusTarget || "",
+        Prioritas: data.prioritas || "",
+        Penanggung_Jawab: data.pic || "",
+        Hasil_Output: data.hasilOutput || "",
+        Catatan: data.catatan || "",
+        Evaluasi_Feedback: data.evaluasiFeedback || "",
+        Updated_At: "2026-08-26T10:00:00.000Z",
       });
       res.end(JSON.stringify({ status: "success", message: "Kegiatan berhasil dicatat." }));
     });
@@ -81,13 +89,18 @@ server.listen(0, async () => {
   // Submit via cloud
   const f = (id, v) => { document.getElementById(id).value = v; };
   f("kegNama","Workshop IoT"); f("kegTanggal","2026-08-26"); f("kegKategori","Pelatihan & Workshop");
+  f("kegProgram","Pelatihan"); f("kegProgres","Selesai");
   f("kegPic","Dr. Budi"); f("kegTempat","Lab Komputer"); f("kegPeserta","30");
-  f("kegStatus","Selesai"); f("kegDeskripsi","Workshop Internet of Things"); f("kegLink","https://x");
+  f("kegPrioritas","Tinggi"); f("kegBulanLaporan","Agustus"); f("kegTahunLaporan","2026");
+  f("kegTarget","Publikasi"); f("kegStatusTarget","Tercapai");
+  f("kegTindakLanjut","Follow up"); f("kegHasilOutput","https://x");
+  f("kegDeskripsi","Workshop Internet of Things"); f("kegEvaluasi","Bagus"); f("kegLink","https://x");
   await submitKegiatan({ preventDefault(){} });
 
   if (KEG.local) throw new Error("setelah submit harus tetap cloud");
   if (KEG.list.length !== 1) throw new Error("data cloud tidak muncul: " + KEG.list.length);
-  if (KEG.list[0]["Nama Kegiatan"] !== "Workshop IoT") throw new Error("nama salah");
+  if (kegVal(KEG.list[0], "nama") !== "Workshop IoT") throw new Error("nama salah");
+  if (kegVal(KEG.list[0], "progres") !== "Selesai") throw new Error("progres salah");
   if (!document.getElementById("kegMode").textContent.includes("spreadsheet")) throw new Error("badge cloud salah");
 
   renderKegKpi(); renderKegCharts(); renderKegTable();

@@ -1107,8 +1107,8 @@ const KEG_COLS = {
 
 const KEG_LOCAL_KEY = "fast_kegiatan_v1";
 
-/* Arsip data lama (spreadsheet "MONITORING FAST TERBARU" — sheet Monitoring_FAST) */
-const LEGACY_KEGIATAN_CSV_URL =
+/* Sumber baca utama kegiatan — spreadsheet "MONITORING FAST TERBARU" (sheet Monitoring_FAST) */
+const KEGIATAN_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1HG1H9-_VZBBoml_WXpMqJ7aHuIQCRHH0545q94LqOls/export?format=csv&gid=841580046";
 
 let KEG = { headers: [], rows: [], list: [], local: true, mode: "local" };
@@ -1175,10 +1175,10 @@ async function loadKegiatan(silent) {
     }
   }
 
-  // 2) Mode arsip — baca CSV spreadsheet lama (read-only)
+  // 2) Baca langsung dari spreadsheet kegiatan (CSV publik — semua data lama & baru)
   if (!ok) {
     try {
-      const res = await fetch(LEGACY_KEGIATAN_CSV_URL + "&_=" + Date.now(), { redirect: "follow" });
+      const res = await fetch(KEGIATAN_CSV_URL + "&_=" + Date.now(), { redirect: "follow" });
       const text = await res.text();
       const parsed = parseCSV(text);
       if (parsed.length > 1) {
@@ -1191,7 +1191,7 @@ async function loadKegiatan(silent) {
         KEG.headers = headers;
         KEG.rows = rows;
         KEG.list = rows;
-        KEG.mode = "archive";
+        KEG.mode = "csv";
         KEG.local = false;
         ok = true;
       }
@@ -1227,8 +1227,8 @@ function renderKegMode() {
   if (KEG.mode === "cloud") {
     el.textContent = "☁️ Tersinkron dengan spreadsheet";
     el.className = "keg-mode cloud";
-  } else if (KEG.mode === "archive") {
-    el.textContent = "📚 Mode arsip — menampilkan data lama (hubungkan backend untuk menambah)";
+  } else if (KEG.mode === "csv") {
+    el.textContent = "📊 Membaca spreadsheet kegiatan (hubungkan backend untuk menambah data)";
     el.className = "keg-mode archive";
   } else {
     el.textContent = "📁 Mode lokal — backend belum terhubung";

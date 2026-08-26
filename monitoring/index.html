@@ -491,7 +491,7 @@
             </div>
             <div class="card help-card">
               <h3>🔒 Cara B — Apps Script (untuk Pencatatan Kegiatan)</h3>
-              <p style="font-size:13px;margin-bottom:8px">Fitur <strong>Pencatatan Kegiatan</strong> butuh backend agar data tersimpan bersama di spreadsheet. Tanpa backend, data tersimpan lokal di browser.</p>
+              <p style="font-size:13px;margin-bottom:8px">Fitur <strong>Pencatatan Kegiatan</strong> menyimpan data baru ke spreadsheet <strong>"MONITORING FAST TERBARU"</strong> (sheet <code>Monitoring_FAST</code>) melalui backend Apps Script. Tanpa backend, data tersimpan lokal di browser.</p>
               <ol>
                 <li>Buka <strong>script.google.com</strong> → New project.</li>
                 <li>Tempel seluruh isi <code>Code.gs</code> dari folder ini.</li>
@@ -499,7 +499,7 @@
                 <li><strong>Execute as:</strong> Me &nbsp;•&nbsp; <strong>Who has access:</strong> Anyone</li>
                 <li>Salin URL <code>/exec</code> → tempel di <code>DATA_SOURCE.gasUrl</code> pada <code>script.js</code>.</li>
               </ol>
-              <p style="margin-top:8px;font-size:12px;color:#64748b">💡 Script juga otomatis membuat sheet <code>Kegiatan</code> di spreadsheet yang sama.</p>
+              <p style="margin-top:8px;font-size:12px;color:#64748b">💡 Data lama (35 kegiatan) sudah otomatis terbaca dari spreadsheet yang sama — tanpa impor terpisah.</p>
             </div>
             <div class="card help-card">
               <h3>4️⃣ Selesai &amp; Pantau</h3>

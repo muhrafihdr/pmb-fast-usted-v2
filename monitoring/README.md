@@ -50,7 +50,7 @@ Dashboard memakai **CSV publik** dari Google Spreadsheet untuk data PMB — tida
 
 ## 🔒 Cara B — Apps Script (untuk Pencatatan Kegiatan)
 
-Fitur **Pencatatan Kegiatan** butuh backend Apps Script agar data tersimpan bersama di spreadsheet (sheet `Kegiatan` dibuat otomatis). Tanpa backend, dashboard otomatis menampilkan **arsip 35 kegiatan lama** (read-only dari spreadsheet "MONITORING FAST TERBARU") atau menyimpan lokal di browser.
+Fitur **Pencatatan Kegiatan** menyimpan data baru ke spreadsheet **"MONITORING FAST TERBARU"** (sheet `Monitoring_FAST`) melalui backend Apps Script. Tanpa backend, dashboard menampilkan data spreadsheet (baca via CSV publik) dan penyimpanan baru jatuh ke mode lokal browser.
 
 1. Buka **https://script.google.com** → klik **New project**.
 2. Tempel seluruh isi `Code.gs` dari folder ini ke editor.
@@ -68,14 +68,16 @@ Fitur **Pencatatan Kegiatan** butuh backend Apps Script agar data tersimpan bers
    ```
 6. Selesai. Badge di seksi Kegiatan berubah menjadi **"☁️ Tersinkron dengan spreadsheet"**.
 
-### 📥 Migrasi 35 kegiatan lama (otomatis)
+### 📌 Tujuan penyimpanan data
 
-`Code.gs` sudah berisi fungsi **`importKegiatanLama()`** yang membaca spreadsheet lama
-(`MONITORING FAST TERBARU` → sheet `Monitoring_FAST`) dan menyalin semua kegiatan ke sheet `Kegiatan`.
+| Data | Spreadsheet | Sheet |
+|------|-------------|-------|
+| Kegiatan baru | `1HG1H9-_VZBBoml...` (MONITORING FAST TERBARU) | `Monitoring_FAST` |
+| PMB (pendaftar) | `1ddnHgb67DdQmOfs...` | `Pendaftar` |
 
-- **Otomatis**: saat sheet `Kegiatan` masih kosong dan dashboard memanggil `getKegiatan`, data lama ikut diimpor sekali.
-- **Manual**: jalankan fungsi `importKegiatanLama()` dari editor Apps Script (Run).
-- **Manual alternatif**: tempel isi `kegiatan-import.csv` ke sheet `Kegiatan`.
+- ID kegiatan dibuat otomatis (`FAST-YYYYMMDD-NNN`), mengikuti pola data lama.
+- Kolom ekstra form (kategori/tempat/peserta/dokumentasi) dirangkum ke kolom `Catatan`.
+- Data lama (35 kegiatan) sudah berada di spreadsheet yang sama → otomatis terbaca, tanpa impor terpisah.
 
 > 🔁 Setelah mengubah `Code.gs`, lakukan **Deploy → Manage deployments → ✏️ Edit → New version → Deploy** agar URL tetap sama.
 
