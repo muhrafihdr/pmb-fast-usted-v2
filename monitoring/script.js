@@ -1078,7 +1078,7 @@ function csvCell(v) {
    MODUL KEGIATAN — Pencatatan Kegiatan FAST
    Sumber data (prioritas):
      1. Apps Script  ?action=getKegiatan  (mode cloud)
-     2. Arsip CSV spreadsheet lama         (mode arsip, read-only)
+     2. CSV publik spreadsheet kegiatan    (semua data lama & baru)
      3. localStorage                       (mode lokal)
    ========================================================= */
 const KEG_COLS = {
@@ -1230,10 +1230,10 @@ function renderKegMode() {
     el.textContent = "☁️ Tersinkron dengan spreadsheet";
     el.className = "keg-mode cloud";
   } else if (KEG.mode === "csv") {
-    el.textContent = "📊 Membaca spreadsheet kegiatan (hubungkan backend untuk menambah data)";
-    el.className = "keg-mode archive";
+    el.textContent = "";
+    el.className = "keg-mode";
   } else {
-    el.textContent = "📁 Mode lokal — backend belum terhubung";
+    el.textContent = "📁 Tersimpan lokal di perangkat";
     el.className = "keg-mode local";
   }
 }
