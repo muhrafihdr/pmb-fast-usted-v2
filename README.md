@@ -2,6 +2,8 @@
 
 Landing page pendaftaran mahasiswa baru (PMB) FAST USTEDI. Responsif (mobile & desktop), memakai logo FAST, logo USTEDI, dan foto gedung USTEDI, serta menyimpan data pendaftar ke **Google Spreadsheet**.
 
+> 📊 **Dashboard Monitoring FAST** — halaman pemantauan data pendaftar (KPI, grafik, tabel, export CSV) tersedia di folder [`monitoring/`](monitoring/). Setelah deploy, akses di **`/monitoring/`** (mis. `https://muhrafihdr.github.io/pmb-fast-usted-v2/monitoring/`). Panduan setup ada di [`monitoring/README.md`](monitoring/README.md).
+
 ## 📁 Struktur File
 
 | File | Fungsi |
