@@ -34,6 +34,9 @@
         <a href="#dashboard" class="nav-link active" data-nav="Dashboard">
           <span class="nav-ico">📊</span> Dashboard
         </a>
+        <a href="#kegiatan" class="nav-link" data-nav="Kegiatan">
+          <span class="nav-ico">🗓️</span> Pencatatan Kegiatan
+        </a>
         <a href="#statistik" class="nav-link" data-nav="Statistik">
           <span class="nav-ico">📈</span> Statistik
         </a>
@@ -160,6 +163,130 @@
                 <tbody></tbody>
               </table>
             </div>
+          </div>
+        </section>
+
+        <!-- ================= KEGIATAN ================= -->
+        <section class="section" id="kegiatan" hidden>
+          <div class="card filter-card" id="kegFormCard">
+            <div class="filter-head">
+              <h3>➕ Catat Kegiatan Baru</h3>
+              <span class="keg-mode" id="kegMode">⏳ …</span>
+            </div>
+            <form id="kegForm" novalidate>
+              <div class="filter-grid">
+                <div class="filter-item filter-search">
+                  <label for="kegNama">Nama Kegiatan <span class="req">*</span></label>
+                  <input type="text" id="kegNama" placeholder="Contoh: Seminar Nasional AI 2026" />
+                </div>
+                <div class="filter-item">
+                  <label for="kegTanggal">Tanggal <span class="req">*</span></label>
+                  <input type="date" id="kegTanggal" />
+                </div>
+                <div class="filter-item">
+                  <label for="kegKategori">Kategori <span class="req">*</span></label>
+                  <select id="kegKategori">
+                    <option value="">— Pilih —</option>
+                    <option>Pengajaran</option>
+                    <option>Penelitian</option>
+                    <option>Pengabdian Masyarakat</option>
+                    <option>Seminar &amp; Webinar</option>
+                    <option>Pelatihan &amp; Workshop</option>
+                    <option>Lomba &amp; Kompetisi</option>
+                    <option>Rapat &amp; Koordinasi</option>
+                    <option>Kunjungan &amp; Studi Banding</option>
+                    <option>Kerja Sama</option>
+                    <option>Kegiatan Mahasiswa</option>
+                    <option>Lainnya</option>
+                  </select>
+                </div>
+                <div class="filter-item">
+                  <label for="kegPic">Penanggung Jawab / PIC</label>
+                  <input type="text" id="kegPic" placeholder="Nama dosen/staf" />
+                </div>
+                <div class="filter-item">
+                  <label for="kegTempat">Tempat / Lokasi</label>
+                  <input type="text" id="kegTempat" placeholder="Ruang/Lab/Aula" />
+                </div>
+                <div class="filter-item">
+                  <label for="kegPeserta">Jumlah Peserta</label>
+                  <input type="number" id="kegPeserta" min="0" placeholder="0" />
+                </div>
+                <div class="filter-item">
+                  <label for="kegStatus">Status <span class="req">*</span></label>
+                  <select id="kegStatus">
+                    <option value="">— Pilih —</option>
+                    <option>Rencana</option>
+                    <option>Berlangsung</option>
+                    <option>Selesai</option>
+                  </select>
+                </div>
+                <div class="filter-item filter-search">
+                  <label for="kegLink">Link Dokumentasi (opsional)</label>
+                  <input type="url" id="kegLink" placeholder="https://drive.google.com/…" />
+                </div>
+                <div class="filter-item filter-search">
+                  <label for="kegDeskripsi">Deskripsi / Keterangan</label>
+                  <textarea id="kegDeskripsi" rows="2" placeholder="Rincian singkat kegiatan…"></textarea>
+                </div>
+                <div class="filter-item filter-btn">
+                  <button type="submit" class="btn-primary btn-block" id="btnKegSubmit">💾 Simpan Kegiatan</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="kpi-grid" id="kegKpi"></div>
+
+          <div class="charts-grid">
+            <div class="card chart-card">
+              <div class="card-head"><h3>Kegiatan per Kategori</h3></div>
+              <div class="chart-box"><canvas id="chartKegKategori" aria-label="Grafik kegiatan per kategori"></canvas></div>
+            </div>
+            <div class="card chart-card">
+              <div class="card-head"><h3>Status Kegiatan</h3></div>
+              <div class="chart-box"><canvas id="chartKegStatus" aria-label="Grafik status kegiatan"></canvas></div>
+            </div>
+            <div class="card chart-card chart-wide">
+              <div class="card-head"><h3>Kegiatan per Bulan — 6 Bulan Terakhir</h3></div>
+              <div class="chart-box chart-tall"><canvas id="chartKegBulan" aria-label="Grafik kegiatan per bulan"></canvas></div>
+            </div>
+          </div>
+
+          <div class="card table-card">
+            <div class="filter-head">
+              <h3>🗂️ Rekap Kegiatan</h3>
+              <div class="filter-actions">
+                <button class="btn-ghost" id="btnResetKeg">Reset</button>
+                <button class="btn-primary" id="btnExportKeg">⬇️ Export CSV</button>
+              </div>
+            </div>
+            <div class="filter-grid">
+              <div class="filter-item filter-search">
+                <label for="kegSearch">Cari kegiatan, PIC, tempat…</label>
+                <input type="search" id="kegSearch" placeholder="Ketik untuk mencari…" />
+              </div>
+              <div class="filter-item">
+                <label for="kegFilterKategori">Kategori</label>
+                <select id="kegFilterKategori"><option value="">Semua</option></select>
+              </div>
+              <div class="filter-item">
+                <label for="kegFilterStatus">Status</label>
+                <select id="kegFilterStatus"><option value="">Semua</option></select>
+              </div>
+              <div class="filter-item">
+                <label for="kegFilterBulan">Bulan</label>
+                <input type="month" id="kegFilterBulan" />
+              </div>
+            </div>
+            <div class="table-meta"><span id="kegTableCount">0 data</span></div>
+            <div class="table-wrap">
+              <table class="data-table" id="kegTable">
+                <thead id="kegThead"></thead>
+                <tbody id="kegTbody"></tbody>
+              </table>
+            </div>
+            <div class="pagination" id="kegPagination"></div>
           </div>
         </section>
 
@@ -292,24 +419,26 @@
           </div>
           <div class="help-grid">
             <div class="card help-card">
-              <h3>✅ Cara A — Spreadsheet Publik (termudah, disarankan)</h3>
+              <h3>✅ Cara A — Spreadsheet Publik (untuk data PMB)</h3>
               <ol>
                 <li>Buka spreadsheet data pendaftar di Google Sheets.</li>
                 <li>Klik tombol <strong>Share / Bagikan</strong> (kanan atas).</li>
                 <li>Ubah akses menjadi <strong>Anyone with the link → Viewer</strong>.</li>
-                <li>Selesai! Dashboard otomatis membaca data via CSV publik.</li>
+                <li>Data PMB otomatis tampil di Dashboard &amp; Data Pendaftar.</li>
               </ol>
               <p style="margin-top:8px;font-size:12px;color:#64748b">⚠️ Semua orang bisa melihat isi spreadsheet (termasuk NIK). Hanya lakukan jika sudah siap, atau gunakan Cara B.</p>
             </div>
             <div class="card help-card">
-              <h3>🔒 Cara B — Apps Script (spreadsheet privat)</h3>
+              <h3>🔒 Cara B — Apps Script (untuk Pencatatan Kegiatan)</h3>
+              <p style="font-size:13px;margin-bottom:8px">Fitur <strong>Pencatatan Kegiatan</strong> butuh backend agar data tersimpan bersama di spreadsheet. Tanpa backend, data tersimpan lokal di browser.</p>
               <ol>
                 <li>Buka <strong>script.google.com</strong> → New project.</li>
                 <li>Tempel seluruh isi <code>Code.gs</code> dari folder ini.</li>
                 <li>Deploy → New deployment → ⚙️ <strong>Web app</strong>.</li>
                 <li><strong>Execute as:</strong> Me &nbsp;•&nbsp; <strong>Who has access:</strong> Anyone</li>
-                <li>Salin URL <code>/exec</code> → tempel di <code>DATA_SOURCE.gasUrl</code> pada <code>script.js</code> (ubah <code>type</code> menjadi <code>"apps-script"</code>).</li>
+                <li>Salin URL <code>/exec</code> → tempel di <code>DATA_SOURCE.gasUrl</code> pada <code>script.js</code>.</li>
               </ol>
+              <p style="margin-top:8px;font-size:12px;color:#64748b">💡 Script juga otomatis membuat sheet <code>Kegiatan</code> di spreadsheet yang sama.</p>
             </div>
             <div class="card help-card">
               <h3>4️⃣ Selesai &amp; Pantau</h3>

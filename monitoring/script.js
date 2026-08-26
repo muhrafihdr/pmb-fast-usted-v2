@@ -1074,25 +1074,482 @@ function csvCell(v) {
 }
 
 /* =========================================================
+   MODUL KEGIATAN — Pencatatan Kegiatan FAST
+   (Sumber: Apps Script ?action=getKegiatan, fallback localStorage)
+   ========================================================= */
+const KEG_COLS = {
+  timestamp: ["timestamp", "waktu", "dicatat"],
+  nama: ["nama kegiatan", "kegiatan", "nama"],
+  tanggal: ["tanggal kegiatan", "tanggal", "tgl", "hari"],
+  kategori: ["kategori", "jenis kegiatan", "jenis"],
+  pic: ["penanggung jawab", "pic", "pj", "penanggungjawab"],
+  tempat: ["tempat", "lokasi"],
+  peserta: ["jumlah peserta", "peserta", "jumlah"],
+  deskripsi: ["deskripsi", "keterangan", "rincian"],
+  status: ["status"],
+  link: ["link dokumentasi", "link", "dokumentasi", "tautan"],
+};
+
+const KEG_LOCAL_KEY = "fast_kegiatan_v1";
+
+let KEG = { headers: [], rows: [], list: [], local: true };
+
+const kegState = {
+  search: "", kategori: "", status: "", bulan: "",
+  sortKey: "tanggal", sortDir: "desc", page: 1, perPage: 10,
+};
+
+function kegColIndex(name) {
+  const aliases = KEG_COLS[name] || [];
+  return KEG.headers.findIndex((h) => aliases.includes(String(h).toLowerCase()));
+}
+function kegCol(name) {
+  const i = kegColIndex(name);
+  return i >= 0 ? KEG.headers[i] : null;
+}
+function kegVal(r, name) {
+  const c = kegCol(name);
+  return c ? (r[c] == null ? "" : r[c]) : "";
+}
+function kegDate(r) {
+  return parseDate(kegVal(r, "tanggal")) || parseDate(kegVal(r, "timestamp"));
+}
+
+/* ---- Ambil data kegiatan ---- */
+async function loadKegiatan(silent) {
+  let ok = false;
+  if (DATA_SOURCE.gasUrl) {
+    try {
+      const sep = DATA_SOURCE.gasUrl.includes("?") ? "&" : "?";
+      const res = await fetch(DATA_SOURCE.gasUrl + sep + "action=getKegiatan&_=" + Date.now(), {
+        redirect: "follow",
+      });
+      const text = await res.text();
+      const json = JSON.parse(text);
+      if (json && json.ok === true) {
+        KEG.headers = json.headers || [];
+        KEG.rows = json.rows || [];
+        KEG.list = KEG.rows;
+        KEG.local = false;
+        ok = true;
+      }
+    } catch (err) {
+      console.warn("getKegiatan gagal, pakai mode lokal:", err);
+    }
+  }
+
+  if (!ok) {
+    const headers = ["Timestamp", "Nama Kegiatan", "Tanggal Kegiatan", "Kategori",
+      "Penanggung Jawab", "Tempat", "Jumlah Peserta", "Deskripsi", "Status", "Link Dokumentasi"];
+    let arr = [];
+    try {
+      arr = JSON.parse(localStorage.getItem(KEG_LOCAL_KEY) || "[]");
+    } catch (_) { arr = []; }
+    KEG.headers = headers;
+    KEG.rows = arr;
+    KEG.list = arr;
+    KEG.local = true;
+  }
+
+  refreshKegSelects();
+  renderKegMode();
+  renderKegKpi();
+  renderKegCharts();
+  renderKegTable();
+}
+
+function renderKegMode() {
+  const el = $("#kegMode");
+  if (KEG.local) {
+    el.textContent = "📁 Mode lokal — backend belum terhubung";
+    el.className = "keg-mode local";
+  } else {
+    el.textContent = "☁️ Tersinkron dengan spreadsheet";
+    el.className = "keg-mode cloud";
+  }
+}
+
+/* ---- KPI Kegiatan ---- */
+function renderKegKpi() {
+  const list = KEG.list;
+  const today = new Date();
+  const monthStr = today.getFullYear() + "-" + pad2(today.getMonth() + 1);
+
+  const bulanIni = list.filter((r) => String(kegVal(r, "tanggal")).startsWith(monthStr)).length;
+  const selesai = list.filter((r) => String(kegVal(r, "status")).toLowerCase() === "selesai").length;
+  const aktif = list.length - selesai;
+  const totalPeserta = list.reduce((s, r) => s + (Number(kegVal(r, "peserta")) || 0), 0);
+
+  const counts = {};
+  list.forEach((r) => {
+    const k = String(kegVal(r, "kategori") || "Lainnya").trim() || "Lainnya";
+    counts[k] = (counts[k] || 0) + 1;
+  });
+  const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0] || ["—", 0];
+
+  const kpis = [
+    { cls: "", label: "🗓️ Total Kegiatan", value: list.length.toLocaleString("id-ID"), sub: "Semua periode" },
+    { cls: "kpi-accent", label: "📅 Bulan Ini", value: bulanIni.toLocaleString("id-ID"), sub: monthStr },
+    { cls: "kpi-green", label: "✅ Selesai", value: selesai.toLocaleString("id-ID"), sub: (list.length ? Math.round((selesai / list.length) * 100) : 0) + "% dari total" },
+    { cls: "kpi-orange", label: "⏳ Belum Selesai", value: aktif.toLocaleString("id-ID"), sub: "Rencana + Berlangsung" },
+    { cls: "kpi-teal", label: "👥 Total Peserta", value: totalPeserta.toLocaleString("id-ID"), sub: "Akumulasi peserta" },
+    { cls: "kpi-accent", label: "🏷️ Kategori Teratas", value: esc(top[0]), sub: top[1] + " kegiatan", small: true },
+  ];
+
+  $("#kegKpi").innerHTML = kpis.map((k) => `
+    <div class="kpi-card ${k.cls}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value ${k.small ? "small" : ""}">${k.value}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>
+  `).join("");
+}
+
+/* ---- Charts Kegiatan ---- */
+function renderKegCharts() {
+  const list = KEG.list;
+
+  // Per kategori (bar)
+  const kat = countByKeg(list, "kategori");
+  makeChart("chartKegKategori", {
+    type: "bar",
+    data: {
+      labels: kat.map((p) => p.label),
+      datasets: [{
+        label: "Kegiatan",
+        data: kat.map((p) => p.count),
+        backgroundColor: kat.map((_, i) => PALETTE[i % PALETTE.length]),
+        borderRadius: 8,
+        maxBarThickness: 40,
+      }],
+    },
+    options: { ...CHART_OPTS, plugins: { ...CHART_OPTS.plugins, legend: { display: false } } },
+  });
+
+  // Per status (doughnut)
+  const st = countByKeg(list, "status");
+  const stColor = (label) => {
+    const l = String(label).toLowerCase();
+    if (l.includes("selesai")) return "#16a34a";
+    if (l.includes("berlangsung")) return "#2563eb";
+    if (l.includes("rencana")) return "#f5b301";
+    return "#94a3b8";
+  };
+  makeChart("chartKegStatus", {
+    type: "doughnut",
+    data: {
+      labels: st.map((p) => p.label),
+      datasets: [{
+        data: st.map((p) => p.count),
+        backgroundColor: st.map((p) => stColor(p.label)),
+        borderWidth: 2,
+        borderColor: "#fff",
+      }],
+    },
+    options: doughnutOpts(st),
+  });
+
+  // Per bulan — 6 bulan terakhir (line)
+  const months = {};
+  const now = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months[d.getFullYear() + "-" + pad2(d.getMonth() + 1)] = 0;
+  }
+  list.forEach((r) => {
+    const d = kegDate(r);
+    if (d) {
+      const key = d.getFullYear() + "-" + pad2(d.getMonth() + 1);
+      if (key in months) months[key]++;
+    }
+  });
+  const mKeys = Object.keys(months);
+  const mLabels = mKeys.map((k) => {
+    const [y, m] = k.split("-");
+    return new Date(y, Number(m) - 1, 1).toLocaleDateString("id-ID", { month: "short", year: "2-digit" });
+  });
+  makeChart("chartKegBulan", {
+    type: "line",
+    data: {
+      labels: mLabels,
+      datasets: [{
+        label: "Kegiatan",
+        data: mKeys.map((k) => months[k]),
+        borderColor: "#0e7490",
+        backgroundColor: "rgba(14,116,144,0.14)",
+        fill: true,
+        tension: 0.35,
+        pointRadius: 4,
+        pointBackgroundColor: "#f5b301",
+        pointBorderColor: "#fff",
+        borderWidth: 2.5,
+      }],
+    },
+    options: { ...CHART_OPTS, plugins: { ...CHART_OPTS.plugins, legend: { display: false } } },
+  });
+}
+
+function countByKeg(list, field) {
+  const counts = {};
+  list.forEach((r) => {
+    let v = String(kegVal(r, field) || "Tidak diketahui").trim();
+    if (!v) v = "Tidak diketahui";
+    counts[v] = (counts[v] || 0) + 1;
+  });
+  return Object.entries(counts)
+    .map(([label, count]) => ({ label, count }))
+    .sort((a, b) => b.count - a.count || String(a.label).localeCompare(b.label));
+}
+
+/* ---- Tabel Kegiatan ---- */
+function kegFiltered() {
+  const q = kegState.search.toLowerCase().trim();
+  return KEG.list.filter((r) => {
+    if (kegState.kategori && kegVal(r, "kategori") !== kegState.kategori) return false;
+    if (kegState.status && kegVal(r, "status") !== kegState.status) return false;
+    if (kegState.bulan && !String(kegVal(r, "tanggal")).startsWith(kegState.bulan)) return false;
+    if (q) {
+      const hay = ["nama", "pic", "tempat", "deskripsi", "kategori", "status"]
+        .map((k) => String(kegVal(r, k)).toLowerCase()).join(" ");
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function renderKegTable() {
+  const rows = kegFiltered();
+  const totalPages = Math.max(1, Math.ceil(rows.length / kegState.perPage));
+  if (kegState.page > totalPages) kegState.page = totalPages;
+
+  const { sortKey, sortDir } = kegState;
+  rows.sort((a, b) => {
+    let cmp = 0;
+    if (sortKey === "tanggal") {
+      const da = kegDate(a), db = kegDate(b);
+      cmp = (da ? da.getTime() : 0) - (db ? db.getTime() : 0);
+    } else {
+      cmp = String(kegVal(a, sortKey)).localeCompare(String(kegVal(b, sortKey)), "id", { numeric: true });
+    }
+    return sortDir === "asc" ? cmp : -cmp;
+  });
+
+  const cols = [
+    { key: "tanggal", label: "Tanggal" },
+    { key: "nama", label: "Nama Kegiatan" },
+    { key: "kategori", label: "Kategori" },
+    { key: "pic", label: "Penanggung Jawab" },
+    { key: "tempat", label: "Tempat" },
+    { key: "peserta", label: "Peserta" },
+    { key: "status", label: "Status" },
+    { key: "link", label: "Dokumentasi" },
+  ];
+
+  $("#kegThead").innerHTML = `<tr>
+    ${cols.map((c) => {
+      const arrow = kegState.sortKey === c.key ? (kegState.sortDir === "asc" ? " ▲" : " ▼") : "";
+      return `<th class="sortable" data-sort="${c.key}">${c.label}${arrow}</th>`;
+    }).join("")}
+  </tr>`;
+
+  const start = (kegState.page - 1) * kegState.perPage;
+  const pageRows = rows.slice(start, start + kegState.perPage);
+  const tbody = $("#kegTbody");
+
+  if (!pageRows.length) {
+    tbody.innerHTML = `<tr><td colspan="${cols.length}" style="text-align:center;color:#64748b;padding:30px">Belum ada kegiatan. Catat kegiatan pertama lewat formulir di atas.</td></tr>`;
+  } else {
+    tbody.innerHTML = pageRows.map((r) => {
+      const d = kegDate(r);
+      const status = String(kegVal(r, "status"));
+      const stCls = "badge-status " + status.toLowerCase();
+      return `<tr>
+        <td style="white-space:nowrap">${esc(d ? fmtDate(d) : kegVal(r, "tanggal"))}</td>
+        <td><strong>${esc(kegVal(r, "nama"))}</strong></td>
+        <td><span class="badge badge-prodi">${esc(kegVal(r, "kategori"))}</span></td>
+        <td>${esc(kegVal(r, "pic"))}</td>
+        <td>${esc(kegVal(r, "tempat"))}</td>
+        <td>${esc(kegVal(r, "peserta"))}</td>
+        <td><span class="badge ${stCls}">${esc(status)}</span></td>
+        <td>${kegVal(r, "link") ? `<a href="${esc(kegVal(r, "link"))}" target="_blank" rel="noopener" style="color:#0d3b8c">🔗 Lihat</a>` : "—"}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  const shown = rows.length ? `${start + 1}–${start + pageRows.length}` : "0";
+  $("#kegTableCount").textContent = `${shown} dari ${rows.length.toLocaleString("id-ID")} kegiatan`;
+  renderKegPagination(rows.length, totalPages);
+}
+
+function renderKegPagination(totalRows, totalPages) {
+  const wrap = $("#kegPagination");
+  const page = kegState.page;
+  let html = `<button class="page-btn" data-page="${page - 1}" ${page <= 1 ? "disabled" : ""}>‹</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || Math.abs(i - page) <= 2) {
+      html += `<button class="page-btn ${i === page ? "current" : ""}" data-page="${i}">${i}</button>`;
+    } else if (Math.abs(i - page) === 3) {
+      html += `<span class="page-btn" style="border:none;background:none;color:#94a3b8">…</span>`;
+    }
+  }
+  html += `<button class="page-btn" data-page="${page + 1}" ${page >= totalPages ? "disabled" : ""}>›</button>`;
+  wrap.innerHTML = html;
+  wrap.querySelectorAll(".page-btn[data-page]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (btn.disabled) return;
+      const p = Number(btn.dataset.page);
+      if (p >= 1 && p <= totalPages) { kegState.page = p; renderKegTable(); }
+    });
+  });
+}
+
+function refreshKegSelects() {
+  const fill = (sel, field, current) => {
+    const el = $(sel);
+    if (!el) return;
+    const values = countByKeg(KEG.list, field).map((x) => x.label);
+    el.innerHTML = `<option value="">Semua</option>`;
+    values.forEach((v) => el.appendChild(new Option(v, v)));
+    el.value = values.includes(current) ? current : "";
+  };
+  fill("#kegFilterKategori", "kategori", kegState.kategori);
+  fill("#kegFilterStatus", "status", kegState.status);
+}
+
+/* ---- Simpan kegiatan ---- */
+async function submitKegiatan(e) {
+  e.preventDefault();
+  const nama = $("#kegNama").value.trim();
+  const tanggal = $("#kegTanggal").value;
+  const kategori = $("#kegKategori").value;
+  const status = $("#kegStatus").value;
+
+  if (!nama) { alert("⚠️ Nama kegiatan wajib diisi."); $("#kegNama").focus(); return; }
+  if (!tanggal) { alert("⚠️ Tanggal kegiatan wajib diisi."); $("#kegTanggal").focus(); return; }
+  if (!kategori) { alert("⚠️ Kategori wajib dipilih."); $("#kegKategori").focus(); return; }
+  if (!status) { alert("⚠️ Status wajib dipilih."); $("#kegStatus").focus(); return; }
+
+  const data = {
+    _tipe: "kegiatan",
+    namaKegiatan: nama,
+    tanggalKegiatan: tanggal,
+    kategori: kategori,
+    pic: $("#kegPic").value.trim(),
+    tempat: $("#kegTempat").value.trim(),
+    jumlahPeserta: $("#kegPeserta").value.trim(),
+    deskripsi: $("#kegDeskripsi").value.trim(),
+    status: status,
+    linkDokumentasi: $("#kegLink").value.trim(),
+  };
+
+  const btn = $("#btnKegSubmit");
+  btn.disabled = true;
+  btn.textContent = "Menyimpan…";
+
+  let saved = false;
+  if (DATA_SOURCE.gasUrl) {
+    try {
+      const res = await fetch(DATA_SOURCE.gasUrl, {
+        method: "POST",
+        redirect: "follow",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(data),
+      });
+      const text = await res.text();
+      let json = null;
+      try { json = JSON.parse(text); } catch (_) { /* bukan JSON */ }
+      if (json && json.status === "error") throw new Error(json.message || "Gagal menyimpan");
+      saved = true; // sukses atau non-JSON (data sudah diproses server)
+    } catch (err) {
+      saved = false;
+      console.warn("Backend gagal, simpan lokal:", err);
+    }
+  }
+
+  if (!saved) {
+    const arr = JSON.parse(localStorage.getItem(KEG_LOCAL_KEY) || "[]");
+    arr.push({
+      Timestamp: new Date().toISOString(),
+      "Nama Kegiatan": data.namaKegiatan,
+      "Tanggal Kegiatan": data.tanggalKegiatan,
+      Kategori: data.kategori,
+      "Penanggung Jawab": data.pic,
+      Tempat: data.tempat,
+      "Jumlah Peserta": data.jumlahPeserta,
+      Deskripsi: data.deskripsi,
+      Status: data.status,
+      "Link Dokumentasi": data.linkDokumentasi,
+    });
+    localStorage.setItem(KEG_LOCAL_KEY, JSON.stringify(arr));
+  }
+
+  btn.disabled = false;
+  btn.textContent = "💾 Simpan Kegiatan";
+  $("#kegForm").reset();
+  kegState.page = 1;
+  await loadKegiatan(true);
+  $("#kegTable").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+/* ---- Export CSV Kegiatan ---- */
+function exportKegCsv() {
+  const rows = kegFiltered();
+  if (!rows.length) {
+    alert("Tidak ada data kegiatan untuk diexport.");
+    return;
+  }
+  const headers = KEG.headers;
+  const lines = [headers.map((h) => csvCell(h)).join(";")];
+  rows.forEach((r) => {
+    lines.push(headers.map((h) => {
+      let v = r[h] == null ? "" : String(r[h]);
+      if (h.toLowerCase().includes("timestamp")) {
+        const d = parseDate(v);
+        if (d) v = fmtDateTime(d);
+      }
+      return csvCell(v);
+    }).join(";"));
+  });
+  const blob = new Blob(["\uFEFF" + lines.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const now = new Date();
+  a.href = url;
+  a.download = `monitoring-fast-kegiatan-${now.getFullYear()}${pad2(now.getMonth() + 1)}${pad2(now.getDate())}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* =========================================================
    NAVIGASI + SIDEBAR MOBILE
    ========================================================= */
 function activateSection(id) {
-  const sections = ["dashboard", "statistik", "data", "bantuan"];
+  const sections = ["dashboard", "kegiatan", "statistik", "data", "bantuan"];
   sections.forEach((s) => {
     $("#" + s).hidden = s !== id;
   });
 
   const titles = {
     dashboard: ["Dashboard", "Ringkasan pendaftar mahasiswa baru FAST USTEDI"],
+    kegiatan: ["Pencatatan Kegiatan", "Catat dan pantau seluruh kegiatan Fakultas Sains dan Teknologi"],
     statistik: ["Statistik", "Analisis mendalam dengan filter rentang waktu"],
     data: ["Data Pendaftar", "Rekap lengkap pendaftar — cari, filter, sortir, dan export"],
     bantuan: ["Bantuan & Setup", "Panduan menghubungkan dashboard ke Google Spreadsheet"],
   };
-  $("#pageTitle").textContent = titles[id][0];
-  $("#pageSubtitle").textContent = titles[id][1];
+  const [t, s] = titles[id];
+  $("#pageTitle").textContent = t;
+  $("#pageSubtitle").textContent = s;
 
-  $$(".nav-link").forEach((a) => a.classList.toggle("active", a.dataset.nav === titles[id][0]));
+  $$(".nav-link").forEach((a) => a.classList.toggle("active", a.dataset.nav === t));
 
+  if (id === "kegiatan") {
+    renderKegMode();
+    renderKegKpi();
+    renderKegCharts();
+    renderKegTable();
+  }
   if (id === "statistik") {
     renderStatKpi();
     renderStatCharts();
@@ -1136,7 +1593,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Refresh
-  $("#btnRefresh").addEventListener("click", () => { state.data.page = 1; loadData(false); });
+  $("#btnRefresh").addEventListener("click", () => {
+    state.data.page = 1;
+    loadData(false);
+    loadKegiatan(true);
+  });
   $("#btnRetry").addEventListener("click", () => loadData(false));
   $("#btnEmptyRetry").addEventListener("click", () => loadData(false));
   $("#autoRefresh").addEventListener("change", scheduleAutoRefresh);
@@ -1211,6 +1672,40 @@ document.addEventListener("DOMContentLoaded", () => {
   // Export
   $("#btnExport").addEventListener("click", exportCsv);
 
+  // ===== KEGIATAN =====
+  $("#kegForm").addEventListener("submit", submitKegiatan);
+  $("#btnExportKeg").addEventListener("click", exportKegCsv);
+  $("#btnResetKeg").addEventListener("click", () => {
+    kegState.search = ""; kegState.kategori = ""; kegState.status = ""; kegState.bulan = "";
+    kegState.page = 1;
+    $("#kegSearch").value = ""; $("#kegFilterKategori").value = "";
+    $("#kegFilterStatus").value = ""; $("#kegFilterBulan").value = "";
+    refreshKegSelects();
+    renderKegTable();
+  });
+  const bindKegFilter = (key, el) => {
+    el.addEventListener("input", () => { kegState[key] = el.value; kegState.page = 1; renderKegTable(); });
+    el.addEventListener("change", () => { kegState[key] = el.value; kegState.page = 1; renderKegTable(); });
+  };
+  bindKegFilter("search", $("#kegSearch"));
+  bindKegFilter("kategori", $("#kegFilterKategori"));
+  bindKegFilter("status", $("#kegFilterStatus"));
+  bindKegFilter("bulan", $("#kegFilterBulan"));
+  $("#kegThead").addEventListener("click", (e) => {
+    const th = e.target.closest("th.sortable");
+    if (!th) return;
+    const key = th.dataset.sort;
+    if (kegState.sortKey === key) {
+      kegState.sortDir = kegState.sortDir === "asc" ? "desc" : "asc";
+    } else {
+      kegState.sortKey = key;
+      kegState.sortDir = "asc";
+    }
+    kegState.page = 1;
+    renderKegTable();
+  });
+
   // Muat data awal
   loadData(false);
+  loadKegiatan(true);
 });

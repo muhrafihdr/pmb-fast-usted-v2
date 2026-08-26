@@ -1,16 +1,24 @@
 # 📊 Monitoring FAST — Dashboard Fakultas Sains dan Teknologi USTEDI
 
-Dashboard pemantauan data pendaftar mahasiswa baru (PMB) FAST USTEDI — versi lengkap pengganti halaman Google Sites [monitoringfast](https://sites.google.com/view/monitoringfast/monitoringfast).
+Dashboard pemantauan **Pencatatan Kegiatan** dan data **PMB (Penerimaan Mahasiswa Baru)** FAST USTEDI — versi lengkap pengganti halaman Google Sites [monitoringfast](https://sites.google.com/view/monitoringfast/monitoringfast).
 
-Dashboard membaca data langsung dari **Google Spreadsheet** (sheet `Pendaftar`, sumber data yang sama dengan landing page PMB) dan menampilkannya dalam bentuk:
+## ✨ Fitur Utama
 
-- ✅ Kartu KPI: total pendaftar, hari ini, 7 hari terakhir, bulan ini, prodi & jalur terpopuler
-- 📈 Grafik: pendaftar per program studi, per jalur, tren 14 hari, jenis kelamin
-- 🔎 Statistik lanjutan dengan filter rentang tanggal, prodi, dan jalur (tren harian/bulanan otomatis, top 10 asal provinsi, hari tersibuk, rata-rata per hari)
-- 🗂️ Tabel data lengkap: pencarian, filter, urutkan (klik kolom), pilih kolom, paginasi
-- ⬇️ Export CSV (kompatibel Excel)
-- ⏱️ Penyegaran otomatis (mati / 30 dtk / 1 mnt / 5 mnt)
-- 📱 Responsif penuh (mobile & desktop), sidebar navigasi
+**🗓️ Pencatatan Kegiatan** (inti monitoring FAST):
+- Form catat kegiatan: nama, tanggal, kategori, PIC, tempat, peserta, status, deskripsi, link dokumentasi
+- KPI: total kegiatan, bulan ini, selesai/belum, total peserta, kategori teratas
+- Grafik: per kategori, per status, tren 6 bulan
+- Rekap tabel: cari, filter kategori/status/bulan, sortir, export CSV
+- Mode lokal (tanpa backend) & mode cloud (tersinkron spreadsheet)
+
+**📊 Data PMB**:
+- Kartu KPI: total pendaftar, hari ini, 7 hari terakhir, bulan ini, prodi & jalur terpopuler
+- Grafik: pendaftar per program studi, per jalur, tren 14 hari, jenis kelamin
+- Statistik lanjutan dengan filter rentang tanggal/prodi/jalur (tren, top 10 provinsi, hari tersibuk)
+- Tabel data lengkap: pencarian, filter, sortir, pilih kolom, paginasi
+- Export CSV (kompatibel Excel)
+
+**⏱️ Penyegaran otomatis** (mati / 30 dtk / 1 mnt / 5 mnt) • **📱 Responsif penuh**
 
 ---
 
@@ -27,22 +35,21 @@ Dashboard membaca data langsung dari **Google Spreadsheet** (sheet `Pendaftar`, 
 
 ---
 
-## ⚙️ Cara A — Spreadsheet Publik (termudah, TANPA Apps Script) ✅
+## ⚙️ Cara A — Spreadsheet Publik (data PMB, TANPA Apps Script) ✅
 
-Dashboard memakai **CSV publik** dari Google Spreadsheet — tidak perlu deploy apa pun.
+Dashboard memakai **CSV publik** dari Google Spreadsheet untuk data PMB — tidak perlu deploy apa pun.
 
 1. Buka spreadsheet data pendaftar di Google Sheets.
 2. Klik **Share / Bagikan** (kanan atas).
 3. Ubah akses menjadi **Anyone with the link → Viewer**.
-4. Selesai! Dashboard otomatis membaca data via:
-   ```
-   https://docs.google.com/spreadsheets/d/<SHEET_ID>/export?format=csv
-   ```
-   > `SHEET_ID` sudah diisi di `script.js` (`DATA_SOURCE.sheetId`). Ganti jika memakai spreadsheet lain.
+4. Selesai! Data PMB otomatis tampil di Dashboard & Data Pendaftar.
+   > `SHEET_ID` sudah diisi di `script.js` (`DATA_SOURCE.sheetId`).
 
 > ⚠️ **Perhatian**: dengan cara ini, siapa pun yang punya link bisa melihat isi spreadsheet (termasuk NIK). Jika tidak ingin data publik, gunakan **Cara B**.
 
-## 🔒 Cara B — Apps Script (spreadsheet privat)
+## 🔒 Cara B — Apps Script (untuk Pencatatan Kegiatan)
+
+Fitur **Pencatatan Kegiatan** butuh backend Apps Script agar data tersimpan bersama di spreadsheet (sheet `Kegiatan` dibuat otomatis). Tanpa backend, kegiatan tersimpan **lokal di browser** (mode lokal).
 
 1. Buka **https://script.google.com** → klik **New project**.
 2. Tempel seluruh isi `Code.gs` dari folder ini ke editor.
@@ -50,15 +57,15 @@ Dashboard memakai **CSV publik** dari Google Spreadsheet — tidak perlu deploy 
    - `Execute as`: **Me**
    - `Who has access`: **Anyone**
 4. Salin **Web app URL** (berakhiran `/exec`).
-5. Di `script.js`, atur:
+5. Di `script.js`, tempel URL ke `DATA_SOURCE.gasUrl`:
    ```js
    const DATA_SOURCE = {
-     type: "apps-script",   // ubah dari "csv"
+     type: "csv",
      sheetId: "1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0",
      gasUrl: "https://script.google.com/macros/s/PASTE_URL_DISINI/exec",
    };
    ```
-6. Selesai.
+6. Selesai. Badge di seksi Kegiatan berubah menjadi **"☁️ Tersinkron dengan spreadsheet"**.
 
 > 🔁 Setelah mengubah `Code.gs`, lakukan **Deploy → Manage deployments → ✏️ Edit → New version → Deploy** agar URL tetap sama.
 
