@@ -298,6 +298,13 @@ input, select, textarea { font-family: inherit; }
   letter-spacing: 0.4px;
 }
 
+.keg-mini {
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: 14px;
+}
+
+.keg-mini .kpi-value { font-size: 24px; }
+
 .badge-status { background: #e2e8f0; color: #334155; }
 .badge-status.rencana { background: #fef3c7; color: #92400e; }
 .badge-status.berlangsung { background: #dbeafe; color: #1d4ed8; }
@@ -747,6 +754,7 @@ input, select, textarea { font-family: inherit; }
   .topbar-actions { order: 3; flex-basis: 100%; justify-content: flex-start; }
   .section { padding: 16px; }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .keg-mini { grid-template-columns: repeat(2, 1fr); }
   .filter-grid { grid-template-columns: 1fr 1fr; }
   .filter-search { grid-column: span 2; }
   .filter-btn { grid-column: span 2; }

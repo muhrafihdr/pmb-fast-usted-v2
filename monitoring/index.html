@@ -43,9 +43,6 @@
         <a href="#data" class="nav-link" data-nav="Data">
           <span class="nav-ico">🗂️</span> Data Pendaftar
         </a>
-        <a href="#bantuan" class="nav-link" data-nav="Bantuan">
-          <span class="nav-ico">🛠️</span> Bantuan &amp; Setup
-        </a>
       </nav>
 
       <div class="sidebar-footer">
@@ -102,7 +99,7 @@
       <div class="state" id="emptyState" hidden>
         <div class="state-emoji">📭</div>
         <h2>Belum Ada Data</h2>
-        <p>Spreadsheet masih kosong atau nama sheet tidak ditemukan. Cek konfigurasi di bagian <a href="#bantuan">Bantuan &amp; Setup</a>.</p>
+        <p>Spreadsheet masih kosong atau nama sheet tidak ditemukan. Periksa konfigurasi <code>DATA_SOURCE.sheetId</code> di <code>script.js</code>.</p>
         <button class="btn-refresh" id="btnEmptyRetry">🔄 Muat Ulang</button>
       </div>
 
@@ -158,6 +155,29 @@
                     <th>Jenis Kelamin</th>
                     <th>Asal Sekolah</th>
                     <th>Provinsi</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>🗓️ Catatan Kegiatan</h3>
+              <a href="#kegiatan" class="link-more">Kelola Kegiatan →</a>
+            </div>
+            <div class="kpi-grid keg-mini" id="dashKegKpi"></div>
+            <div class="table-wrap">
+              <table class="data-table" id="dashKegTable">
+                <thead>
+                  <tr>
+                    <th>Bulan</th>
+                    <th>Nama Kegiatan</th>
+                    <th>Program</th>
+                    <th>Progres</th>
+                    <th>Prioritas</th>
+                    <th>Penanggung Jawab</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -469,63 +489,6 @@
               </table>
             </div>
             <div class="pagination" id="pagination"></div>
-          </div>
-        </section>
-
-        <!-- ================= BANTUAN ================= -->
-        <section class="section" id="bantuan" hidden>
-          <div class="section-intro">
-            <h2>🛠️ Bantuan &amp; Setup</h2>
-            <p>Dashboard membaca data langsung dari Google Spreadsheet. Ada 2 cara — pilih salah satu.</p>
-          </div>
-          <div class="help-grid">
-            <div class="card help-card">
-              <h3>✅ Cara A — Spreadsheet Publik (untuk data PMB)</h3>
-              <ol>
-                <li>Buka spreadsheet data pendaftar di Google Sheets.</li>
-                <li>Klik tombol <strong>Share / Bagikan</strong> (kanan atas).</li>
-                <li>Ubah akses menjadi <strong>Anyone with the link → Viewer</strong>.</li>
-                <li>Data PMB otomatis tampil di Dashboard &amp; Data Pendaftar.</li>
-              </ol>
-              <p style="margin-top:8px;font-size:12px;color:#64748b">⚠️ Semua orang bisa melihat isi spreadsheet (termasuk NIK). Hanya lakukan jika sudah siap, atau gunakan Cara B.</p>
-            </div>
-            <div class="card help-card">
-              <h3>🔒 Cara B — Apps Script (untuk Pencatatan Kegiatan)</h3>
-              <p style="font-size:13px;margin-bottom:8px">Fitur <strong>Pencatatan Kegiatan</strong> menyimpan data baru ke spreadsheet <strong>"MONITORING FAST TERBARU"</strong> (sheet <code>Monitoring_FAST</code>) melalui backend Apps Script. Tanpa backend, data tersimpan lokal di browser.</p>
-              <ol>
-                <li>Buka <strong>script.google.com</strong> → New project.</li>
-                <li>Tempel seluruh isi <code>Code.gs</code> dari folder ini.</li>
-                <li>Deploy → New deployment → ⚙️ <strong>Web app</strong>.</li>
-                <li><strong>Execute as:</strong> Me &nbsp;•&nbsp; <strong>Who has access:</strong> Anyone</li>
-                <li>Salin URL <code>/exec</code> → tempel di <code>DATA_SOURCE.gasUrl</code> pada <code>script.js</code>.</li>
-              </ol>
-              <p style="margin-top:8px;font-size:12px;color:#64748b">💡 Data lama (35 kegiatan) sudah otomatis terbaca dari spreadsheet yang sama — tanpa impor terpisah.</p>
-            </div>
-            <div class="card help-card">
-              <h3>4️⃣ Selesai &amp; Pantau</h3>
-              <ol>
-                <li>Dashboard memuat ulang otomatis sesuai pengaturan <strong>Auto</strong> di pojok kanan atas.</li>
-                <li>Gunakan <strong>Export CSV</strong> untuk unduh rekap data.</li>
-                <li>Data baru dari formulir PMB muncul otomatis dalam beberapa saat.</li>
-              </ol>
-            </div>
-            <div class="card help-card">
-              <h3>⚙️ Kustomisasi</h3>
-              <ol>
-                <li>Ganti <code>DATA_SOURCE.sheetId</code> di <code>script.js</code> jika memakai spreadsheet lain.</li>
-                <li>Atur kolom default tabel di <code>DEFAULT_COLS</code>.</li>
-                <li>Ubah warna tema di <code>:root</code> pada <code>style.css</code>.</li>
-              </ol>
-            </div>
-          </div>
-
-          <div class="card help-contact">
-            <h3>📞 Butuh bantuan?</h3>
-            <p>
-              💬 WhatsApp: <a href="https://wa.me/6288228995205" target="_blank" rel="noopener">0882-2899-5205</a> &nbsp;•&nbsp;
-              📧 Email: <a href="mailto:fast.ustedi@gmail.com">fast.ustedi@gmail.com</a> &nbsp;•&nbsp;
-              🌐 <a href="https://fastustedi.web.id" target="_blank" rel="noopener">fastustedi.web.id</a>
-            </p>
           </div>
         </section>
 

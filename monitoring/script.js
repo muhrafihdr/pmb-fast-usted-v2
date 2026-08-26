@@ -359,6 +359,7 @@ function renderAll() {
   renderKpi();
   renderDashCharts();
   renderRecent();
+  renderDashKeg();
   renderStatKpi();
   renderStatCharts();
   renderColPicker();
@@ -1220,6 +1221,7 @@ async function loadKegiatan(silent) {
   renderKegKpi();
   renderKegCharts();
   renderKegTable();
+  renderDashKeg();
 }
 
 function renderKegMode() {
@@ -1234,6 +1236,53 @@ function renderKegMode() {
     el.textContent = "📁 Mode lokal — backend belum terhubung";
     el.className = "keg-mode local";
   }
+}
+
+/* ---- Ringkasan kegiatan di halaman Dashboard ---- */
+function renderDashKeg() {
+  const list = KEG.list;
+  const now = new Date();
+  const bulanIniKey = now.getFullYear() + "-" + pad2(now.getMonth() + 1);
+  const selesai = list.filter((r) => String(kegVal(r, "progres")).toLowerCase() === "selesai").length;
+  const proses = list.filter((r) => {
+    const p = String(kegVal(r, "progres")).toLowerCase();
+    return p && p !== "selesai";
+  }).length;
+  const bulanIni = list.filter((r) => kegBulanKey(r) === bulanIniKey).length;
+
+  $("#dashKegKpi").innerHTML = `
+    <div class="kpi-card"><div class="kpi-label">🗓️ Total Kegiatan</div><div class="kpi-value">${list.length.toLocaleString("id-ID")}</div><div class="kpi-sub">Tercatat di spreadsheet</div></div>
+    <div class="kpi-card kpi-green"><div class="kpi-label">✅ Selesai</div><div class="kpi-value">${selesai.toLocaleString("id-ID")}</div><div class="kpi-sub">${list.length ? Math.round((selesai / list.length) * 100) : 0}% dari total</div></div>
+    <div class="kpi-card kpi-orange"><div class="kpi-label">⏳ Dalam Proses</div><div class="kpi-value">${proses.toLocaleString("id-ID")}</div><div class="kpi-sub">Rencana + Berlangsung + Proses</div></div>
+    <div class="kpi-card kpi-accent"><div class="kpi-label">📅 Bulan Ini</div><div class="kpi-value">${bulanIni.toLocaleString("id-ID")}</div><div class="kpi-sub">${bulanIniKey}</div></div>
+  `;
+
+  const sorted = list
+    .slice()
+    .sort((a, b) => {
+      const da = kegDate(a), db = kegDate(b);
+      return (db ? db.getTime() : 0) - (da ? da.getTime() : 0);
+    })
+    .slice(0, 6);
+
+  const tbody = $("#dashKegTable tbody");
+  if (!sorted.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#64748b;padding:24px">Belum ada kegiatan tercatat.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = sorted.map((r) => {
+    const d = kegDate(r);
+    const progres = String(kegVal(r, "progres"));
+    const pCls = "badge-status " + progres.toLowerCase().replace(/ /g, "_");
+    return `<tr>
+      <td style="white-space:nowrap">${esc(d ? d.toLocaleDateString("id-ID", { month: "long", year: "numeric" }) : kegVal(r, "bulan"))}</td>
+      <td><strong>${esc(kegVal(r, "nama"))}</strong></td>
+      <td>${esc(kegVal(r, "program"))}</td>
+      <td><span class="badge ${pCls}">${esc(progres)}</span></td>
+      <td>${esc(kegVal(r, "prioritas"))}</td>
+      <td>${esc(kegVal(r, "pic"))}</td>
+    </tr>`;
+  }).join("");
 }
 
 /* ---- KPI Kegiatan ---- */
@@ -1614,17 +1663,16 @@ function exportKegCsv() {
    NAVIGASI + SIDEBAR MOBILE
    ========================================================= */
 function activateSection(id) {
-  const sections = ["dashboard", "kegiatan", "statistik", "data", "bantuan"];
+  const sections = ["dashboard", "kegiatan", "statistik", "data"];
   sections.forEach((s) => {
     $("#" + s).hidden = s !== id;
   });
 
   const titles = {
-    dashboard: ["Dashboard", "Ringkasan pendaftar mahasiswa baru FAST USTEDI"],
+    dashboard: ["Dashboard", "Ringkasan pendaftar & kegiatan Fakultas Sains dan Teknologi USTEDI"],
     kegiatan: ["Pencatatan Kegiatan", "Catat dan pantau seluruh kegiatan Fakultas Sains dan Teknologi"],
     statistik: ["Statistik", "Analisis mendalam dengan filter rentang waktu"],
     data: ["Data Pendaftar", "Rekap lengkap pendaftar — cari, filter, sortir, dan export"],
-    bantuan: ["Bantuan & Setup", "Panduan menghubungkan dashboard ke Google Spreadsheet"],
   };
   const [t, s] = titles[id];
   $("#pageTitle").textContent = t;
@@ -1632,6 +1680,9 @@ function activateSection(id) {
 
   $$(".nav-link").forEach((a) => a.classList.toggle("active", a.dataset.nav === t));
 
+  if (id === "dashboard") {
+    renderDashKeg();
+  }
   if (id === "kegiatan") {
     renderKegMode();
     renderKegKpi();
