@@ -1120,7 +1120,9 @@ const kegState = {
 
 function kegColIndex(name) {
   const aliases = KEG_COLS[name] || [];
-  return KEG.headers.findIndex((h) => aliases.includes(String(h).toLowerCase()));
+  // Normalisasi: underscore/dash → spasi agar "Bulan_Laporan" cocok dengan "bulan laporan"
+  const norm = (s) => String(s).toLowerCase().replace(/[_\-]+/g, " ").trim();
+  return KEG.headers.findIndex((h) => aliases.includes(norm(h)));
 }
 function kegCol(name) {
   const i = kegColIndex(name);
@@ -1428,7 +1430,7 @@ function renderKegTable() {
       const d = kegDate(r);
       const progres = String(kegVal(r, "progres"));
       const pCls = "badge-status " + progres.toLowerCase().replace(/ /g, "_");
-      const bulanLabel = d ? d.toLocaleDateString("id-ID", { month: "short", year: "numeric" }) : kegVal(r, "bulan");
+      const bulanLabel = d ? d.toLocaleDateString("id-ID", { month: "long", year: "numeric" }) : kegVal(r, "bulan");
       const out = kegVal(r, "output") || kegVal(r, "link");
       return `<tr>
         <td style="white-space:nowrap;font-size:11px;color:#64748b">${esc(kegVal(r, "id"))}</td>
