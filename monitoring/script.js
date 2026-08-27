@@ -342,7 +342,10 @@ async function loadData(silent) {
       state.data.visibleCols = DEFAULT_COLS.filter((k) => colIndex(k) >= 0);
     }
 
-    if (RAW.total === 0) {
+    // Hanya tampilkan layar "kosong" jika spreadsheet tidak punya header sama
+    // sekali (sheet hilang / nama salah). Kalau header ada tapi belum ada baris,
+    // dashboard tetap ditampilkan (KPI 0, tabel kosong) — data Kegiatan tetap terlihat.
+    if (RAW.total === 0 && RAW.headers.length === 0) {
       $("#content").hidden = true;
       $("#loading").hidden = true;
       $("#errorState").hidden = true;
@@ -972,7 +975,11 @@ function renderDataTable() {
   const tbody = $("#dataTbody");
 
   if (!pageRows.length) {
-    tbody.innerHTML = `<tr><td colspan="${keys.length + 1}" style="text-align:center;color:#64748b;padding:30px">Tidak ada data yang cocok dengan filter.</td></tr>`;
+    const filterAktif = state.data.search || state.data.prodi || state.data.jalur || state.data.from || state.data.to;
+    const pesan = filterAktif
+      ? "Tidak ada data yang cocok dengan filter."
+      : "Belum ada data pendaftar. Baris akan muncul otomatis setelah ada yang mengisi formulir PMB di fastustedi.web.id.";
+    tbody.innerHTML = `<tr><td colspan="${keys.length + 1}" style="text-align:center;color:#64748b;padding:30px">${pesan}</td></tr>`;
   } else {
     tbody.innerHTML = pageRows.map((r) => `
       <tr>
