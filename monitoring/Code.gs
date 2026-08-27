@@ -245,7 +245,9 @@ function getSheet_(spreadsheetId, sheetName) {
   return sheet;
 }
 
-/** Cari baris data (mulai baris 2) yang nilai kolomnya sama dengan value. */
+/** Cari baris data (mulai baris 2) yang nilai kolomnya sama dengan value.
+    Untuk kolom tanggal (Timestamp): dibandingkan sebagai waktu (toleransi 3 dtk)
+    agar format sheet (mis. 8:58 vs 08:58) tidak jadi masalah. */
 function findRowIndex_(sheet, headerName, value) {
   const lastRow = sheet.getLastRow();
   if (lastRow < 2) return -1;
@@ -257,14 +259,28 @@ function findRowIndex_(sheet, headerName, value) {
   }
   if (col < 0) return -1;
   const vals = sheet.getRange(2, col + 1, lastRow - 1, 1).getValues();
-  const want = normVal_(value);
-  const wantShort = want.length >= 16 ? want.slice(0, 16) : "";
+  const wantDate = looksLikeDate_(value) ? toDateVal_(value) : null;
+  const wantStr = String(value == null ? "" : value).trim();
   for (let i = 0; i < vals.length; i++) {
-    const nv = normVal_(vals[i][0]);
-    if (nv === want) return i + 2;
-    if (wantShort && nv.slice(0, 16) === wantShort) return i + 2;
+    const cell = vals[i][0];
+    if (cell instanceof Date || wantDate) {
+      const cellDate = toDateVal_(cell);
+      if (cellDate && wantDate && Math.abs(cellDate.getTime() - wantDate.getTime()) < 3000) {
+        return i + 2;
+      }
+    } else if (normVal_(cell) === wantStr) {
+      return i + 2;
+    }
   }
   return -1;
+}
+
+/** Apakah string tampak seperti tanggal (untuk pencocokan berbasis waktu). */
+function looksLikeDate_(v) {
+  const s = String(v == null ? "" : v).trim();
+  return /^\d{1,2}\/\d{1,2}\/\d{4}/.test(s) ||
+    /^\d{4}-\d{2}-\d{2}/.test(s) ||
+    /^\d{4}\/\d{2}\/\d{2}/.test(s);
 }
 
 /** Normalisasi nilai sel untuk perbandingan (Date → dd/MM/yyyy HH:mm:ss). */
