@@ -21,18 +21,20 @@ Landing page pendaftaran mahasiswa baru (PMB) FAST USTEDI. Responsif (mobile & d
 
 ## ⚙️ Langkah 1 — Pasang Google Apps Script (wajib agar data tersimpan)
 
-1. Buka **https://script.google.com** → klik **New project**.
-2. Hapus kode bawaan di `Code.gs`, lalu **tempel seluruh isi file `Code.gs`** dari folder ini.
-3. Pastikan `SHEET_ID` di dalamnya sudah benar:
+1. Buka **https://script.google.com** → klik **New project** (atau buka project yang sudah dipakai).
+2. Hapus kode bawaan di `Code.gs`, lalu **tempel seluruh isi file `Code.gs`** dari folder ini (versi CRUD — melayani form PMB **dan** dashboard Monitoring).
+3. Pastikan ID spreadsheet di dalamnya sudah benar:
    ```
-   SHEET_ID = "1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0"
+   PMB_SHEET_ID = "1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0"        // data pendaftar
+   KEGIATAN_SHEET_ID = "1HG1H9-_VZBBoml_WXpMqJ7aHuIQCRHH0545q94LqOls"  // Pencatatan Kegiatan
    ```
-   > Spreadsheet tujuan: https://docs.google.com/spreadsheets/d/1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0/edit
+   > Spreadsheet tujuan pendaftar: https://docs.google.com/spreadsheets/d/1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0/edit
+   > Spreadsheet tujuan kegiatan (dashboard): https://docs.google.com/spreadsheets/d/1HG1H9-_VZBBoml_WXpMqJ7aHuIQCRHH0545q94LqOls/edit
 
 4. Jalankan fungsi **`setupHeaders`** sekali:
    - Pilih fungsi `setupHeaders` di dropdown atas → klik **Run**.
    - Saat diminta izin, pilih akun Google yang punya akses ke spreadsheet → **Allow**.
-   - (Opsional) ubah nama sheet/tab, misalnya `Pendaftar`, di bagian `SHEET_NAME`.
+   - (Opsional) ubah nama sheet/tab, misalnya `Pendaftar` (`PMB_SHEET`) dan `Monitoring_FAST` (`KEGIATAN_SHEET`).
 
 5. **Deploy sebagai Web App:**
    - Klik **Deploy** → **New deployment** → ikon ⚙️ → **Web app**.
@@ -144,7 +146,7 @@ Setiap pendaftar menjadi **satu baris** dengan kolom:
 | Muncul pesan "URL Web App belum dikonfigurasi" | Isi `GAS_WEB_APP_URL` di `script.js`. |
 | CORS/error saat kirim | Pastikan memakai `Content-Type: text/plain` (sudah diatur di `script.js`) dan akses Web App = **Anyone**. |
 | Spreadsheet tidak muncul di editor Apps Script | Buka spreadsheet tersebut di browser terlebih dahulu dengan akun yang sama. |
-| Ingin ubah nama tab/sheet | Ubah `SHEET_NAME` di `Code.gs`, lalu deploy versi baru. |
+| Ingin ubah nama tab/sheet | Ubah `PMB_SHEET` / `KEGIATAN_SHEET` di `Code.gs`, lalu deploy versi baru. |
 
 ---
 

@@ -18,8 +18,12 @@ const DATA_SOURCE = {
   type: "csv", // "csv" (default) atau "apps-script"
   sheetId: "1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0",
 
-  // --- CARA B: URL Web App Apps Script (kosongkan jika pakai CSV) ---
-  gasUrl: "",
+  // --- CARA B: URL Web App Apps Script ---
+  // Terhubung ke project Apps Script yang sama dengan landing page PMB.
+  // Setelah Code.gs (versi CRUD) di-deploy ulang, fitur Pencatatan Kegiatan
+  // menulis ke spreadsheet "MONITORING FAST TERBARU" (1HG1H9-...) dan
+  // Data Pendaftar menulis ke spreadsheet PMB (1ddnHgb67-...).
+  gasUrl: "https://script.google.com/macros/s/AKfycbzo4MNSZGeEEzdg__fVjMid78eChazuJJ0RWMUPQdK3jMCyOs9r5O1BYlnyIZFesGcO/exec",
 
   // Alternatif: tempel konfigurasi di window.MONITORING_CONFIG
   // (mis. di <script> terpisah) untuk menimpa nilai di atas:
@@ -38,6 +42,26 @@ const DATA_SOURCE = {
 function csvUrl() {
   return "https://docs.google.com/spreadsheets/d/" +
     DATA_SOURCE.sheetId + "/export?format=csv";
+}
+
+/* Probe backend Apps Script — pastikan Web App versi baru sudah aktif
+   sebelum mengirim data (mencegah tulisan ke backend lama yang belum
+   mendukung skema Kegiatan/Pendaftar). */
+async function probeBackend() {
+  if (!DATA_SOURCE.gasUrl) return;
+  try {
+    const sep = DATA_SOURCE.gasUrl.includes("?") ? "&" : "?";
+    const res = await fetch(DATA_SOURCE.gasUrl + sep + "action=ping&_=" + Date.now(), {
+      redirect: "follow",
+    });
+    const text = await res.text();
+    let json = null;
+    try { json = JSON.parse(text); } catch (_) { /* bukan JSON */ }
+    if (json && json.ok === true) {
+      backendPendReady = true;
+      backendKegReady = true;
+    }
+  } catch (_) { /* backend belum siap → tetap mode lokal */ }
 }
 
 /* =========================================================
@@ -74,6 +98,12 @@ const state = {
 let charts = {};        // instance chart per canvas
 let autoTimer = null;
 let lastLoadedAt = null;
+
+// Status backend Apps Script. Hanya "aktif" jika Web App sudah di-deploy
+// dengan Code.gs versi terbaru (mendukung ping/getKegiatan). Selama belum
+// aktif, CRUD disimpan lokal (overlay) — aman, tidak merusak spreadsheet.
+let backendPendReady = false; // pendaftar bisa ditulis ke spreadsheet
+let backendKegReady = false;  // kegiatan bisa ditulis ke spreadsheet
 
 /* Alias kolom — dipetakan berdasarkan nama header spreadsheet.
    Tambahkan alias bila nama kolom di sheet berbeda. */
@@ -342,6 +372,7 @@ async function loadData(silent) {
   } finally {
     btn.disabled = false;
     ico.classList.remove("spin");
+    probeBackend(); // cek ulang (mis. setelah backend baru di-deploy)
   }
 }
 
@@ -1267,13 +1298,45 @@ function editKegiatan(key) {
   setKegEditing(key, row);
 }
 
-function deleteKegiatan(key) {
+async function deleteKegiatan(key) {
   const row = KEG.list.find((r) => r.__key === key);
   if (!row) return;
   const nama = kegVal(row, "nama") || "kegiatan ini";
-  if (!confirm('Hapus kegiatan "' + nama + '"?\n(Perubahan tersimpan di perangkat ini — tanpa backend)')) return;
+  const isLocal = String(key).startsWith("new:");
+  const viaBackend = !isLocal && backendKegReady && String(key).startsWith("id:");
+  const pesan = viaBackend
+    ? 'Hapus kegiatan "' + nama + '" dari spreadsheet?'
+    : 'Hapus kegiatan "' + nama + '"?\n(Perubahan tersimpan di perangkat ini — tanpa backend)';
+  if (!confirm(pesan)) return;
+
+  if (viaBackend) {
+    try {
+      const res = await fetch(DATA_SOURCE.gasUrl, {
+        method: "POST",
+        redirect: "follow",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ _tipe: "kegiatan", _aksi: "delete", _key: String(key).replace(/^id:/, "") }),
+      });
+      const text = await res.text();
+      let json = null;
+      try { json = JSON.parse(text); } catch (_) { /* bukan JSON */ }
+      if (json && json.status === "error") throw new Error(json.message || "Gagal menghapus");
+      // Bersihkan overlay terkait baris yang sudah dihapus dari spreadsheet
+      const ov = kegOverlay();
+      delete (ov.deleted || {})[key];
+      delete (ov.edited || {})[key];
+      saveKegOverlay(ov);
+      if (kegEditingKey === key) resetKegForm();
+      await loadKegiatan(true);
+      return;
+    } catch (err) {
+      console.warn("Backend delete gagal, simpan lokal:", err);
+      // lanjut ke jalur overlay di bawah
+    }
+  }
+
   const ov = kegOverlay();
-  if (String(key).startsWith("new:")) {
+  if (isLocal) {
     ov.created = (ov.created || []).filter((c) => c.__key !== key);
   } else {
     ov.deleted = ov.deleted || {};
@@ -1362,7 +1425,7 @@ function closePendModal() {
   pendEditingKey = null;
 }
 
-function submitPendForm(e) {
+async function submitPendForm(e) {
   if (e && e.preventDefault) e.preventDefault();
   const nama = String($("#pend_nama").value || "").trim();
   if (!nama) { alert("⚠️ Nama Lengkap wajib diisi."); $("#pend_nama").focus(); return; }
@@ -1371,18 +1434,63 @@ function submitPendForm(e) {
     const i = colIndex(aliasKey);
     return i >= 0 ? RAW.headers[i] : aliasKey;
   };
+  const tsHeader = headerFor("timestamp");
 
   const row = {};
   PEND_FIELDS.forEach((f) => {
     const el = document.getElementById("pend_" + f.key);
     row[headerFor(f.key)] = el ? String(el.value || "").trim() : "";
   });
-  if (!row[headerFor("timestamp")]) row[headerFor("timestamp")] = fmtDateTime(new Date());
 
+  const isEdit = Boolean(pendEditingKey);
+  const existing = isEdit ? RAW.list.find((r) => r.__key === pendEditingKey) : null;
+  const isLocalEdit = isEdit && String(pendEditingKey).startsWith("new:");
+  // Timestamp: pertahankan milik baris asli saat edit; baris baru → sekarang
+  const originalTs = existing && existing[tsHeader] ? String(existing[tsHeader]) : "";
+  if (!row[tsHeader]) {
+    row[tsHeader] = isEdit ? originalTs : new Date().toISOString();
+  }
+
+  // --- Mode cloud: tulis langsung ke spreadsheet (kecuali baris lokal new:) ---
+  if (backendPendReady && (!isEdit || !isLocalEdit)) {
+    try {
+      const payload = {
+        _tipe: "pendaftar",
+        _aksi: isEdit ? "update" : "create",
+        _key: isEdit ? originalTs : "",
+      };
+      Object.keys(row).forEach((h) => { payload[h] = row[h]; });
+      const res = await fetch(DATA_SOURCE.gasUrl, {
+        method: "POST",
+        redirect: "follow",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+      });
+      const text = await res.text();
+      let json = null;
+      try { json = JSON.parse(text); } catch (_) { /* bukan JSON */ }
+      if (json && json.status === "error") throw new Error(json.message || "Gagal menyimpan");
+      // Sukses → bersihkan overlay agar tidak menimpa/menduplikasi data spreadsheet
+      const ov = pendOverlay();
+      if (isEdit) {
+        delete (ov.edited || {})[pendEditingKey];
+        delete (ov.deleted || {})[pendEditingKey];
+        ov.created = (ov.created || []).map((c) => (c.__key === pendEditingKey ? row : c));
+      }
+      savePendOverlay(ov);
+      closePendModal();
+      await loadData(true);
+      return;
+    } catch (err) {
+      console.warn("Backend gagal, simpan lokal:", err);
+      // lanjut ke jalur overlay di bawah
+    }
+  }
+
+  // --- Mode lokal (overlay) — fallback ---
   const ov = pendOverlay();
   if (pendEditingKey) {
     const key = pendEditingKey;
-    const existing = RAW.list.find((r) => r.__key === key);
     if (existing) {
       RAW.headers.forEach((h) => { if (row[h] === undefined) row[h] = existing[h] || ""; });
     }
@@ -1402,13 +1510,46 @@ function submitPendForm(e) {
 
 function editPendaftar(key) { openPendModal("edit", key); }
 
-function deletePendaftar(key) {
+async function deletePendaftar(key) {
   const row = RAW.list.find((r) => r.__key === key);
   if (!row) return;
   const nm = val(row, "nama") || "data ini";
-  if (!confirm('Hapus data pendaftar "' + nm + '"?\n(Perubahan tersimpan di perangkat ini — tanpa backend)')) return;
+  const isLocal = String(key).startsWith("new:");
+  const viaBackend = !isLocal && backendPendReady;
+  const pesan = viaBackend
+    ? 'Hapus data pendaftar "' + nm + '" dari spreadsheet?'
+    : 'Hapus data pendaftar "' + nm + '"?\n(Perubahan tersimpan di perangkat ini — tanpa backend)';
+  if (!confirm(pesan)) return;
+
+  if (viaBackend) {
+    try {
+      const tsH = colIndex("timestamp") >= 0 ? RAW.headers[colIndex("timestamp")] : "Timestamp";
+      const ts = val(row, "timestamp") || row[tsH] || "";
+      const res = await fetch(DATA_SOURCE.gasUrl, {
+        method: "POST",
+        redirect: "follow",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ _tipe: "pendaftar", _aksi: "delete", _key: ts }),
+      });
+      const text = await res.text();
+      let json = null;
+      try { json = JSON.parse(text); } catch (_) { /* bukan JSON */ }
+      if (json && json.status === "error") throw new Error(json.message || "Gagal menghapus");
+      // Bersihkan overlay terkait baris yang sudah dihapus dari spreadsheet
+      const ov = pendOverlay();
+      delete (ov.deleted || {})[key];
+      delete (ov.edited || {})[key];
+      savePendOverlay(ov);
+      await loadData(true);
+      return;
+    } catch (err) {
+      console.warn("Backend delete gagal, simpan lokal:", err);
+      // lanjut ke jalur overlay di bawah
+    }
+  }
+
   const ov = pendOverlay();
-  if (String(key).startsWith("new:")) {
+  if (isLocal) {
     ov.created = (ov.created || []).filter((c) => c.__key !== key);
   } else {
     ov.deleted = ov.deleted || {};
@@ -1481,6 +1622,7 @@ async function loadKegiatan(silent) {
         KEG.mode = "cloud";
         KEG.local = false;
         ok = true;
+        backendKegReady = true;
       }
     } catch (err) {
       console.warn("getKegiatan gagal:", err);
@@ -1861,10 +2003,12 @@ async function submitKegiatan(e) {
   if (!nama) { alert("⚠️ Nama kegiatan wajib diisi."); $("#kegNama").focus(); return; }
   if (!progres) { alert("⚠️ Progres wajib dipilih."); $("#kegProgres").focus(); return; }
 
+  // Baris dari spreadsheet → key = ID_Monitoring; baris lokal (new:) → simpan lokal
+  const kegKeyIsRemote = kegEditingKey && String(kegEditingKey).startsWith("id:");
   const data = {
     _tipe: "kegiatan",
     _aksi: kegEditingKey ? "update" : "create",
-    _key: kegEditingKey || "",
+    _key: kegKeyIsRemote ? String(kegEditingKey).replace(/^id:/, "") : "",
     namaKegiatan: nama,
     tanggalKegiatan: $("#kegTanggal").value,
     kategori: $("#kegKategori").value,
@@ -1892,7 +2036,7 @@ async function submitKegiatan(e) {
   btn.textContent = "Menyimpan…";
 
   let saved = false;
-  if (DATA_SOURCE.gasUrl) {
+  if (backendKegReady && (!kegEditingKey || kegKeyIsRemote)) {
     try {
       const res = await fetch(DATA_SOURCE.gasUrl, {
         method: "POST",
@@ -1905,6 +2049,13 @@ async function submitKegiatan(e) {
       try { json = JSON.parse(text); } catch (_) { /* bukan JSON */ }
       if (json && json.status === "error") throw new Error(json.message || "Gagal menyimpan");
       saved = true; // sukses atau non-JSON (data sudah diproses server)
+      // Bersihkan overlay agar data tidak tampil ganda setelah tersimpan di spreadsheet
+      if (kegEditingKey) {
+        const ov = kegOverlay();
+        delete (ov.edited || {})[kegEditingKey];
+        delete (ov.deleted || {})[kegEditingKey];
+        saveKegOverlay(ov);
+      }
     } catch (err) {
       saved = false;
       console.warn("Backend gagal, simpan lokal:", err);
@@ -2355,6 +2506,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Muat data awal
+  probeBackend();
   loadData(false);
   loadKegiatan(true);
 });

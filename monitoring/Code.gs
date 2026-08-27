@@ -2,21 +2,29 @@
  * ============================================================
  *  Monitoring FAST USTEDI — Google Apps Script (Backend)
  *  ------------------------------------------------------------
- *  MELAYANI DATA untuk dashboard Monitoring FAST:
- *   1. Baca data PMB (sheet "Pendaftar")          → doGet?action=getAll
- *   2. Baca data Kegiatan (sheet "Monitoring_FAST") → doGet?action=getKegiatan
- *   3. Simpan kegiatan baru → doPost (JSON dengan _tipe:"kegiatan")
- *      → DITULIS ke spreadsheet "MONITORING FAST TERBARU"
- *        (sheet Monitoring_FAST — skema asli fakultas)
- *   4. (Backward-compatible) Simpan PMB → doPost (JSON PMB lama)
+ *  MELAYANI data untuk dashboard Monitoring FAST DAN landing page PMB:
  *
- *  CARA MEMASANG:
- *   1. https://script.google.com → New project → tempel file ini
+ *   GET:
+ *     ?action=ping        → cek backend aktif ({ok:true,pong:true})
+ *     ?action=getAll      → baca data PMB (sheet "Pendaftar")
+ *     ?action=getKegiatan → baca data Kegiatan (sheet "Monitoring_FAST")
+ *
+ *   POST (JSON):
+ *     { _tipe:"kegiatan",  _aksi:"create"|"update"|"delete", ... }
+ *        → spreadsheet KEGIATAN  (1HG1H9-... / sheet Monitoring_FAST)
+ *     { _tipe:"pendaftar", _aksi:"create"|"update"|"delete", ... }
+ *        → spreadsheet PMB       (1ddnHgb67-... / sheet Pendaftar)
+ *     { ...data PMB landing page (tanpa _tipe) }
+ *        → backward-compatible: tulis ke spreadsheet PMB
+ *
+ *  CARA PASANG (sekali saja):
+ *   1. Buka https://script.google.com → New project → tempel file ini
+ *      (atau GANTI isi project Apps Script yang sudah dipakai landing
+ *       page PMB, lalu Deploy → Manage deployments → ✏️ New version)
  *   2. Deploy → New deployment → ⚙️ Web app
  *      - Execute as : Me | Who has access : Anyone
  *   3. Salin URL /exec → tempel ke DATA_SOURCE.gasUrl di script.js
- *   (Atau: ganti Code.gs project PMB yang sudah berjalan lalu
- *    Deploy → Manage deployments → ✏️ New version → Deploy)
+ *      (Jika memakai project lama, URL tetap sama setelah New version.)
  * ============================================================
  */
 
@@ -47,6 +55,11 @@ const KEGIATAN_HEADERS = [
 /** Batas maksimum baris yang dikirim ke dashboard */
 const MAX_ROWS = 5000;
 
+const NAMA_BULAN_ = [
+  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+  "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+];
+
 /* ============================================================
    GET — baca data untuk dashboard
    ============================================================ */
@@ -68,16 +81,25 @@ function doGet(e) {
 }
 
 /* ============================================================
-   POST — simpan data (PMB atau Kegiatan)
+   POST — simpan / ubah / hapus (Kegiatan, Pendaftar, atau PMB legacy)
    ============================================================ */
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
 
-    // --- Data Kegiatan → spreadsheet MONITORING FAST TERBARU ---
+    /* ---------- KEGIATAN → spreadsheet MONITORING FAST TERBARU ---------- */
     if (data._tipe === "kegiatan") {
       const sheet = getSheet_(KEGIATAN_SHEET_ID, KEGIATAN_SHEET);
-      const sekarang = new Date();
+      ensureHeader_(sheet, KEGIATAN_HEADERS);
+      const aksi = data._aksi || "create";
+      const id = String(data._key || "").replace(/^id:/, "").trim();
+
+      if (aksi === "delete") {
+        const idx = findRowIndex_(sheet, "ID_Monitoring", id);
+        if (idx <= 0) throw new Error("Kegiatan dengan ID " + id + " tidak ditemukan.");
+        sheet.deleteRow(idx);
+        return jsonOutput_({ status: "success", message: "Kegiatan dihapus dari spreadsheet." });
+      }
 
       // Bulan/Tahun laporan: dari form, atau diturunkan dari Tanggal Kegiatan
       let bulan = data.bulanLaporan || "";
@@ -99,32 +121,82 @@ function doPost(e) {
         infoTambahan.push("Dokumentasi: " + data.linkDokumentasi);
       }
       const catatan = [data.catatan || ""].concat(infoTambahan).filter(Boolean).join(" | ");
+      const sekarang = new Date();
+      const idMonitoring = id || data.idMonitoring || buatIdMonitoring_(sheet);
 
-      sheet.appendRow([
-        data.idMonitoring || buatIdMonitoring_(sheet), // ID_Monitoring
-        sekarang,                                      // Timestamp_Input
-        bulan || NAMA_BULAN_[sekarang.getMonth()],     // Bulan_Laporan
-        tahun || String(sekarang.getFullYear()),       // Tahun_Laporan
-        data.periode || "Bulanan",                     // Periode
-        data.programStudi || "Program Studi Digabung", // Program_Studi
-        data.program || "",                            // Program
-        data.namaKegiatan || "",                       // Kegiatan
-        data.progres || "",                            // Progres
-        data.tindakLanjut || "",                       // Tindak_Lanjut
-        data.target || "",                             // Target
-        data.statusTarget || "",                       // Status_Target
-        data.prioritas || "",                          // Prioritas
-        data.pic || "",                                // Penanggung_Jawab
-        data.hasilOutput || data.linkDokumentasi || "",// Hasil_Output
-        catatan,                                       // Catatan
-        data.evaluasiFeedback || "",                   // Evaluasi_Feedback
-        sekarang,                                      // Updated_At
-      ]);
-      return jsonOutput_({ status: "success", message: "Kegiatan berhasil dicatat." });
+      const baris = [
+        idMonitoring,                                    // ID_Monitoring
+        sekarang,                                        // Timestamp_Input (update: dipertahankan di bawah)
+        bulan || NAMA_BULAN_[sekarang.getMonth()],       // Bulan_Laporan
+        tahun || String(sekarang.getFullYear()),         // Tahun_Laporan
+        data.periode || "Bulanan",                       // Periode
+        data.programStudi || "Program Studi Digabung",   // Program_Studi
+        data.program || "",                              // Program
+        data.namaKegiatan || "",                         // Kegiatan
+        data.progres || "",                              // Progres
+        data.tindakLanjut || "",                         // Tindak_Lanjut
+        data.target || "",                               // Target
+        data.statusTarget || "",                         // Status_Target
+        data.prioritas || "",                            // Prioritas
+        data.pic || "",                                  // Penanggung_Jawab
+        data.hasilOutput || data.linkDokumentasi || "",  // Hasil_Output
+        catatan,                                         // Catatan
+        data.evaluasiFeedback || "",                     // Evaluasi_Feedback
+        sekarang,                                        // Updated_At
+      ];
+
+      if (aksi === "update") {
+        const idx = findRowIndex_(sheet, "ID_Monitoring", idMonitoring);
+        if (idx <= 0) throw new Error("Kegiatan dengan ID " + idMonitoring + " tidak ditemukan.");
+        const old = sheet.getRange(idx, 1, 1, KEGIATAN_HEADERS.length).getValues()[0];
+        baris[1] = old[1]; // pertahankan Timestamp_Input asli
+        sheet.getRange(idx, 1, 1, KEGIATAN_HEADERS.length).setValues([baris]);
+      } else {
+        sheet.appendRow(baris);
+      }
+      return jsonOutput_({ status: "success", message: "Kegiatan berhasil disimpan." });
     }
 
-    // --- Data PMB (backward-compatible dengan landing page) ---
+    /* ---------- PENDAFTAR (PMB) → spreadsheet Pendaftar ---------- */
+    if (data._tipe === "pendaftar") {
+      const sheet = getSheet_(PMB_SHEET_ID, PMB_SHEET);
+      ensureHeader_(sheet, PMB_HEADERS);
+      const aksi = data._aksi || "create";
+      const tsKey = String(data._key || "").trim();
+
+      if (aksi === "delete") {
+        const idx = findRowIndex_(sheet, "Timestamp", tsKey);
+        if (idx <= 0) throw new Error("Data pendaftar tidak ditemukan di spreadsheet.");
+        sheet.deleteRow(idx);
+        return jsonOutput_({ status: "success", message: "Data pendaftar dihapus dari spreadsheet." });
+      }
+
+      const nilai = PMB_HEADERS.map(function (h) {
+        if (h === "Timestamp") {
+          const d = toDateVal_(ambil_(data, "Timestamp"));
+          return d ? d : new Date();
+        }
+        return ambil_(data, h);
+      });
+
+      if (aksi === "update") {
+        const idx = findRowIndex_(sheet, "Timestamp", tsKey);
+        if (idx <= 0) throw new Error("Data pendaftar tidak ditemukan di spreadsheet.");
+        const old = sheet.getRange(idx, 1, 1, PMB_HEADERS.length).getValues()[0];
+        // Kolom kosong di payload → pertahankan nilai lama
+        const gabung = nilai.map(function (v, i) {
+          return (v === "" || v == null) ? old[i] : v;
+        });
+        sheet.getRange(idx, 1, 1, PMB_HEADERS.length).setValues([gabung]);
+      } else {
+        sheet.appendRow(nilai);
+      }
+      return jsonOutput_({ status: "success", message: "Data pendaftar berhasil disimpan." });
+    }
+
+    /* ---------- PMB legacy (landing page — tanpa _tipe) ---------- */
     const sheet = getSheet_(PMB_SHEET_ID, PMB_SHEET);
+    ensureHeader_(sheet, PMB_HEADERS);
     sheet.appendRow([
       new Date(),
       data.namaLengkap || "", data.nik || "", data.tempatLahir || "",
@@ -139,11 +211,6 @@ function doPost(e) {
     return jsonOutput_({ status: "error", message: "Terjadi kesalahan: " + err.message });
   }
 }
-
-const NAMA_BULAN_ = [
-  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-  "Juli", "Agustus", "September", "Oktober", "November", "Desember",
-];
 
 /* ============================================================
    Helper
@@ -178,6 +245,63 @@ function getSheet_(spreadsheetId, sheetName) {
   return sheet;
 }
 
+/** Cari baris data (mulai baris 2) yang nilai kolomnya sama dengan value. */
+function findRowIndex_(sheet, headerName, value) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return -1;
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const target = String(headerName).toLowerCase();
+  let col = -1;
+  for (let i = 0; i < headers.length; i++) {
+    if (String(headers[i]).trim().toLowerCase() === target) { col = i; break; }
+  }
+  if (col < 0) return -1;
+  const vals = sheet.getRange(2, col + 1, lastRow - 1, 1).getValues();
+  const want = normVal_(value);
+  const wantShort = want.length >= 16 ? want.slice(0, 16) : "";
+  for (let i = 0; i < vals.length; i++) {
+    const nv = normVal_(vals[i][0]);
+    if (nv === want) return i + 2;
+    if (wantShort && nv.slice(0, 16) === wantShort) return i + 2;
+  }
+  return -1;
+}
+
+/** Normalisasi nilai sel untuk perbandingan (Date → dd/MM/yyyy HH:mm:ss). */
+function normVal_(v) {
+  if (v instanceof Date && !isNaN(v.getTime())) return fmtDmy_(v);
+  return String(v == null ? "" : v).trim();
+}
+function fmtDmy_(d) {
+  return pad2_(d.getDate()) + "/" + pad2_(d.getMonth() + 1) + "/" + d.getFullYear() +
+    " " + pad2_(d.getHours()) + ":" + pad2_(d.getMinutes()) + ":" + pad2_(d.getSeconds());
+}
+
+/** Ubah string tanggal (dd/MM/yyyy, ISO, dsb.) menjadi Date bila bisa. */
+function toDateVal_(v) {
+  if (v instanceof Date) return v;
+  if (v == null || String(v).trim() === "") return null;
+  const s = String(v).trim();
+  let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  if (m) {
+    return new Date(+m[3], +m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0));
+  }
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+
+/** Ambil nilai dari payload — peka huruf besar/kecil pada nama kolom. */
+function ambil_(data, name) {
+  if (data == null) return "";
+  if (data[name] !== undefined && data[name] !== null) return data[name];
+  const lower = String(name).toLowerCase();
+  const keys = Object.keys(data);
+  for (let i = 0; i < keys.length; i++) {
+    if (String(keys[i]).toLowerCase() === lower) return data[keys[i]];
+  }
+  return "";
+}
+
 /** Membuat ID Monitoring otomatis: FAST-YYYYMMDD-NNN (berdasarkan sheet tujuan) */
 function buatIdMonitoring_(sheet) {
   const now = new Date();
@@ -192,16 +316,41 @@ function buatIdMonitoring_(sheet) {
   return prefix + pad3_(max + 1);
 }
 
-function pad2_(n) { return String(n).padStart(2, "0"); }
-function pad3_(n) { return String(n).padStart(3, "0"); }
+/** Pastikan baris header ada di baris 1 (aman dipanggil berulang). */
+function ensureHeader_(sheet, headers) {
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(headers);
+  } else {
+    const first = String(sheet.getRange(1, 1).getValue());
+    if (first !== headers[0]) {
+      sheet.insertRowsBefore(1, 1);
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    }
+  }
+  const hr = sheet.getRange(1, 1, 1, headers.length);
+  hr.setFontWeight("bold");
+  hr.setBackground("#0d3b8c");
+  hr.setFontColor("#ffffff");
+  sheet.setFrozenRows(1);
+}
 
-/** Jalankan untuk mengecek koneksi ke kedua spreadsheet */
+/** (Opsional) Buat header kedua sheet — jalankan sekali dari editor. */
+function setupHeaders() {
+  ensureHeader_(getSheet_(PMB_SHEET_ID, PMB_SHEET), PMB_HEADERS);
+  ensureHeader_(getSheet_(KEGIATAN_SHEET_ID, KEGIATAN_SHEET), KEGIATAN_HEADERS);
+  Logger.log("Header siap: " + PMB_SHEET + " & " + KEGIATAN_SHEET);
+}
+
+/** (Opsional) Cek koneksi ke kedua spreadsheet di log editor. */
 function testConnection() {
   const pmb = SpreadsheetApp.openById(PMB_SHEET_ID);
   const keg = SpreadsheetApp.openById(KEGIATAN_SHEET_ID);
   Logger.log("Spreadsheet PMB: " + pmb.getName() + " → " + pmb.getSheets().map(function (s) { return s.getName(); }).join(", "));
   Logger.log("Spreadsheet Kegiatan: " + keg.getName() + " → " + keg.getSheets().map(function (s) { return s.getName(); }).join(", "));
 }
+
+function pad2_(n) { return String(n).padStart(2, "0"); }
+function pad3_(n) { return String(n).padStart(3, "0"); }
 
 function jsonOutput_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(
