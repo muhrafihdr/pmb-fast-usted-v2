@@ -504,15 +504,6 @@ a {
 }
 
 /* ---------- DIKTI SAINTEK BERDAMPAK ---------- */
-.prodi-card-dikti {
-  border-top-color: var(--primary);
-  background: linear-gradient(180deg, #fff 0%, var(--primary-light) 100%);
-}
-
-.prodi-card-dikti h3 {
-  color: var(--primary);
-}
-
 .dikti-info {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
