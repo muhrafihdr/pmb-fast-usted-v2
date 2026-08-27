@@ -56,7 +56,7 @@ Dashboard memakai **CSV publik** dari Google Spreadsheet untuk data PMB — tida
 Fitur **Pencatatan Kegiatan** menyimpan data ke spreadsheet **"MONITORING FAST TERBARU"** (sheet `Monitoring_FAST`) dan **Data Pendaftar** tersambung ke spreadsheet PMB melalui backend Apps Script. `DATA_SOURCE.gasUrl` di `script.js` **sudah terisi** dengan URL Web App berikut (sudah aktif):
 
 ```
-https://script.google.com/macros/s/AKfycby_OA83MsamyETBdGYkvm2ENy89akchQ0K1wjY7pLHVPriVyA6uuDaqi725PKaPuNBd/exec
+https://script.google.com/macros/s/AKfycbx6rfVnvF9VDRPG0KRtTclmA1VVRRCdNK5ERWl95udC4rir0G0qCi1stdVTMLYoaG0UQA/exec
 ```
 
 Tidak perlu ubah apa pun di `script.js`. Jika suatu saat backend diganti, cukup ganti URL di `DATA_SOURCE.gasUrl` (monitoring) dan `GAS_WEB_APP_URL` (landing page).
