@@ -1008,10 +1008,23 @@ a.contact-card:hover {
 
 .footer-links a {
   font-size: 0.88rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   transition: color 0.2s ease;
 }
 
+.footer-links .ig-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
 .footer-links a:hover {
+  color: var(--accent);
+}
+
+.footer-links a:hover .ig-icon {
   color: var(--accent);
 }
 
