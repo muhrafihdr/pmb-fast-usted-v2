@@ -53,17 +53,13 @@ Dashboard memakai **CSV publik** dari Google Spreadsheet untuk data PMB — tida
 
 ## 🔒 Cara B — Apps Script (untuk Pencatatan Kegiatan)
 
-Fitur **Pencatatan Kegiatan** menyimpan data ke spreadsheet **"MONITORING FAST TERBARU"** (sheet `Monitoring_FAST`) dan **Data Pendaftar** tersambung ke spreadsheet PMB melalui backend Apps Script. `DATA_SOURCE.gasUrl` di `script.js` **sudah terisi** dengan URL Web App project Apps Script yang sama dengan landing page PMB. Tinggal deploy ulang `Code.gs` versi terbaru:
+Fitur **Pencatatan Kegiatan** menyimpan data ke spreadsheet **"MONITORING FAST TERBARU"** (sheet `Monitoring_FAST`) dan **Data Pendaftar** tersambung ke spreadsheet PMB melalui backend Apps Script. `DATA_SOURCE.gasUrl` di `script.js` **sudah terisi** dengan URL Web App berikut (sudah aktif):
 
-1. Buka **https://script.google.com** → buka **project Apps Script yang dipakai landing page PMB** (atau klik **New project**).
-2. Hapus isi `Code.gs` lama, lalu **tempel seluruh isi `Code.gs` dari folder ini** (versi CRUD terbaru).
-3. **Deploy → Manage deployments → ✏️ Edit → New version → Deploy** (URL `/exec` tetap sama).
-   - Pastikan `Execute as`: **Me** dan `Who has access`: **Anyone**.
-4. Selesai. Badge di seksi Kegiatan berubah menjadi **"☁️ Tersinkron dengan spreadsheet"**.
+```
+https://script.google.com/macros/s/AKfycby_OA83MsamyETBdGYkvm2ENy89akchQ0K1wjY7pLHVPriVyA6uuDaqi725PKaPuNBd/exec
+```
 
-> Jika membuat project baru, salin URL `/exec`-nya ke `DATA_SOURCE.gasUrl` di `script.js`.
-
-> Dashboard mengecek backend lewat `?action=ping` — selama backend versi baru belum aktif, CRUD otomatis kembali ke mode lokal (aman, tidak menulis data rusak ke spreadsheet).
+Tidak perlu ubah apa pun di `script.js`. Jika suatu saat backend diganti, cukup ganti URL di `DATA_SOURCE.gasUrl` (monitoring) dan `GAS_WEB_APP_URL` (landing page).
 
 ### 📌 Tujuan penyimpanan data
 

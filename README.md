@@ -46,7 +46,7 @@ Landing page pendaftaran mahasiswa baru (PMB) FAST USTEDI. Responsif (mobile & d
 6. **Hubungkan ke landing page:**
    Buka `script.js`, tempel URL tersebut di bagian paling atas:
    ```js
-   const GAS_WEB_APP_URL = "https://script.google.com/macros/s/PASTE_URL_DISINI/exec";
+   const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby_OA83MsamyETBdGYkvm2ENy89akchQ0K1wjY7pLHVPriVyA6uuDaqi725PKaPuNBd/exec";
    ```
 
 7. Tes: buka halaman web → isi formulir → kirim → cek spreadsheet (baris baru muncul, kolom `Timestamp` terisi).

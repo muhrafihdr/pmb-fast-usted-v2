@@ -23,7 +23,7 @@ const DATA_SOURCE = {
   // Setelah Code.gs (versi CRUD) di-deploy ulang, fitur Pencatatan Kegiatan
   // menulis ke spreadsheet "MONITORING FAST TERBARU" (1HG1H9-...) dan
   // Data Pendaftar menulis ke spreadsheet PMB (1ddnHgb67-...).
-  gasUrl: "https://script.google.com/macros/s/AKfycbzo4MNSZGeEEzdg__fVjMid78eChazuJJ0RWMUPQdK3jMCyOs9r5O1BYlnyIZFesGcO/exec",
+  gasUrl: "https://script.google.com/macros/s/AKfycby_OA83MsamyETBdGYkvm2ENy89akchQ0K1wjY7pLHVPriVyA6uuDaqi725PKaPuNBd/exec",
 
   // Alternatif: tempel konfigurasi di window.MONITORING_CONFIG
   // (mis. di <script> terpisah) untuk menimpa nilai di atas:
