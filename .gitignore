@@ -1,9 +1,5 @@
-# Local Netlify folder
+# Local Netlify folder (state lokal, tidak perlu di-upload)
 .netlify
-
-# Folder kerja lokal (salinan kanonik disimpan di root + monitoring/)
-FAST USTEDI/
-MONITORING FAST/
 
 # macOS
 .DS_Store

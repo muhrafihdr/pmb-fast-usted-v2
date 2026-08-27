@@ -1,0 +1,35 @@
+# =========================================================
+# Konfigurasi Netlify — PMB FAST USTEDI
+# ---------------------------------------------------------
+# Cara termudah: buka https://app.netlify.com/drop lalu
+# seret (drag & drop) folder website ini ke browser.
+# File ini otomatis dibaca Netlify saat deploy.
+#
+# 🌐 DOMAIN: https://fastustedi.web.id
+#    (custom domain via Netlify DNS, nameserver:
+#     dns1.p09.nsone.net, dns2.p09.nsone.net,
+#     dns3.p09.nsone.net, dns4.p09.nsone.net)
+# =========================================================
+
+# Direktori yang dipublikasikan = root folder ini
+[build]
+  publish = "."
+
+# Header keamanan dasar untuk semua halaman
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache jangka panjang untuk gambar (logo & gedung)
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.jpeg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

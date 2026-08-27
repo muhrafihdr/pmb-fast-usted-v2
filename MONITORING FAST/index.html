@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Dashboard Monitoring FAST — Fakultas Sains dan Teknologi USTEDI. Pantau data pendaftar mahasiswa baru secara real-time: statistik, grafik, dan rekap data." />
+  <title>Monitoring FAST — Dashboard Fakultas Sains &amp; Teknologi USTEDI</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+
+  <!-- Cache-busting: ganti ?v= setiap deploy agar browser selalu ambil file terbaru -->
+  <link rel="stylesheet" href="style.css?v=20260830" />
+</head>
+<body>
+
+  <div class="layout">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar" aria-label="Navigasi dashboard">
+      <div class="sidebar-brand">
+        <img src="LOGO FAST.png" alt="Logo FAST" class="brand-logo" />
+        <div class="brand-text">
+          <strong>Monitoring FAST</strong>
+          <small>Fakultas Sains &amp; Teknologi</small>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#dashboard" class="nav-link active" data-nav="Dashboard">
+          <span class="nav-ico">📊</span> Dashboard
+        </a>
+        <a href="#kegiatan" class="nav-link" data-nav="Kegiatan">
+          <span class="nav-ico">🗓️</span> Pencatatan Kegiatan
+        </a>
+        <a href="#statistik" class="nav-link" data-nav="Statistik">
+          <span class="nav-ico">📈</span> Statistik
+        </a>
+        <a href="#data" class="nav-link" data-nav="Data">
+          <span class="nav-ico">🗂️</span> Data Pendaftar
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <img src="Logo Ustedi.png" alt="Logo USTEDI" class="footer-logo" />
+        <p>Universitas Sains Teknologi<br />Ekonomi Digital Indonesia</p>
+      </div>
+
+      <button class="sidebar-close" id="sidebarClose" aria-label="Tutup menu">✕</button>
+    </aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop" hidden></div>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main">
+
+      <!-- Topbar -->
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn" aria-label="Buka menu">☰</button>
+        <div class="topbar-title">
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="pageSubtitle">Ringkasan pendaftar mahasiswa baru FAST USTEDI</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="updated" id="lastUpdated" title="Terakhir diperbarui">⏱️ —</span>
+          <label class="autorefresh" title="Penyegaran otomatis">
+            <span>Auto</span>
+            <select id="autoRefresh">
+              <option value="0">Mati</option>
+              <option value="30">30 dtk</option>
+              <option value="60" selected>1 mnt</option>
+              <option value="300">5 mnt</option>
+            </select>
+          </label>
+          <button class="btn-refresh" id="btnRefresh" aria-label="Muat ulang data">
+            <span class="refresh-ico">⟳</span> Muat Ulang
+          </button>
+        </div>
+      </header>
+
+      <!-- State: loading -->
+      <div class="state" id="loading" role="status">
+        <div class="spinner"></div>
+        <p>Memuat data dari Google Spreadsheet…</p>
+      </div>
+
+      <!-- State: error -->
+      <div class="state" id="errorState" hidden>
+        <div class="state-emoji">⚠️</div>
+        <h2>Gagal Memuat Data</h2>
+        <p id="errorMessage">Terjadi kesalahan saat mengambil data.</p>
+        <button class="btn-refresh" id="btnRetry">🔄 Coba Lagi</button>
+      </div>
+
+      <!-- State: kosong -->
+      <div class="state" id="emptyState" hidden>
+        <div class="state-emoji">📭</div>
+        <h2>Belum Ada Data</h2>
+        <p>Spreadsheet data pendaftar tidak ditemukan atau belum memiliki baris header. Periksa konfigurasi <code>DATA_SOURCE.sheetId</code> di <code>script.js</code>.</p>
+        <button class="btn-refresh" id="btnEmptyRetry">🔄 Muat Ulang</button>
+      </div>
+
+      <!-- Konten utama -->
+      <div id="content" hidden>
+
+        <!-- ================= DASHBOARD ================= -->
+        <section class="section" id="dashboard">
+          <div class="insight-strip" id="insightStrip" hidden></div>
+
+          <div class="kpi-grid" id="kpiGrid"></div>
+
+          <div class="charts-grid">
+            <div class="card chart-card">
+              <div class="card-head">
+                <h3>Pendaftar per Program Studi</h3>
+              </div>
+              <div class="chart-box"><canvas id="chartProdi" aria-label="Grafik pendaftar per program studi"></canvas></div>
+            </div>
+            <div class="card chart-card">
+              <div class="card-head">
+                <h3>Pendaftar per Jalur</h3>
+              </div>
+              <div class="chart-box"><canvas id="chartJalur" aria-label="Grafik pendaftar per jalur"></canvas></div>
+            </div>
+            <div class="card chart-card chart-wide">
+              <div class="card-head">
+                <h3>Tren Pendaftar — 14 Hari Terakhir</h3>
+              </div>
+              <div class="chart-box chart-tall"><canvas id="chartTren" aria-label="Grafik tren pendaftar 14 hari"></canvas></div>
+            </div>
+            <div class="card chart-card">
+              <div class="card-head">
+                <h3>Jenis Kelamin</h3>
+              </div>
+              <div class="chart-box"><canvas id="chartGender" aria-label="Grafik jenis kelamin"></canvas></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>🕒 Pendaftar Terbaru</h3>
+              <a href="#data" class="link-more">Lihat semua →</a>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table" id="recentTable">
+                <thead>
+                  <tr>
+                    <th>Waktu</th>
+                    <th>Nama</th>
+                    <th>Program Studi</th>
+                    <th>Jalur</th>
+                    <th>Jenis Kelamin</th>
+                    <th>Asal Sekolah</th>
+                    <th>Provinsi</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>🗓️ Catatan Kegiatan</h3>
+              <a href="#kegiatan" class="link-more">Kelola Kegiatan →</a>
+            </div>
+            <div class="kpi-grid keg-mini" id="dashKegKpi"></div>
+            <div class="table-wrap">
+              <table class="data-table" id="dashKegTable">
+                <thead>
+                  <tr>
+                    <th>Bulan</th>
+                    <th>Nama Kegiatan</th>
+                    <th>Program</th>
+                    <th>Progres</th>
+                    <th>Prioritas</th>
+                    <th>Penanggung Jawab</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= KEGIATAN ================= -->
+        <section class="section" id="kegiatan" hidden>
+          <div class="card filter-card" id="kegFormCard">
+            <div class="filter-head">
+              <h3 id="kegFormTitle">➕ Catat Kegiatan Baru</h3>
+              <span class="keg-mode" id="kegMode">⏳ …</span>
+            </div>
+            <form id="kegForm" novalidate>
+              <div class="form-banner" id="kegEditBanner" hidden>
+                <span>✏️ Mengedit: <strong id="kegEditName"></strong></span>
+                <button type="button" class="btn-ghost btn-sm" id="btnKegCancelEdit">✖ Batal</button>
+              </div>
+              <div class="keg-form-section">
+                <h4>📌 Informasi Kegiatan</h4>
+                <div class="filter-grid">
+                  <div class="filter-item filter-search">
+                    <label for="kegNama">Nama Kegiatan <span class="req">*</span></label>
+                    <input type="text" id="kegNama" placeholder="Contoh: Sosialisasi PMB di SMAN 16 Semarang" />
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegTanggal">Tanggal Kegiatan</label>
+                    <input type="date" id="kegTanggal" />
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegProgram">Program</label>
+                    <input type="text" id="kegProgram" placeholder="Contoh: Sosialisasi PMB" />
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegKategori">Kategori</label>
+                    <select id="kegKategori">
+                      <option value="">— Pilih —</option>
+                      <option>Sosialisasi &amp; Kerja Sama</option>
+                      <option>Pengajaran</option>
+                      <option>Penelitian</option>
+                      <option>Pengabdian Masyarakat</option>
+                      <option>Seminar &amp; Webinar</option>
+                      <option>Pelatihan &amp; Workshop</option>
+                      <option>Akreditasi &amp; Kurikulum</option>
+                      <option>Rapat &amp; Koordinasi</option>
+                      <option>Kegiatan Mahasiswa</option>
+                      <option>Lainnya</option>
+                    </select>
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegProgres">Progres <span class="req">*</span></label>
+                    <select id="kegProgres">
+                      <option value="">— Pilih —</option>
+                      <option>Rencana</option>
+                      <option>Berlangsung</option>
+                      <option>Dalam Proses</option>
+                      <option>Selesai</option>
+                    </select>
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegPic">Penanggung Jawab</label>
+                    <input type="text" id="kegPic" placeholder="Nama dosen/staf" />
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegTempat">Tempat / Lokasi</label>
+                    <input type="text" id="kegTempat" placeholder="Ruang/Lab/Sekolah" />
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegPeserta">Jumlah Peserta</label>
+                    <input type="number" id="kegPeserta" min="0" placeholder="0" />
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegPrioritas">Prioritas</label>
+                    <select id="kegPrioritas">
+                      <option value="">— Pilih —</option>
+                      <option>Tinggi</option>
+                      <option>Sedang</option>
+                      <option>Rendah</option>
+                    </select>
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegBulanLaporan">Bulan Laporan</label>
+                    <select id="kegBulanLaporan">
+                      <option value="">— Pilih —</option>
+                      <option>Januari</option><option>Februari</option><option>Maret</option>
+                      <option>April</option><option>Mei</option><option>Juni</option>
+                      <option>Juli</option><option>Agustus</option><option>September</option>
+                      <option>Oktober</option><option>November</option><option>Desember</option>
+                    </select>
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegTahunLaporan">Tahun Laporan</label>
+                    <input type="number" id="kegTahunLaporan" min="2020" max="2100" placeholder="2026" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="keg-form-section">
+                <h4>🎯 Target &amp; Evaluasi</h4>
+                <div class="filter-grid">
+                  <div class="filter-item filter-search">
+                    <label for="kegTarget">Target</label>
+                    <input type="text" id="kegTarget" placeholder="Target yang ingin dicapai…" />
+                  </div>
+                  <div class="filter-item">
+                    <label for="kegStatusTarget">Status Target</label>
+                    <select id="kegStatusTarget">
+                      <option value="">— Pilih —</option>
+                      <option>Tercapai</option>
+                      <option>Dalam Proses</option>
+                      <option>Belum Tercapai</option>
+                    </select>
+                  </div>
+                  <div class="filter-item filter-search">
+                    <label for="kegTindakLanjut">Tindak Lanjut</label>
+                    <input type="text" id="kegTindakLanjut" placeholder="Langkah tindak lanjut…" />
+                  </div>
+                  <div class="filter-item filter-search">
+                    <label for="kegHasilOutput">Hasil / Output (link)</label>
+                    <input type="url" id="kegHasilOutput" placeholder="https://drive.google.com/…" />
+                  </div>
+                  <div class="filter-item filter-search">
+                    <label for="kegLink">Link Dokumentasi (opsional)</label>
+                    <input type="url" id="kegLink" placeholder="https://drive.google.com/…" />
+                  </div>
+                  <div class="filter-item filter-search">
+                    <label for="kegDeskripsi">Catatan</label>
+                    <textarea id="kegDeskripsi" rows="2" placeholder="Catatan singkat…"></textarea>
+                  </div>
+                  <div class="filter-item filter-search">
+                    <label for="kegEvaluasi">Evaluasi / Feedback</label>
+                    <textarea id="kegEvaluasi" rows="2" placeholder="Evaluasi kegiatan…"></textarea>
+                  </div>
+                  <div class="filter-item filter-btn">
+                    <button type="submit" class="btn-primary btn-block" id="btnKegSubmit">💾 Simpan Kegiatan</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="kpi-grid" id="kegKpi"></div>
+
+          <div class="charts-grid">
+            <div class="card chart-card">
+              <div class="card-head"><h3>Kegiatan per Kategori</h3></div>
+              <div class="chart-box"><canvas id="chartKegKategori" aria-label="Grafik kegiatan per kategori"></canvas></div>
+            </div>
+            <div class="card chart-card">
+              <div class="card-head"><h3>Status Kegiatan</h3></div>
+              <div class="chart-box"><canvas id="chartKegStatus" aria-label="Grafik status kegiatan"></canvas></div>
+            </div>
+            <div class="card chart-card chart-wide">
+              <div class="card-head"><h3>Kegiatan per Bulan — 6 Bulan Terakhir</h3></div>
+              <div class="chart-box chart-tall"><canvas id="chartKegBulan" aria-label="Grafik kegiatan per bulan"></canvas></div>
+            </div>
+          </div>
+
+          <div class="card table-card">
+            <div class="filter-head">
+              <h3>🗂️ Rekap Kegiatan</h3>
+              <div class="filter-actions">
+                <button class="btn-ghost" id="btnResetKeg">Reset</button>
+                <button class="btn-primary" id="btnExportKeg">⬇️ Export CSV</button>
+                <button class="btn-primary btn-pdf" id="btnExportKegPdf">📄 Export PDF</button>
+              </div>
+            </div>
+            <div class="filter-grid">
+              <div class="filter-item filter-search">
+                <label for="kegSearch">Cari kegiatan, program, PIC…</label>
+                <input type="search" id="kegSearch" placeholder="Ketik untuk mencari…" />
+              </div>
+              <div class="filter-item">
+                <label for="kegFilterProgram">Program</label>
+                <select id="kegFilterProgram"><option value="">Semua</option></select>
+              </div>
+              <div class="filter-item">
+                <label for="kegFilterProgres">Progres</label>
+                <select id="kegFilterProgres"><option value="">Semua</option></select>
+              </div>
+              <div class="filter-item">
+                <label for="kegFilterBulan">Bulan Laporan</label>
+                <input type="month" id="kegFilterBulan" />
+              </div>
+            </div>
+            <div class="table-meta"><span id="kegTableCount">0 data</span></div>
+            <div class="table-wrap">
+              <table class="data-table" id="kegTable">
+                <thead id="kegThead"></thead>
+                <tbody id="kegTbody"></tbody>
+              </table>
+            </div>
+            <div class="pagination" id="kegPagination"></div>
+          </div>
+        </section>
+
+        <!-- ================= STATISTIK ================= -->
+        <section class="section" id="statistik" hidden>
+          <div class="card filter-card">
+            <div class="filter-head">
+              <h3>🔎 Filter Statistik</h3>
+              <button class="btn-ghost" id="btnResetStat">Reset</button>
+            </div>
+            <div class="filter-grid">
+              <div class="filter-item">
+                <label for="statFrom">Tanggal dari</label>
+                <input type="date" id="statFrom" />
+              </div>
+              <div class="filter-item">
+                <label for="statTo">Tanggal sampai</label>
+                <input type="date" id="statTo" />
+              </div>
+              <div class="filter-item">
+                <label for="statProdi">Program Studi</label>
+                <select id="statProdi"><option value="">Semua</option></select>
+              </div>
+              <div class="filter-item">
+                <label for="statJalur">Jalur Pendaftaran</label>
+                <select id="statJalur"><option value="">Semua</option></select>
+              </div>
+              <div class="filter-item filter-btn">
+                <button class="btn-primary" id="btnApplyStat">Terapkan</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-grid" id="statKpi"></div>
+
+          <div class="charts-grid">
+            <div class="card chart-card chart-wide">
+              <div class="card-head">
+                <h3>Tren Pendaftar (per hari)</h3>
+              </div>
+              <div class="chart-box chart-tall"><canvas id="chartTrendRange" aria-label="Grafik tren pendaftar rentang"></canvas></div>
+            </div>
+            <div class="card chart-card">
+              <div class="card-head">
+                <h3>Distribusi Jalur</h3>
+              </div>
+              <div class="chart-box"><canvas id="chartJalurRange" aria-label="Grafik distribusi jalur rentang"></canvas></div>
+            </div>
+            <div class="card chart-card">
+              <div class="card-head">
+                <h3>Distribusi Program Studi</h3>
+              </div>
+              <div class="chart-box"><canvas id="chartProdiRange" aria-label="Grafik distribusi prodi rentang"></canvas></div>
+            </div>
+            <div class="card chart-card chart-wide">
+              <div class="card-head">
+                <h3>Top 10 Asal Provinsi</h3>
+              </div>
+              <div class="chart-box"><canvas id="chartProvinsi" aria-label="Grafik asal provinsi"></canvas></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= DATA ================= -->
+        <section class="section" id="data" hidden>
+          <div class="card filter-card">
+            <div class="filter-head">
+              <h3>🔍 Cari &amp; Filter Data</h3>
+              <div class="filter-actions">
+                <button class="btn-ghost" id="btnResetData">Reset</button>
+                <button class="btn-primary" id="btnAddPend">➕ Tambah Pendaftar</button>
+                <button class="btn-primary" id="btnExport">⬇️ Export CSV</button>
+              </div>
+            </div>
+            <div class="filter-grid">
+              <div class="filter-item filter-search">
+                <label for="dataSearch">Cari (nama, email, sekolah, kota…)</label>
+                <input type="search" id="dataSearch" placeholder="Ketik untuk mencari…" />
+              </div>
+              <div class="filter-item">
+                <label for="dataProdi">Program Studi</label>
+                <select id="dataProdi"><option value="">Semua</option></select>
+              </div>
+              <div class="filter-item">
+                <label for="dataJalur">Jalur Pendaftaran</label>
+                <select id="dataJalur"><option value="">Semua</option></select>
+              </div>
+              <div class="filter-item">
+                <label for="dataFrom">Dari tanggal</label>
+                <input type="date" id="dataFrom" />
+              </div>
+              <div class="filter-item">
+                <label for="dataTo">Sampai tanggal</label>
+                <input type="date" id="dataTo" />
+              </div>
+              <div class="filter-item">
+                <label for="dataPerPage">Baris / halaman</label>
+                <select id="dataPerPage">
+                  <option value="10">10</option>
+                  <option value="25" selected>25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+            </div>
+            <details class="col-picker">
+              <summary>Pilih kolom yang ditampilkan</summary>
+              <div class="col-list" id="colList"></div>
+            </details>
+          </div>
+
+          <div class="card table-card">
+            <div class="table-meta">
+              <span id="tableCount">0 data</span>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table" id="dataTable">
+                <thead id="dataThead"></thead>
+                <tbody id="dataTbody"></tbody>
+              </table>
+            </div>
+            <div class="pagination" id="pagination"></div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Modal CRUD Pendaftar -->
+      <div class="modal-backdrop" id="modalBackdrop" hidden>
+        <div class="modal">
+          <div class="modal-head">
+            <h3 id="pendModalTitle">➕ Tambah Pendaftar</h3>
+            <button class="modal-close" id="pendModalClose" aria-label="Tutup">✕</button>
+          </div>
+          <form id="pendForm" novalidate>
+            <div class="filter-grid" id="pendFormFields"></div>
+            <div class="modal-foot">
+              <button type="button" class="btn-ghost" id="pendModalCancel">Batal</button>
+              <button type="submit" class="btn-primary" id="pendModalSave">💾 Simpan</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <p>© <span id="year"></span> Monitoring FAST — Fakultas Sains dan Teknologi USTEDI. Data diperbarui otomatis dari Google Spreadsheet.</p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- jsPDF + autoTable untuk Export PDF -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+
+  <script src="script.js?v=20260830"></script>
+</body>
+</html>
