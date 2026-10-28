@@ -1,0 +1,25 @@
+/* =========================================================
+   Blog FAST USTEDI — aksen visual khusus blog
+   ========================================================= */
+.blog-kepala {
+  background: linear-gradient(115deg, #06384f 0%, #0891b2 62%, #0e7490 100%);
+}
+.blog-kepala::after { background: rgba(245, 179, 1, .18); }
+
+.blog-kepala .bagian-label,
+.blog-kepala .tag { color: #e6fbff; }
+
+/* Kartu artikel memakai kelas berita agar konsisten. */
+#blogGrid .berita-sampul,
+#daftarBerita .berita-sampul { background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%); }
+#daftarBerita .bu-sampul { background: linear-gradient(135deg, #0891b2, #0e7490 60%, #06384f); }
+
+/* Sorot kategori artikel */
+.pil-filter button.aktif { background: #0891b2; }
+
+/* Penanda draf/internal (hanya tampil bila data berstatus draf). */
+.tag-draf { background: #fef4d8; color: #8a6400; }
+
+@media (max-width: 620px) {
+  .blog-kepala { padding: 44px 0 50px; }
+}

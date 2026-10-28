@@ -1,0 +1,95 @@
+/* =========================================================
+   Berita FAST USTEDI — gaya khusus
+   ========================================================= */
+
+/* ----- Kepala halaman ----- */
+.kepala-halaman {
+  position: relative; background: linear-gradient(115deg, var(--utama-gelap) 0%, var(--utama) 62%, #1e5ac4 100%);
+  color: #fff; padding: 56px 0 62px; overflow: hidden;
+}
+.kepala-halaman::after {
+  content: ""; position: absolute; right: -120px; top: -120px; width: 380px; height: 380px;
+  border-radius: 50%; background: rgba(245, 179, 1, .16);
+}
+.kepala-halaman .wadah { position: relative; z-index: 1; }
+.kepala-halaman h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); font-weight: 800; letter-spacing: -.02em; }
+.kepala-halaman p { color: #cfe0fa; margin-top: 10px; max-width: 640px; }
+.kepala-halaman .jejak { font-size: .8rem; color: #a9c2ea; margin-bottom: 12px; }
+.kepala-halaman .jejak a:hover { color: var(--aksen); }
+
+/* ----- Bilah alat (cari & filter) ----- */
+.bilah-alat { background: #fff; border-bottom: 1px solid var(--garis); position: sticky; top: var(--nav-tinggi); z-index: 800; }
+.bilah-alat-inner { display: flex; gap: 14px; align-items: center; padding: 14px 20px; flex-wrap: wrap; }
+.pencarian { position: relative; flex: 1; min-width: 220px; }
+.pencarian input {
+  width: 100%; padding: 11px 14px 11px 40px; border: 1.5px solid var(--garis-kuat);
+  border-radius: 999px; background: #fff;
+}
+.pencarian input:focus { outline: none; border-color: var(--utama); box-shadow: 0 0 0 4px rgba(13, 59, 140, .1); }
+.pencarian::before { content: "🔍"; position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-size: .9rem; opacity: .6; }
+.pil-filter { display: flex; gap: 8px; flex-wrap: wrap; }
+.pil-filter button {
+  padding: 8px 15px; border-radius: 999px; font-size: .82rem; font-weight: 600;
+  background: var(--bg-alt); color: var(--teks-redup); transition: var(--transisi); border: 1.5px solid transparent;
+}
+.pil-filter button:hover { color: var(--utama); }
+.pil-filter button.aktif { background: var(--utama); color: #fff; }
+
+/* ----- Daftar berita ----- */
+.berita-grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.berita-utama {
+  grid-column: 1 / -1; display: grid; grid-template-columns: 1.15fr 1fr; gap: 0;
+  border: 1px solid var(--garis); border-radius: var(--radius-besar); overflow: hidden; background: #fff;
+  transition: var(--transisi);
+}
+.berita-utama:hover { box-shadow: var(--bayang-besar); }
+.berita-utama .bu-sampul { min-height: 290px; background: linear-gradient(135deg, #0d3b8c, #1e5ac4 55%, #082a66); display: grid; place-items: center; color: #fff; font-size: 4rem; }
+.berita-utama .bu-isi { padding: 34px 32px; display: flex; flex-direction: column; justify-content: center; }
+.berita-utama h2 { font-size: clamp(1.25rem, 2.6vw, 1.7rem); font-weight: 800; line-height: 1.28; margin: 12px 0; letter-spacing: -.015em; }
+.berita-utama:hover h2 { color: var(--utama); }
+
+/* ----- Artikel ----- */
+.artikel-sampul { height: 320px; background: linear-gradient(135deg, var(--utama), var(--utama-gelap)); display: grid; place-items: center; color: #fff; font-size: 4rem; border-radius: var(--radius-besar); margin-bottom: 32px; }
+.artikel-judul { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800; line-height: 1.22; letter-spacing: -.025em; margin: 14px 0 18px; }
+.artikel-meta { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; color: var(--teks-redup); font-size: .86rem; padding-bottom: 22px; border-bottom: 1px solid var(--garis); margin-bottom: 28px; }
+.artikel-meta .penulis { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--teks); }
+.artikel-isi { font-size: 1.03rem; line-height: 1.85; color: #253449; }
+.artikel-isi h1, .artikel-isi h2, .artikel-isi h3 { color: var(--teks); line-height: 1.35; margin: 32px 0 12px; letter-spacing: -.015em; }
+.artikel-isi h1 { font-size: 1.55rem; }
+.artikel-isi h2 { font-size: 1.3rem; }
+.artikel-isi h3 { font-size: 1.1rem; }
+.artikel-isi p { margin-bottom: 16px; }
+.artikel-isi ul, .artikel-isi ol { margin: 0 0 18px 22px; }
+.artikel-isi ul { list-style: disc; }
+.artikel-isi ol { list-style: decimal; }
+.artikel-isi li { margin-bottom: 8px; }
+.artikel-isi blockquote {
+  border-left: 4px solid var(--aksen); background: var(--bg-alt); padding: 16px 20px;
+  border-radius: 0 var(--radius-kecil) var(--radius-kecil) 0; margin: 22px 0; font-style: italic;
+}
+.artikel-isi blockquote p { margin: 0; }
+.artikel-isi a { color: var(--utama); font-weight: 600; text-decoration: underline; }
+.artikel-isi img { border-radius: var(--radius); margin: 20px 0; }
+.artikel-isi hr { margin: 30px 0; }
+
+.berbagi { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--garis); }
+.berbagi span { font-size: .84rem; font-weight: 600; color: var(--teks-redup); }
+
+.artikel-samping { position: sticky; top: calc(var(--nav-tinggi) + 24px); }
+.artikel-samping h3 { font-size: .82rem; text-transform: uppercase; letter-spacing: .1em; color: var(--teks-redup); margin-bottom: 16px; }
+.mini-berita { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--garis); transition: var(--transisi); }
+.mini-berita:first-of-type { border-top: none; }
+.mini-berita:hover { padding-left: 6px; }
+.mini-berita:hover strong { color: var(--utama); }
+.mini-berita strong { font-size: .9rem; font-weight: 600; line-height: 1.4; display: block; }
+.mini-berita small { color: var(--teks-redup); font-size: .76rem; }
+.mini-no { width: 30px; height: 30px; flex-shrink: 0; display: grid; place-items: center; background: var(--utama-terang); color: var(--utama); border-radius: 8px; font-weight: 700; font-size: .82rem; }
+
+.tata-artikel { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 44px; align-items: start; }
+
+@media (max-width: 900px) {
+  .berita-utama { grid-template-columns: 1fr; }
+  .berita-utama .bu-sampul { min-height: 190px; }
+  .tata-artikel { grid-template-columns: 1fr; }
+  .artikel-samping { position: static; }
+}

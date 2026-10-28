@@ -1,0 +1,86 @@
+{
+  "versi": 1,
+  "diperbarui": "2026-01-08T08:30:00.000Z",
+  "kategori": [
+    { "id": "akademik", "nama": "Akademik", "warna": "#0d3b8c" },
+    { "id": "kemahasiswaan", "nama": "Kemahasiswaan", "warna": "#16a34a" },
+    { "id": "prestasi", "nama": "Prestasi", "warna": "#f5b301" },
+    { "id": "kerja-sama", "nama": "Kerja Sama", "warna": "#7c3aed" },
+    { "id": "pelatihan", "nama": "Pelatihan", "warna": "#0891b2" },
+    { "id": "pengumuman", "nama": "Pengumuman", "warna": "#dc2626" }
+  ],
+  "item": [
+    {
+      "slug": "fast-usted-buka-pendaftaran-2026-2027",
+      "judul": "FAST USTEDI Resmi Membuka Pendaftaran Mahasiswa Baru 2026/2027",
+      "ringkasan": "Pendaftaran dibuka setiap hari tanpa gelombang, dengan diskon 50% SPP khusus mahasiswa Fakultas Sains dan Teknologi.",
+      "kategori": "pengumuman",
+      "penulis": "Humas FAST",
+      "tanggal": "2026-01-08",
+      "gambar": "",
+      "tagar": ["PMB", "2026", "Pendaftaran"],
+      "unggulan": true,
+      "berkas": "fast-usted-buka-pendaftaran-2026-2027.json"
+    },
+    {
+      "slug": "mahasiswa-informatika-juara-hackathon-nasional",
+      "judul": "Mahasiswa Informatika FAST Raih Juara 1 Hackathon Nasional",
+      "ringkasan": "Tim mahasiswa S1 Informatika berhasil menyabet juara pertama dengan aplikasi pemantau kualitas udara berbasis AI.",
+      "kategori": "prestasi",
+      "penulis": "Prodi Informatika",
+      "tanggal": "2026-01-05",
+      "gambar": "",
+      "tagar": ["Informatika", "Prestasi", "AI"],
+      "unggulan": true,
+      "berkas": "mahasiswa-informatika-juara-hackathon-nasional.json"
+    },
+    {
+      "slug": "kerja-sama-fast-dengan-industri-teknologi",
+      "judul": "FAST USTEDI Jalin Kerja Sama dengan Lima Perusahaan Teknologi",
+      "ringkasan": "Penandatanganan MoU mencakup magang bersertifikat, penelitian bersama, dan rekrutmen lulusan.",
+      "kategori": "kerja-sama",
+      "penulis": "Humas FAST",
+      "tanggal": "2025-12-20",
+      "gambar": "",
+      "tagar": ["MoU", "Magang", "Industri"],
+      "unggulan": false,
+      "berkas": "kerja-sama-fast-dengan-industri-teknologi.json"
+    },
+    {
+      "slug": "prodi-sains-data-luncurkan-laboratorium-big-data",
+      "judul": "Prodi Sains Data Luncurkan Laboratorium Big Data Terbaru",
+      "ringkasan": "Laboratorium baru dilengkapi klaster komputasi dan perangkat visualisasi data untuk mendukung praktikum mahasiswa.",
+      "kategori": "akademik",
+      "penulis": "Prodi Sains Data",
+      "tanggal": "2025-12-12",
+      "gambar": "",
+      "tagar": ["Sains Data", "Laboratorium", "Big Data"],
+      "unggulan": false,
+      "berkas": "prodi-sains-data-luncurkan-laboratorium-big-data.json"
+    },
+    {
+      "slug": "fast-academy-buka-kelas-pelatihan-data-analytics",
+      "judul": "FAST Academy Buka Kelas Pelatihan Data Analytics untuk Umum",
+      "ringkasan": "Program pelatihan bersertifikat selama 8 pertemuan, terbuka untuk mahasiswa, guru, dan masyarakat umum.",
+      "kategori": "pelatihan",
+      "penulis": "FAST Academy",
+      "tanggal": "2025-12-01",
+      "gambar": "",
+      "tagar": ["Academy", "Data Analytics", "Sertifikat"],
+      "unggulan": true,
+      "berkas": "fast-academy-buka-kelas-pelatihan-data-analytics.json"
+    },
+    {
+      "slug": "seminar-nasional-transformasi-digital-pendidikan",
+      "judul": "Seminar Nasional Transformasi Digital Pendidikan Sukses Digelar",
+      "ringkasan": "Lebih dari 300 peserta dari berbagai daerah mengikuti seminar yang menghadirkan pembicara dari akademisi dan industri.",
+      "kategori": "kemahasiswaan",
+      "penulis": "BEM FAST",
+      "tanggal": "2025-11-18",
+      "gambar": "",
+      "tagar": ["Seminar", "Digital", "Pendidikan"],
+      "unggulan": false,
+      "berkas": "seminar-nasional-transformasi-digital-pendidikan.json"
+    }
+  ]
+}

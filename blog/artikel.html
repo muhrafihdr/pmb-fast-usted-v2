@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Artikel Blog Fakultas Sains dan Teknologi USTEDI." />
+  <meta name="theme-color" content="#0891b2" />
+  <title>Memuat artikel… — Blog FAST</title>
+  <link rel="icon" href="/assets/img/logo-fast.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/fast.css?v=20260216" />
+  <link rel="stylesheet" href="/assets/css/berita.css?v=20260216" />
+  <link rel="stylesheet" href="/assets/css/blog.css?v=20260216" />
+</head>
+<body>
+
+  <div id="fast-header"></div>
+
+  <main class="bagian">
+    <div class="wadah">
+      <p class="jejak" style="font-size:.8rem;color:var(--teks-redup);margin-bottom:26px">
+        <a href="/" style="color:var(--utama)">Portal</a> ›
+        <a href="/blog/" style="color:var(--utama)">Blog</a> ›
+        <span id="jejakJudul">Artikel</span>
+      </p>
+
+      <div class="tata-artikel">
+        <article id="artikel">
+          <div class="pemuat"><span class="pemuat-lingkar"></span><span>Memuat artikel…</span></div>
+        </article>
+
+        <aside class="artikel-samping">
+          <h3>Artikel Lainnya</h3>
+          <div id="artikelSamping"><div class="pemuat"><span class="pemuat-lingkar"></span></div></div>
+          <div class="kartu mt-3" style="background:var(--utama-terang);border:none">
+            <h3 style="font-size:1rem;margin-bottom:8px">🎓 Ingin kuliah di FAST?</h3>
+            <p style="font-size:.88rem;color:var(--teks-redup);margin-bottom:14px">Pendaftaran mahasiswa baru dibuka sepanjang tahun.</p>
+            <a href="/pmb/" class="btn btn-utama btn-blok btn-kecil">Daftar Sekarang</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <div id="fast-footer"></div>
+
+  <script>window.FAST_BASE = "/";</script>
+  <script>window.FAST_PAGE = { modul: "blog", nav: [{ label: "Semua Artikel", href: "/blog/" }, { label: "Berita", href: "/berita/" }, { label: "PMB", href: "/pmb/", khusus: true }] };</script>
+  <script src="/assets/js/config.js?v=20260216"></script>
+  <script src="/assets/js/cms.js?v=20260216"></script>
+  <script src="/assets/js/data.js?v=20260216"></script>
+  <script src="/assets/js/auth.js?v=20260216"></script>
+  <script src="/assets/js/markdown.js?v=20260216"></script>
+  <script src="/assets/js/ui.js?v=20260216"></script>
+  <script src="/assets/js/blog.js?v=20260216"></script>
+</body>
+</html>

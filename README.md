@@ -4,6 +4,30 @@ Landing page pendaftaran mahasiswa baru (PMB) FAST USTEDI. Responsif (mobile & d
 
 > 📊 **Dashboard Monitoring FAST** — halaman pemantauan data pendaftar (KPI, grafik, tabel, export CSV) tersedia di folder [`monitoring/`](monitoring/). Setelah deploy, akses di **`/monitoring/`** (mis. `https://muhrafihdr.github.io/pmb-fast-usted-v2/monitoring/`). Panduan setup ada di [`monitoring/README.md`](monitoring/README.md).
 
+## ✍️ Blog & Panel Admin
+
+Situs ini kini memiliki dua fitur baru:
+
+- **Blog FAST** di `/blog/` — daftar artikel, pencarian, kategori, dan halaman detail artikel. Data blog tersimpan di `data/blog/`.
+- **Panel Admin** di `/admin/` — dikunci dengan username dan password. Tautan **🔒 Admin** tersedia di bagian bawah footer setiap halaman. Kata sandi tidak ditampilkan di antarmuka.
+
+Panel admin dapat mengelola:
+
+| Modul | Cakupan |
+|---|---|
+| Blog | tulis/edit/hapus artikel, kategori, status terbit/draf |
+| Berita | kelola berita fakultas |
+| Halaman & Profil | identitas, kontak, hero, pengumuman, statistik, keunggulan, prodi, SEO |
+| Academy | katalog kelas, jadwal, biaya, kuota, silabus |
+| PMB | tahun akademik, status, jalur, jadwal, biaya, alur, FAQ |
+| Data & Publikasi | cadangan/impor JSON, unduh, reset, publikasi ke GitHub |
+
+Perubahan disimpan sebagai *override* di `localStorage` browser dan langsung tampil di perangkat tersebut. Untuk membuat perubahan berlaku bagi semua pengunjung, gunakan **Data & Publikasi → Terbitkan ke GitHub** atau unduh cadangan lalu salin berkas JSON ke folder `data/`.
+
+Panduan lengkap: [`docs/ADMIN.md`](docs/ADMIN.md) · Dokumentasi SSO: [`docs/SSO.md`](docs/SSO.md).
+
+> **Catatan keamanan:** karena situs ini statis, login admin melindungi antarmuka pengelolaan konten di sisi klien. Untuk keamanan produksi yang lebih kuat, gunakan backend autentikasi dan penyimpanan konten di server.
+
 ## 📁 Struktur File
 
 | File | Fungsi |

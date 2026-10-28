@@ -1,0 +1,80 @@
+/* =========================================================
+   PMB FAST USTEDI — gaya khusus halaman pendaftaran
+   ========================================================= */
+
+/* ----- Hero ----- */
+.pmb-hero { position: relative; overflow: hidden; min-height: 470px; display: grid; align-items: center; color: #fff; }
+.pmb-hero-bg { position: absolute; inset: 0; background: url("../../assets/img/gedung-usted.jpeg") center/cover no-repeat; transform: scale(1.05); }
+.pmb-hero-tirai { position: absolute; inset: 0; background: linear-gradient(110deg, rgba(7, 30, 66, .96) 0%, rgba(13, 59, 140, .86) 55%, rgba(30, 90, 196, .62) 100%); }
+.pmb-hero-isi { position: relative; padding: 66px 0; max-width: 720px; }
+.pmb-hero .label { font-size: .78rem; letter-spacing: .2em; text-transform: uppercase; color: var(--aksen); font-weight: 700; }
+.pmb-hero h1 { font-size: clamp(1.9rem, 4.6vw, 3rem); font-weight: 800; line-height: 1.12; margin: 14px 0 16px; letter-spacing: -.025em; }
+.pmb-hero h1 span { color: var(--aksen); }
+.pmb-hero .sub { color: #d6e3f9; max-width: 560px; margin-bottom: 26px; }
+.pmb-hero .aksi { display: flex; gap: 12px; flex-wrap: wrap; }
+.pmb-badge { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 34px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, .18); }
+.pmb-badge div strong { display: block; font-size: .95rem; color: #fff; }
+.pmb-badge div small { font-size: .78rem; color: #a9c2ea; letter-spacing: .04em; }
+
+/* ----- Sorotan cepat ----- */
+.sorot { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.sorot-kartu { background: #fff; border: 1px solid var(--garis); border-left: 5px solid var(--aksen); border-radius: var(--radius); padding: 20px; }
+.sorot-kartu strong { display: block; font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--teks-redup); margin-bottom: 6px; }
+.sorot-kartu span { font-size: 1.05rem; font-weight: 700; color: var(--utama); }
+
+/* ----- Alur ----- */
+.alur { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); counter-reset: langkah; }
+.alur-item { position: relative; background: #fff; border: 1px solid var(--garis); border-radius: var(--radius); padding: 26px 22px; }
+.alur-no { width: 42px; height: 42px; display: grid; place-items: center; background: var(--utama); color: #fff; border-radius: 12px; font-weight: 800; margin-bottom: 14px; }
+.alur-item h3 { font-size: 1.02rem; margin-bottom: 7px; }
+.alur-item p { color: var(--teks-redup); font-size: .9rem; }
+
+/* ----- Kartu formulir ----- */
+.kartu-form { background: #fff; border: 1px solid var(--garis); border-radius: var(--radius-besar); padding: 34px; box-shadow: var(--bayang); max-width: 900px; margin: 0 auto; }
+.kartu-form fieldset { margin-bottom: 30px; }
+.kartu-form legend { font-size: 1rem; }
+.sukses { text-align: center; padding: 40px 20px; }
+.sukses-ikon { font-size: 3.2rem; margin-bottom: 14px; }
+.sukses h3 { font-size: 1.4rem; margin-bottom: 10px; }
+.sukses p { color: var(--teks-redup); margin-bottom: 20px; }
+.catatan-aman { display: flex; gap: 12px; align-items: flex-start; background: var(--utama-terang); border-radius: var(--radius-kecil); padding: 14px 18px; font-size: .87rem; color: var(--utama-gelap); margin-bottom: 20px; }
+
+/* ----- Prodi pilihan ----- */
+.pilihan-prodi { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.prodi-opsi { position: relative; }
+.prodi-opsi input { position: absolute; opacity: 0; pointer-events: none; }
+.prodi-opsi label {
+  display: block; border: 2px solid var(--garis-kuat); border-radius: var(--radius); padding: 18px;
+  cursor: pointer; transition: var(--transisi); height: 100%; background: #fff;
+}
+.prodi-opsi label:hover { border-color: var(--utama); }
+.prodi-opsi input:checked + label { border-color: var(--utama); background: var(--utama-terang); box-shadow: 0 0 0 3px rgba(13, 59, 140, .1); }
+.prodi-opsi .ikon { font-size: 1.5rem; }
+.prodi-opsi strong { display: block; margin: 8px 0 4px; font-size: .98rem; }
+.prodi-opsi small { color: var(--teks-redup); font-size: .82rem; }
+
+/* ----- FAQ ----- */
+.faq-item { background: #fff; border: 1px solid var(--garis); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; }
+.faq-item summary { padding: 18px 22px; font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 14px; align-items: center; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: "+"; font-size: 1.3rem; color: var(--utama); font-weight: 400; flex-shrink: 0; }
+.faq-item[open] summary::after { content: "−"; }
+.faq-item[open] summary { color: var(--utama); }
+.faq-item p { padding: 0 22px 20px; color: var(--teks-redup); font-size: .92rem; }
+
+/* ----- Status pendaftaran ----- */
+.kartu-status { background: #fff; border: 1px solid var(--garis); border-radius: var(--radius-besar); padding: 32px; max-width: 620px; margin: 0 auto; box-shadow: var(--bayang); }
+.lini-masa { display: grid; gap: 0; margin-top: 26px; }
+.lini-item { display: flex; gap: 14px; padding-bottom: 22px; position: relative; }
+.lini-item::before { content: ""; position: absolute; left: 15px; top: 32px; bottom: 0; width: 2px; background: var(--garis); }
+.lini-item:last-child::before { display: none; }
+.lini-titik { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-alt); color: var(--teks-redup); display: grid; place-items: center; font-size: .85rem; flex-shrink: 0; z-index: 1; font-weight: 700; }
+.lini-item.selesai .lini-titik { background: var(--hijau); color: #fff; }
+.lini-item.aktif .lini-titik { background: var(--aksen); color: #3a2c00; }
+.lini-item strong { display: block; font-size: .95rem; }
+.lini-item small { color: var(--teks-redup); font-size: .82rem; }
+
+@media (max-width: 620px) {
+  .kartu-form { padding: 22px 18px; }
+  .pmb-hero-isi { padding: 48px 0; }
+}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Berita, agenda, pengumuman, dan prestasi Fakultas Sains dan Teknologi USTEDI." />
+  <meta name="theme-color" content="#0d3b8c" />
+  <title>Berita FAST — Fakultas Sains dan Teknologi USTEDI</title>
+  <link rel="icon" href="/assets/img/logo-fast.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/fast.css?v=20260216" />
+  <link rel="stylesheet" href="/assets/css/berita.css?v=20260216" />
+</head>
+<body>
+
+  <div id="fast-header"></div>
+
+  <header class="kepala-halaman">
+    <div class="wadah">
+      <p class="jejak"><a href="/">Portal FAST</a> › Berita</p>
+      <h1>📰 Berita Fakultas Sains dan Teknologi</h1>
+      <p>Kabar terkini, agenda kegiatan, pengumuman akademik, prestasi mahasiswa, dan kerja sama industri FAST USTEDI.</p>
+    </div>
+  </header>
+
+  <div class="bilah-alat">
+    <div class="wadah bilah-alat-inner">
+      <div class="pencarian">
+        <input type="search" id="cari" placeholder="Cari judul, isi, atau tagar berita…" aria-label="Cari berita" />
+      </div>
+      <div class="pil-filter" id="filterKategori"></div>
+    </div>
+  </div>
+
+  <main class="bagian">
+    <div class="wadah">
+      <div class="berita-grid" id="daftarBerita">
+        <div class="pemuat"><span class="pemuat-lingkar"></span><span>Memuat berita…</span></div>
+      </div>
+      <div class="tengah mt-3">
+        <button class="btn btn-garis" id="muatLagi" hidden>Muat Berita Lainnya</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== Buletin ===== -->
+  <section class="bagian bagian-alt">
+    <div class="wadah wadah-sempit tengah">
+      <span class="bagian-label">Buletin</span>
+      <h2 class="bagian-judul">Jangan Lewatkan Kabar Terbaru</h2>
+      <p class="bagian-desk">Masuk dengan akun SSO untuk berlangganan buletin dan menerima ringkasan berita FAST setiap bulan.</p>
+      <div class="fleks mt-2" style="justify-content:center">
+        <a href="#masuk" class="btn btn-utama">Masuk &amp; Berlangganan</a>
+        <a href="/academy/" class="btn btn-garis">Lihat FAST Academy</a>
+      </div>
+    </div>
+  </section>
+
+  <div id="fast-footer"></div>
+
+  <script>window.FAST_BASE = "/";</script>
+  <script>window.FAST_PAGE = { modul: "berita", nav: [{ label: "Semua Berita", href: "/berita/" }, { label: "Kategori", href: "#" }, { label: "PMB", href: "/pmb/", khusus: true }] };</script>
+  <script src="/assets/js/config.js?v=20260216"></script>
+  <script src="/assets/js/cms.js?v=20260216"></script>
+  <script src="/assets/js/data.js?v=20260216"></script>
+  <script src="/assets/js/auth.js?v=20260216"></script>
+  <script src="/assets/js/ui.js?v=20260216"></script>
+  <script src="/assets/js/berita.js?v=20260216"></script>
+</body>
+</html>

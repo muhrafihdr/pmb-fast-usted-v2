@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#071e42" />
+  <title>Panel Admin — FAST USTEDI</title>
+  <link rel="icon" href="/assets/img/logo-fast.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/fast.css?v=20260216" />
+  <link rel="stylesheet" href="/assets/css/admin.css?v=20260216" />
+</head>
+<body class="admin-body">
+
+  <!-- ================= HALAMAN MASUK ================= -->
+  <div class="admin-login-wrap" id="adminLogin">
+    <div class="admin-login-kartu">
+      <div class="admin-login-merek">
+        <img src="/assets/img/logo-fast.png" alt="Logo FAST" />
+        <div>
+          <strong>FAST USTEDI</strong>
+          <small>Panel Pengelolaan Konten</small>
+        </div>
+      </div>
+
+      <h1>Masuk Admin</h1>
+      <p>Area terbatas untuk mengelola berita, blog, dan konten website.</p>
+
+      <div class="admin-pesan" id="loginPesan" hidden></div>
+
+      <form id="formLogin" autocomplete="off" novalidate>
+        <label for="loginUser">Username</label>
+        <input type="text" id="loginUser" name="username" autocomplete="username"
+               placeholder="Masukkan username" required spellcheck="false" />
+
+        <label for="loginPass">Password</label>
+        <div class="admin-pass">
+          <input type="password" id="loginPass" name="password" autocomplete="current-password"
+                 placeholder="Masukkan password" required />
+          <button type="button" id="togglePass" aria-label="Tampilkan kata sandi" aria-pressed="false" title="Tampilkan kata sandi">👁</button>
+        </div>
+
+        <button type="submit" class="btn btn-utama" id="btnLogin">
+          <span class="teks-btn">🔐 Masuk</span>
+        </button>
+      </form>
+
+      <p class="admin-login-catatan">
+        Halaman ini tidak diindeks mesin pencari.<br />
+        <a href="/">← Kembali ke Portal FAST</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ================= PANEL ADMIN ================= -->
+  <div class="admin-shell" id="adminShell" hidden>
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="admin-merek">
+        <img src="/assets/img/logo-fast.png" alt="Logo FAST" />
+        <div>
+          <strong>FAST USTEDI</strong>
+          <small>Admin Panel</small>
+        </div>
+      </div>
+
+      <nav class="admin-nav" id="adminNav" aria-label="Navigasi admin">
+        <a href="#/ringkasan" data-nav="ringkasan"><span>📊</span> Ringkasan</a>
+        <a href="#/blog" data-nav="blog"><span>✍️</span> Blog <span class="badge" id="badgeBlog" hidden>0</span></a>
+        <a href="#/berita" data-nav="berita"><span>📰</span> Berita</a>
+        <a href="#/halaman" data-nav="halaman"><span>🏠</span> Halaman &amp; Profil</a>
+        <a href="#/academy" data-nav="academy"><span>🧠</span> Academy</a>
+        <a href="#/pmb" data-nav="pmb"><span>🎓</span> PMB</a>
+        <a href="#/data" data-nav="data"><span>💾</span> Data &amp; Publikasi <span class="badge" id="badgeData" hidden>0</span></a>
+      </nav>
+
+      <div class="admin-sidebar-bawah">
+        <p>Perubahan tersimpan di browser ini. Gunakan menu <strong>Data &amp; Publikasi</strong> untuk mencadangkan atau menerbitkan ke repositori.</p>
+        <a href="/" target="_blank" rel="noopener">🌐 Lihat Website</a>
+        <a href="/docs/ADMIN.md" target="_blank" rel="noopener">📘 Panduan Admin</a>
+        <button type="button" class="keluar" id="adminKeluar">🚪 Keluar dari Admin</button>
+      </div>
+    </aside>
+
+    <div class="admin-utama">
+      <header class="admin-topbar">
+        <button type="button" class="admin-menu-toggle" id="adminMenuToggle" aria-label="Buka menu admin">☰</button>
+        <div class="admin-topbar-judul">
+          <h1 id="adminJudul">Ringkasan</h1>
+          <p id="adminSubjudul">Selamat datang di panel pengelolaan konten FAST USTEDI.</p>
+        </div>
+        <div class="admin-topbar-aksi">
+          <a href="/" target="_blank" rel="noopener" class="btn btn-garis btn-kecil">🌐 Lihat Situs</a>
+          <button type="button" class="btn btn-bahaya btn-kecil" id="adminKeluarAtas">Keluar</button>
+        </div>
+      </header>
+
+      <main class="admin-konten" id="adminKonten">
+        <div class="pemuat"><span class="pemuat-lingkar"></span><span>Memuat panel…</span></div>
+      </main>
+    </div>
+  </div>
+
+  <script>window.FAST_BASE = "/";</script>
+  <script>window.FAST_PAGE = { modul: "admin", nav: [] };</script>
+  <script src="/assets/js/config.js?v=20260216"></script>
+  <script src="/assets/js/cms.js?v=20260216"></script>
+  <script src="/assets/js/data.js?v=20260216"></script>
+  <script src="/assets/js/auth.js?v=20260216"></script>
+  <script src="/assets/js/markdown.js?v=20260216"></script>
+  <script src="/assets/js/ui.js?v=20260216"></script>
+  <script src="/assets/js/admin.js?v=20260216"></script>
+</body>
+</html>

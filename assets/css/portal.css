@@ -1,0 +1,82 @@
+/* =========================================================
+   Portal FAST USTEDI — gaya khusus halaman depan
+   ========================================================= */
+
+/* ----- Bilah pengumuman ----- */
+.pengumuman { background: var(--utama-gelap); color: #fff; }
+.pengumuman[hidden] { display: none; }
+.pengumuman-inner { display: flex; align-items: center; gap: 14px; padding-top: 11px; padding-bottom: 11px; flex-wrap: wrap; }
+.pengumuman-ikon { font-size: 1.05rem; }
+.pengumuman p { flex: 1; font-size: .88rem; min-width: 200px; }
+.pengumuman .btn { flex-shrink: 0; }
+
+/* ----- Hero ----- */
+.hero { position: relative; min-height: 540px; display: grid; align-items: center; overflow: hidden; }
+.hero-bg {
+  position: absolute; inset: 0;
+  background: url("../../assets/img/gedung-usted.jpeg") center/cover no-repeat;
+  transform: scale(1.04);
+}
+.hero-tirai {
+  position: absolute; inset: 0;
+  background: linear-gradient(105deg, rgba(7, 30, 66, .95) 0%, rgba(13, 59, 140, .87) 48%, rgba(13, 59, 140, .55) 100%);
+}
+.hero-isi { position: relative; padding-top: 82px; padding-bottom: 82px; color: #fff; max-width: 800px; }
+.hero-label { font-size: .78rem; letter-spacing: .2em; text-transform: uppercase; color: var(--aksen); font-weight: 700; margin-bottom: 16px; }
+.hero h1 { font-size: clamp(2rem, 5.2vw, 3.5rem); font-weight: 800; line-height: 1.1; letter-spacing: -.025em; margin-bottom: 18px; }
+.hero h1 span { color: var(--aksen); }
+.hero-sub { font-size: clamp(1rem, 1.9vw, 1.14rem); color: #d5e2f8; max-width: 620px; margin-bottom: 30px; }
+.hero-sub strong { color: #fff; }
+.hero-aksi { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+.hero-sso { font-size: .88rem; color: #b3c8ea; }
+.hero-sso a { color: var(--aksen); font-weight: 600; text-decoration: underline; }
+
+/* ----- Kartu layanan ----- */
+.kartu-layanan { position: relative; overflow: hidden; padding: 28px 24px; border-radius: var(--radius-besar); border: 1px solid var(--garis); background: #fff; display: flex; flex-direction: column; transition: var(--transisi); }
+.kartu-layanan::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 5px; background: var(--warna, var(--utama)); }
+.kartu-layanan:hover { transform: translateY(-6px); box-shadow: var(--bayang-besar); border-color: transparent; }
+.kl-ikon { width: 58px; height: 58px; display: grid; place-items: center; font-size: 1.7rem; border-radius: 16px; background: color-mix(in srgb, var(--warna, #0d3b8c) 12%, #fff); margin-bottom: 16px; }
+.kartu-layanan h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+.kartu-layanan p { color: var(--teks-redup); font-size: .93rem; flex: 1; margin-bottom: 18px; }
+.kl-tautan { font-weight: 700; font-size: .9rem; color: var(--warna, var(--utama)); display: inline-flex; align-items: center; gap: 6px; }
+.kartu-layanan:hover .kl-tautan { gap: 11px; }
+
+/* ----- Statistik ----- */
+.stat-kartu { background: #fff; border: 1px solid var(--garis); border-radius: var(--radius); padding: 24px; text-align: center; }
+.stat-ikon { font-size: 1.7rem; margin-bottom: 8px; }
+.stat-nilai { font-size: 1.8rem; font-weight: 800; color: var(--utama); line-height: 1.1; }
+.stat-label { font-size: .82rem; color: var(--teks-redup); margin-top: 5px; text-transform: uppercase; letter-spacing: .07em; }
+
+/* ----- Kartu berita ----- */
+.berita-kartu { background: #fff; border: 1px solid var(--garis); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; transition: var(--transisi); }
+.berita-kartu:hover { transform: translateY(-5px); box-shadow: var(--bayang-besar); }
+.berita-sampul { height: 168px; background: linear-gradient(135deg, var(--utama) 0%, var(--utama-gelap) 100%); display: grid; place-items: center; font-size: 2.4rem; color: #fff; flex-shrink: 0; }
+.berita-isi { padding: 20px; display: flex; flex-direction: column; flex: 1; }
+.berita-meta { display: flex; gap: 10px; align-items: center; font-size: .76rem; color: var(--teks-redup); margin-bottom: 10px; flex-wrap: wrap; }
+.berita-kartu h3 { font-size: 1.05rem; font-weight: 700; line-height: 1.35; margin-bottom: 9px; }
+.berita-kartu:hover h3 { color: var(--utama); }
+.berita-ringkas { color: var(--teks-redup); font-size: .88rem; flex: 1; }
+
+/* ----- Kartu kelas academy ----- */
+.kelas-kartu { background: #fff; border: 1px solid var(--garis); border-radius: var(--radius); padding: 22px; display: flex; flex-direction: column; transition: var(--transisi); }
+.kelas-kartu:hover { transform: translateY(-5px); box-shadow: var(--bayang-besar); }
+.kelas-atas { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+.kelas-kartu h3 { font-size: 1.03rem; font-weight: 700; line-height: 1.35; margin-bottom: 8px; }
+.kelas-rinci { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: .82rem; color: var(--teks-redup); margin: 12px 0 16px; }
+.kelas-rinci span { display: inline-flex; align-items: center; gap: 5px; }
+.kelas-kaki { margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-top: 14px; border-top: 1px solid var(--garis); flex-wrap: wrap; }
+.kelas-biaya { font-weight: 800; color: var(--hijau); font-size: 1.05rem; }
+
+/* ----- Kontak ----- */
+.kontak-kartu { background: #fff; border: 1px solid var(--garis); border-radius: var(--radius); padding: 26px; text-align: center; transition: var(--transisi); }
+.kontak-kartu:hover { transform: translateY(-4px); box-shadow: var(--bayang); }
+.kontak-ikon { font-size: 1.9rem; margin-bottom: 12px; }
+.kontak-kartu h3 { font-size: 1.02rem; margin-bottom: 6px; }
+.kontak-kartu p { color: var(--teks-redup); font-size: .9rem; }
+.kontak-kartu small { color: var(--utama); font-size: .8rem; display: block; margin-top: 8px; font-weight: 600; }
+
+@media (max-width: 620px) {
+  .hero { min-height: 470px; }
+  .hero-isi { padding-top: 60px; padding-bottom: 60px; }
+  .hero-aksi .btn { flex: 1; }
+}

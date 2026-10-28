@@ -1,0 +1,64 @@
+{
+  "versi": 2,
+  "diperbarui": "2026-02-15T08:00:00.000Z",
+  "meta": {
+    "title": "FAST USTEDI — Fakultas Sains dan Teknologi",
+    "description": "Portal resmi Fakultas Sains dan Teknologi USTEDI — Berita, Blog, Penerimaan Mahasiswa Baru (PMB), dan FAST Academy dalam satu sistem terintegrasi SSO."
+  },
+  "org": {
+    "kampus": "Universitas Sains Teknologi Ekonomi Digital Indonesia",
+    "fakultas": "Fakultas Sains dan Teknologi",
+    "singkatan": "FAST",
+    "domain": "fastustedi.web.id",
+    "alamat": "JL. MR. Koesbiyono Tjondrowibowo, Gunungpati, Semarang",
+    "whatsapp": "6288228995205",
+    "teleponTampil": "0882-2899-5205",
+    "email": "fast.ustedi@gmail.com",
+    "tahunBerdiri": "2024",
+    "jamLayanan": "Senin–Jumat, 08.00–16.00",
+    "instagram": {
+      "informatika": "https://www.instagram.com/informatika.ustedi/",
+      "sainsdata": "https://www.instagram.com/sainsdata.ustedi/",
+      "teknikindustri": "https://www.instagram.com/teknikindustri.ustedi/"
+    }
+  },
+  "hero": {
+    "label": "Universitas Sains Teknologi Ekonomi Digital Indonesia",
+    "judul": "Fakultas Sains & Teknologi",
+    "sorot": "USTEDI",
+    "sub": "Satu pintu untuk berita kampus, artikel blog, penerimaan mahasiswa baru, dan pelatihan bersertifikat — terintegrasi dengan satu akun SSO.",
+    "cta": [
+      { "label": "🎓 Daftar Kuliah", "href": "/pmb/", "gaya": "btn-aksen" },
+      { "label": "🧠 Ikuti Pelatihan", "href": "/academy/", "gaya": "btn-putih" }
+    ],
+    "ssoTeks": "Masuk dengan SSO untuk memantau pendaftaran, kelas, dan konten."
+  },
+  "pengumuman": [
+    {
+      "id": "pengumuman-pmb-2026",
+      "teks": "Pendaftaran Mahasiswa Baru FAST USTEDI Tahun Akademik 2026/2027 telah dibuka.",
+      "tautan": "/pmb/",
+      "label": "Daftar Sekarang",
+      "aktif": true
+    }
+  ],
+  "statistik": [
+    { "label": "Program Studi", "nilai": "3", "ikon": "🎓" },
+    { "label": "Mahasiswa Aktif", "nilai": "1.200+", "ikon": "👩‍🎓" },
+    { "label": "Mitra Industri", "nilai": "40+", "ikon": "🤝" },
+    { "label": "Alumni Tersebar", "nilai": "900+", "ikon": "🌏" }
+  ],
+  "keunggulan": [
+    { "ikon": "🎓", "judul": "Dosen Berkualitas", "teks": "Diajar dosen berpengalaman dengan latar akademik dan industri." },
+    { "ikon": "💻", "judul": "Kurikulum Modern", "teks": "Berbasis kompetensi dan selalu diperbarui mengikuti teknologi." },
+    { "ikon": "🏢", "judul": "Fasilitas Lengkap", "teks": "Laboratorium, ruang praktik, dan lingkungan kampus yang nyaman." },
+    { "ikon": "🤝", "judul": "Kerja Sama Industri", "teks": "Jaringan mitra untuk magang, praktik kerja, dan karier lulusan." },
+    { "ikon": "🏅", "judul": "Beasiswa", "teks": "Berbagai jalur beasiswa prestasi akademik dan non-akademik." },
+    { "ikon": "📱", "judul": "Serba Digital", "teks": "Pendaftaran, berita, blog, dan pelatihan terintegrasi dalam satu akun SSO." }
+  ],
+  "programStudi": [
+    { "kode": "IF", "nama": "S1 Informatika", "ikon": "🖥️", "teks": "Pemrograman, kecerdasan artifisial, dan rekayasa perangkat lunak.", "instagram": "https://www.instagram.com/informatika.ustedi/" },
+    { "kode": "SD", "nama": "S1 Sains Data", "ikon": "📊", "teks": "Statistika, big data, dan machine learning untuk pengambilan keputusan.", "instagram": "https://www.instagram.com/sainsdata.ustedi/" },
+    { "kode": "TI", "nama": "S1 Teknik Industri", "ikon": "🏭", "teks": "Optimalisasi sistem produksi, manajemen operasi, dan perbaikan proses.", "instagram": "https://www.instagram.com/teknikindustri.ustedi/" }
+  ]
+}

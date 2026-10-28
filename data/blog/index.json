@@ -1,0 +1,52 @@
+{
+  "versi": 1,
+  "diperbarui": "2026-02-15T08:00:00.000Z",
+  "kategori": [
+    { "id": "wawasan", "nama": "Wawasan", "warna": "#0d3b8c" },
+    { "id": "teknologi", "nama": "Teknologi", "warna": "#0891b2" },
+    { "id": "karier", "nama": "Karier", "warna": "#16a34a" },
+    { "id": "tips", "nama": "Tips Belajar", "warna": "#f5b301" },
+    { "id": "kampus", "nama": "Kehidupan Kampus", "warna": "#7c3aed" }
+  ],
+  "item": [
+    {
+      "slug": "mengenal-tiga-program-studi-fast-ustedi",
+      "judul": "Mengenal Tiga Program Studi di FAST USTEDI",
+      "ringkasan": "Informatika, Sains Data, dan Teknik Industri memiliki karakter yang berbeda. Kenali fokus, prospek, dan kecocokannya untukmu.",
+      "kategori": "wawasan",
+      "penulis": "Humas FAST",
+      "tanggal": "2026-02-12",
+      "gambar": "",
+      "tagar": ["Program Studi", "Informatika", "Sains Data", "Teknik Industri"],
+      "unggulan": true,
+      "status": "publik",
+      "berkas": "mengenal-tiga-program-studi-fast-ustedi.json"
+    },
+    {
+      "slug": "lima-alasan-memilih-kuliah-di-fast-ustedi",
+      "judul": "Lima Alasan Memilih Kuliah di FAST USTEDI",
+      "ringkasan": "Dari kurikulum yang relevan hingga keringanan biaya, ini alasan mengapa FAST USTEDI layak menjadi pilihan studi kamu.",
+      "kategori": "kampus",
+      "penulis": "Humas FAST",
+      "tanggal": "2026-02-08",
+      "gambar": "",
+      "tagar": ["PMB", "Kuliah", "Beasiswa"],
+      "unggulan": true,
+      "status": "publik",
+      "berkas": "lima-alasan-memilih-kuliah-di-fast-ustedi.json"
+    },
+    {
+      "slug": "tips-belajar-data-science-untuk-pemula",
+      "judul": "Tips Belajar Data Science untuk Pemula",
+      "ringkasan": "Tidak perlu langsung jago coding. Mulai dari rasa ingin tahu, data sederhana, dan kebiasaan kecil yang konsisten.",
+      "kategori": "tips",
+      "penulis": "Prodi Sains Data",
+      "tanggal": "2026-02-03",
+      "gambar": "",
+      "tagar": ["Data Science", "Belajar", "Python"],
+      "unggulan": true,
+      "status": "publik",
+      "berkas": "tips-belajar-data-science-untuk-pemula.json"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "versi": 1,
+  "diperbarui": "2026-01-08T08:30:00.000Z",
+  "tahunAkademik": "2026/2027",
+  "statusPendaftaran": "dibuka",
+  "catatanStatus": "Pendaftaran dibuka setiap hari. Tidak ada sistem gelombang.",
+  "jadwal": [
+    { "label": "Pendaftaran Dibuka", "nilai": "Sepanjang tahun" },
+    { "label": "Verifikasi Data", "nilai": "1–3 hari kerja" },
+    { "label": "Pengumuman", "nilai": "Setelah verifikasi" },
+    { "label": "Awal Kuliah", "nilai": "Sesuai kalender akademik" }
+  ],
+  "jalur": [
+    { "id": "reguler-pagi", "nama": "Kelas Reguler Pagi", "teks": "Kuliah pada pagi hari, cocok untuk lulusan SMA/SMK/MA." },
+    { "id": "karyawan", "nama": "Kelas Karyawan", "teks": "Jadwal fleksibel bagi yang sudah bekerja." },
+    { "id": "beasiswa-prestasi", "nama": "Beasiswa Prestasi", "teks": "Untuk pendaftar dengan prestasi akademik atau non-akademik." },
+    { "id": "beasiswa-hafidz", "nama": "Beasiswa Hafidz Quran / Pondok Pesantren", "teks": "Khusus pendaftar hafidz Quran atau santri pondok pesantren." },
+    { "id": "beasiswa-alumni", "nama": "Beasiswa Alumni", "teks": "Keringanan khusus bagi keluarga alumni USTEDI." }
+  ],
+  "programStudi": [
+    { "kode": "IF", "nama": "S1 Informatika", "jenjang": "S1", "ikon": "🖥️" },
+    { "kode": "SD", "nama": "S1 Sains Data", "jenjang": "S1", "ikon": "📊" },
+    { "kode": "TI", "nama": "S1 Teknik Industri", "jenjang": "S1", "ikon": "🏭" }
+  ],
+  "biaya": {
+    "catatan": "Biaya registrasi hanya dibayarkan sekali, tanpa uang gedung. Tersedia diskon 50% SPP khusus FAST.",
+    "item": [
+      { "label": "Biaya Registrasi", "nilai": "Sekali bayar" },
+      { "label": "Uang Gedung", "nilai": "Tidak ada" },
+      { "label": "SPP", "nilai": "Diskon 50% khusus FAST" },
+      { "label": "Beasiswa", "nilai": "Tersedia beberapa jalur" }
+    ]
+  },
+  "langkah": [
+    { "no": 1, "judul": "Isi Formulir", "teks": "Lengkapi data diri pada formulir pendaftaran online di halaman ini." },
+    { "no": 2, "judul": "Verifikasi Data", "teks": "Panitia PMB akan memverifikasi data melalui email atau WhatsApp." },
+    { "no": 3, "judul": "Seleksi", "teks": "Ikuti proses seleksi sesuai jalur pendaftaran yang dipilih." },
+    { "no": 4, "judul": "Daftar Ulang", "teks": "Lakukan daftar ulang setelah dinyatakan lulus seleksi." }
+  ],
+  "berkas": [
+    "Ijazah / Surat Keterangan Lulus",
+    "Rapor semester akhir",
+    "KTP dan Kartu Keluarga",
+    "Pas foto latar merah ukuran 3x4",
+    "Piagam prestasi (bila mendaftar jalur beasiswa)"
+  ],
+  "faq": [
+    {
+      "t": "Apakah pendaftaran ini dipungut biaya?",
+      "j": "Pendaftaran PMB FAST USTEDI dilakukan secara online dan offline. Biaya registrasi dikenakan ketika mendaftar sebagai mahasiswa. Biaya hanya dibayarkan sekali tanpa uang gedung. Terdapat diskon 50% SPP khusus FAST."
+    },
+    {
+      "t": "Kapan batas akhir pendaftaran?",
+      "j": "Pendaftaran mahasiswa Fakultas Sains dan Teknologi USTEDI dibuka setiap hari. Tidak terdapat gelombang pendaftaran. Kuliah fleksibel dan terjangkau."
+    },
+    {
+      "t": "Berkas apa saja yang perlu disiapkan?",
+      "j": "Siapkan scan ijazah/surat keterangan lulus, rapor, KTP/KK, dan pas foto. Detail berkas akan diminta panitia setelah data pendaftaran diverifikasi."
+    },
+    {
+      "t": "Bagaimana jika saya mengisi data yang salah?",
+      "j": "Hubungi panitia PMB melalui kontak di bawah untuk perbaikan data. Pastikan data yang diisi sudah benar sebelum menekan tombol kirim."
+    },
+    {
+      "t": "Apakah saya bisa memantau status pendaftaran?",
+      "j": "Bisa. Masuk dengan akun SSO Anda pada menu Status Pendaftaran, lalu masukkan NIK dan email yang dipakai saat mendaftar."
+    }
+  ]
+}

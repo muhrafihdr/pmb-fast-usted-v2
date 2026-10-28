@@ -1,0 +1,8 @@
+{
+  "_catatan": "Daftar pengguna & peran SSO FAST. Kunci = alamat email (huruf kecil). Nilai = daftar peran. Peran yang tersedia: admin, berita, pmb, academy, viewer. Berkas ini publik (hanya berisi alamat email), TIDAK memuat kata sandi atau token apa pun.",
+  "admin@ustedi.ac.id": ["admin"],
+  "berita@ustedi.ac.id": ["berita"],
+  "pmb@ustedi.ac.id": ["pmb"],
+  "academy@ustedi.ac.id": ["academy"],
+  "muh.rafihdr@gmail.com": ["admin"]
+}

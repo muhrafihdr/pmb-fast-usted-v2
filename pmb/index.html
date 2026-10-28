@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Pendaftaran Mahasiswa Baru (PMB) Fakultas Sains dan Teknologi USTEDI — daftar online, mudah, cepat, dan aman. Terintegrasi SSO." />
+  <meta name="theme-color" content="#0d3b8c" />
+  <title>PMB FAST USTEDI — Pendaftaran Mahasiswa Baru</title>
+  <link rel="icon" href="/assets/img/logo-fast.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/fast.css?v=20260216" />
+  <link rel="stylesheet" href="/assets/css/pmb.css?v=20260216" />
+</head>
+<body>
+
+  <div id="fast-header"></div>
+
+  <!-- ===== HERO ===== -->
+  <section class="pmb-hero" id="beranda">
+    <div class="pmb-hero-bg" role="img" aria-label="Gedung USTEDI"></div>
+    <div class="pmb-hero-tirai"></div>
+    <div class="wadah pmb-hero-isi">
+      <p class="label">Penerimaan Mahasiswa Baru <span id="tahunAkademik">2026/2027</span></p>
+      <h1>Fakultas Sains &amp; Teknologi <span>USTEDI</span></h1>
+      <p class="sub">Wujudkan masa depanmu bersama kami. Kuliah di lingkungan modern, tenaga pengajar profesional, dan fasilitas lengkap untuk mencetak lulusan unggul di bidang sains dan teknologi.</p>
+      <div class="aksi">
+        <a href="#formulir" class="btn btn-aksen btn-besar">Daftar Sekarang</a>
+        <a href="#tentang" class="btn btn-putih btn-besar">Pelajari Lebih Lanjut</a>
+      </div>
+      <div class="pmb-badge">
+        <div><strong id="badgeTahun">Tahun Akademik</strong><small id="badgeTahunNilai">2026/2027</small></div>
+        <div><strong>Pendaftaran</strong><small>Online &amp; Offline</small></div>
+        <div><strong>Beasiswa</strong><small>Banyak Pilihan</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SOROTAN ===== -->
+  <section class="bagian" style="padding-top:44px;padding-bottom:44px">
+    <div class="wadah">
+      <div class="sorot" id="sorotJadwal"></div>
+    </div>
+  </section>
+
+  <!-- ===== TENTANG ===== -->
+  <section class="bagian bagian-alt" id="tentang">
+    <div class="wadah">
+      <div class="bagian-kepala">
+        <span class="bagian-label">Tentang Kami</span>
+        <h2 class="bagian-judul">Mengapa Memilih FAST USTEDI?</h2>
+        <p class="bagian-desk">Fakultas Sains dan Teknologi USTEDI berkomitmen menghadirkan pendidikan tinggi yang relevan dengan kebutuhan industri dan perkembangan zaman.</p>
+      </div>
+      <div class="grid grid-3" id="keunggulanGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===== PROGRAM STUDI ===== -->
+  <section class="bagian" id="program-studi">
+    <div class="wadah">
+      <div class="bagian-kepala">
+        <span class="bagian-label">Program Studi</span>
+        <h2 class="bagian-judul">Pilihan Program Studi</h2>
+        <p class="bagian-desk">Pilih program studi yang sesuai dengan minat dan bakatmu.</p>
+      </div>
+      <div class="grid grid-3" id="prodiGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===== JALUR ===== -->
+  <section class="bagian bagian-alt" id="jalur-pendaftaran">
+    <div class="wadah">
+      <div class="bagian-kepala">
+        <span class="bagian-label">Jalur Pendaftaran</span>
+        <h2 class="bagian-judul">Jalur &amp; Beasiswa</h2>
+        <p class="bagian-desk">Tersedia beberapa jalur pendaftaran, termasuk jalur beasiswa.</p>
+      </div>
+      <div class="grid grid-3" id="jalurGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===== ALUR ===== -->
+  <section class="bagian" id="alur">
+    <div class="wadah">
+      <div class="bagian-kepala">
+        <span class="bagian-label">Alur Pendaftaran</span>
+        <h2 class="bagian-judul">Langkah Mudah Mendaftar</h2>
+      </div>
+      <div class="alur" id="alurGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===== BIAYA ===== -->
+  <section class="bagian bagian-alt" id="biaya">
+    <div class="wadah">
+      <div class="bagian-kepala">
+        <span class="bagian-label">Biaya</span>
+        <h2 class="bagian-judul">Ringkasan Biaya &amp; Keringanan</h2>
+        <p class="bagian-desk" id="biayaCatatan"></p>
+      </div>
+      <div class="grid grid-3" id="biayaGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===== FORMULIR ===== -->
+  <section class="bagian" id="formulir">
+    <div class="wadah">
+      <div class="bagian-kepala">
+        <span class="bagian-label">Formulir Online</span>
+        <h2 class="bagian-judul">Formulir Pendaftaran Mahasiswa Baru</h2>
+        <p class="bagian-desk">Isi data dengan benar dan lengkap. Data dikirim aman ke sistem panitia PMB FAST USTEDI.</p>
+      </div>
+
+      <div class="kartu-form">
+        <!-- Sukses -->
+        <div class="sukses" id="formSukses" hidden>
+          <div class="sukses-ikon">✅</div>
+          <h3>Pendaftaran Berhasil!</h3>
+          <p id="pesanSukses">Terima kasih, data pendaftaranmu telah kami terima. Panitia PMB akan menghubungi kamu segera.</p>
+          <div class="fleks" style="justify-content:center">
+            <button type="button" class="btn btn-utama" id="btnDaftarLagi">Daftar Lagi</button>
+            <a class="btn btn-garis" href="status.html">Cek Status Pendaftaran</a>
+          </div>
+        </div>
+
+        <div class="peringatan peringatan-galat" id="formGalat" hidden></div>
+
+        <form id="pmbForm" novalidate>
+          <fieldset>
+            <legend>Data Pribadi</legend>
+
+            <div class="form-baris">
+              <div class="form-grup">
+                <label for="namaLengkap">Nama Lengkap <span class="wajib">*</span></label>
+                <input type="text" id="namaLengkap" name="namaLengkap" placeholder="Sesuai akta/identitas" autocomplete="name" />
+                <small class="galat"></small>
+              </div>
+              <div class="form-grup">
+                <label for="nik">NIK <span class="wajib">*</span></label>
+                <input type="text" id="nik" name="nik" placeholder="16 digit NIK" inputmode="numeric" maxlength="16" />
+                <small class="galat"></small>
+              </div>
+            </div>
+
+            <div class="form-baris">
+              <div class="form-grup">
+                <label for="tempatLahir">Tempat Lahir <span class="wajib">*</span></label>
+                <input type="text" id="tempatLahir" name="tempatLahir" placeholder="Contoh: Jayapura" />
+                <small class="galat"></small>
+              </div>
+              <div class="form-grup">
+                <label for="tanggalLahir">Tanggal Lahir <span class="wajib">*</span></label>
+                <input type="date" id="tanggalLahir" name="tanggalLahir" />
+                <small class="galat"></small>
+              </div>
+            </div>
+
+            <div class="form-baris">
+              <div class="form-grup">
+                <label>Jenis Kelamin <span class="wajib">*</span></label>
+                <div class="fleks" style="gap:10px">
+                  <label class="radio-pil"><input type="radio" name="jenisKelamin" value="Laki-laki" /><span>Laki-laki</span></label>
+                  <label class="radio-pil"><input type="radio" name="jenisKelamin" value="Perempuan" /><span>Perempuan</span></label>
+                </div>
+                <small class="galat"></small>
+              </div>
+              <div class="form-grup">
+                <label for="email">Email Aktif <span class="wajib">*</span></label>
+                <input type="email" id="email" name="email" placeholder="nama@email.com" autocomplete="email" />
+                <small class="galat"></small>
+              </div>
+            </div>
+
+            <div class="form-baris">
+              <div class="form-grup">
+                <label for="noHp">No. HP / WhatsApp <span class="wajib">*</span></label>
+                <input type="tel" id="noHp" name="noHp" placeholder="08xxxxxxxxxx" inputmode="tel" />
+                <small class="galat"></small>
+              </div>
+              <div class="form-grup">
+                <label for="asalSekolah">Asal Sekolah <span class="wajib">*</span></label>
+                <input type="text" id="asalSekolah" name="asalSekolah" placeholder="Nama SMA/SMK/MA" />
+                <small class="galat"></small>
+              </div>
+            </div>
+
+            <div class="form-baris">
+              <div class="form-grup">
+                <label for="jurusanSekolah">Jurusan <span class="wajib">*</span></label>
+                <input type="text" id="jurusanSekolah" name="jurusanSekolah" placeholder="IPA / IPS / TKJ / RPL / dll." />
+                <small class="galat"></small>
+              </div>
+              <div class="form-grup">
+                <label for="tahunLulus">Tahun Lulus <span class="wajib">*</span></label>
+                <select id="tahunLulus" name="tahunLulus"><option value="">— Pilih Tahun —</option></select>
+                <small class="galat"></small>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Alamat Tempat Tinggal</legend>
+            <div class="form-grup">
+              <label for="alamat">Alamat Lengkap <span class="wajib">*</span></label>
+              <textarea id="alamat" name="alamat" rows="3" placeholder="Nama jalan, nomor rumah, RT/RW, nama kampung/kompleks"></textarea>
+              <small class="galat"></small>
+            </div>
+            <div class="form-baris">
+              <div class="form-grup">
+                <label for="provinsi">Provinsi <span class="wajib">*</span></label>
+                <input type="text" id="provinsi" name="provinsi" placeholder="Provinsi" />
+                <small class="galat"></small>
+              </div>
+              <div class="form-grup">
+                <label for="kabupaten">Kota / Kabupaten <span class="wajib">*</span></label>
+                <input type="text" id="kabupaten" name="kabupaten" placeholder="Kota/Kabupaten" />
+                <small class="galat"></small>
+              </div>
+            </div>
+            <div class="form-baris">
+              <div class="form-grup">
+                <label for="kecamatan">Kecamatan <span class="wajib">*</span></label>
+                <input type="text" id="kecamatan" name="kecamatan" placeholder="Kecamatan" />
+                <small class="galat"></small>
+              </div>
+              <div class="form-grup">
+                <label for="kelurahan">Kelurahan / Desa <span class="wajib">*</span></label>
+                <input type="text" id="kelurahan" name="kelurahan" placeholder="Kelurahan/Desa" />
+                <small class="galat"></small>
+              </div>
+            </div>
+            <div class="form-baris">
+              <div class="form-grup">
+                <label for="kodePos">Kode Pos</label>
+                <input type="text" id="kodePos" name="kodePos" placeholder="Kode pos" inputmode="numeric" maxlength="5" />
+                <small class="galat"></small>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Pilihan Pendaftaran</legend>
+            <div class="form-baris">
+              <div class="form-grup">
+                <label for="jalur">Jalur Pendaftaran <span class="wajib">*</span></label>
+                <select id="jalur" name="jalur"><option value="">— Pilih Jalur —</option></select>
+                <small class="galat"></small>
+              </div>
+            </div>
+
+            <div class="form-grup">
+              <label>Program Studi Pilihan <span class="wajib">*</span></label>
+              <div class="pilihan-prodi" id="pilihanProdi"></div>
+              <input type="hidden" id="programStudi" name="programStudi" />
+              <small class="galat"></small>
+            </div>
+          </fieldset>
+
+          <div class="catatan-aman">
+            <span aria-hidden="true">🔒</span>
+            <p>Data kamu aman. Informasi hanya digunakan untuk keperluan administrasi pendaftaran PMB FAST USTEDI. Data pribadi tidak dipublikasikan.</p>
+          </div>
+
+          <label class="kotak-centang" style="margin-bottom:18px">
+            <input type="checkbox" id="setuju" />
+            <span>Saya menyatakan data yang diisi benar dan menyetujui data diproses untuk keperluan pendaftaran.</span>
+          </label>
+          <small class="galat" id="galatSetuju" style="display:block;margin-bottom:14px"></small>
+
+          <button type="submit" class="btn btn-aksen btn-besar btn-blok" id="btnKirim">
+            <span class="teks-btn">Kirim Pendaftaran</span>
+            <span class="pemuat-lingkar" id="pemuatKirim" hidden style="width:18px;height:18px;border-width:2px;border-color:rgba(255,255,255,.4);border-top-color:#fff"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section class="bagian bagian-alt" id="faq">
+    <div class="wadah wadah-sempit">
+      <div class="bagian-kepala">
+        <span class="bagian-label">FAQ</span>
+        <h2 class="bagian-judul">Pertanyaan yang Sering Diajukan</h2>
+      </div>
+      <div id="faqList"></div>
+    </div>
+  </section>
+
+  <!-- ===== KONTAK ===== -->
+  <section class="bagian" id="kontak">
+    <div class="wadah">
+      <div class="bagian-kepala">
+        <span class="bagian-label">Kontak</span>
+        <h2 class="bagian-judul">Hubungi Panitia PMB</h2>
+      </div>
+      <div class="grid grid-3" id="kontakGrid"></div>
+    </div>
+  </section>
+
+  <div id="fast-footer"></div>
+
+  <script>window.FAST_BASE = "/";</script>
+  <script>window.FAST_PAGE = { modul: "pmb", nav: [{ label: "Tentang", href: "#tentang" }, { label: "Prodi", href: "#program-studi" }, { label: "Alur", href: "#alur" }, { label: "FAQ", href: "#faq" }, { label: "Status", href: "/pmb/status.html" }, { label: "Daftar", href: "#formulir", khusus: true }] };</script>
+  <script src="/assets/js/config.js?v=20260216"></script>
+  <script src="/assets/js/cms.js?v=20260216"></script>
+  <script src="/assets/js/data.js?v=20260216"></script>
+  <script src="/assets/js/auth.js?v=20260216"></script>
+  <script src="/assets/js/ui.js?v=20260216"></script>
+  <script src="/assets/js/pmb.js?v=20260216"></script>
+</body>
+</html>
