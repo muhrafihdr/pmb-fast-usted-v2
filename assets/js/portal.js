@@ -271,7 +271,6 @@
   kontak();
   beritaTerbaru();
   blogTerbaru();
-  kelasTerdekat();
 
   D.json("site.json").then(function (site) {
     if (site && site.org) {

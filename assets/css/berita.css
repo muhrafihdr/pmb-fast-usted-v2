@@ -18,7 +18,7 @@
 .kepala-halaman .jejak a:hover { color: var(--aksen); }
 
 /* ----- Bilah alat (cari & filter) ----- */
-.bilah-alat { background: #fff; border-bottom: 1px solid var(--garis); position: sticky; top: var(--nav-tinggi); z-index: 800; }
+.bilah-alat { background: #fff; border-bottom: 1px solid var(--garis); }
 .bilah-alat-inner { display: flex; gap: 14px; align-items: center; padding: 14px 20px; flex-wrap: wrap; }
 .pencarian { position: relative; flex: 1; min-width: 220px; }
 .pencarian input {
