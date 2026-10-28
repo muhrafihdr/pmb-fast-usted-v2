@@ -256,6 +256,10 @@
     var shell = document.getElementById("adminShell");
     if (login) login.hidden = true;
     if (shell) shell.hidden = false;
+    /* Pastikan panel admin langsung tampil dari bagian atas, bukan di bawah form login. */
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
     pasangShell();
     route();
     perbaruiBadge();
@@ -298,7 +302,17 @@
     k.addEventListener("click", tanganiKlik);
     k.addEventListener("submit", tanganiSubmit);
     k.addEventListener("change", function (ev) {
-      if (ev.target && ev.target.id === "fileImpor") imporCadangan(ev.target);
+      if (!ev.target) return;
+      if (ev.target.id === "fileImpor") imporCadangan(ev.target);
+      if (ev.target.id === "postGambarFile") pilihGambar(ev.target);
+    });
+
+    k.addEventListener("input", function (ev) {
+      if (ev.target && ev.target.getAttribute && ev.target.getAttribute("data-f") === "gambar") {
+        var v = String(ev.target.value || "").trim();
+        if (!v) perbaruiPratinjauGambar("");
+        else if (/^(https?:\/\/|data:image\/|\/)/i.test(v)) perbaruiPratinjauGambar(v);
+      }
     });
   }
 
@@ -574,6 +588,113 @@
       });
       return o;
     });
+  }
+
+  function gambarEditor(p) {
+    var nilai = p.gambar || "";
+    return '<div class="ed-field penuh">' +
+      '<label for="postGambar">Gambar Sampul</label>' +
+      '<div class="ed-gambar-baris">' +
+        '<input id="postGambar" type="text" data-f="gambar" value="' + aman(nilai) + '" placeholder="https://… atau pilih file gambar" />' +
+        '<label class="btn btn-garis btn-kecil ed-pilih-berkas">Choose File<input type="file" id="postGambarFile" accept="image/jpeg,image/png,image/webp,image/gif" /></label>' +
+        '<button type="button" class="btn btn-bahaya btn-kecil" data-aksi="hapus-gambar">Hapus Gambar</button>' +
+      "</div>" +
+      '<small>Pilih file JPG, PNG, WebP, atau GIF. Gambar otomatis diperkecil agar ringan. Bisa juga mengisi URL gambar secara manual.</small>' +
+      '<div class="ed-gambar-pratinjau" id="pratinjauGambar"' + (nilai ? "" : " hidden") + '>' +
+        '<img id="pratinjauGambarImg" src="' + aman(nilai) + '" alt="Pratinjau gambar sampul" />' +
+      "</div>" +
+    "</div>";
+  }
+
+  function perbaruiPratinjauGambar(nilai) {
+    var box = document.getElementById("pratinjauGambar");
+    var img = document.getElementById("pratinjauGambarImg");
+    if (!box || !img) return;
+    if (nilai) {
+      img.src = nilai;
+      box.hidden = false;
+    } else {
+      img.removeAttribute("src");
+      box.hidden = true;
+    }
+  }
+
+  function pasangGambar(nilai) {
+    var input = document.querySelector('form[data-form="post"] [data-f="gambar"]');
+    if (input) input.value = nilai || "";
+    perbaruiPratinjauGambar(nilai || "");
+  }
+
+  function kompresGambar(img) {
+    var w = img.naturalWidth || img.width;
+    var h = img.naturalHeight || img.height;
+    if (!w || !h) return "";
+
+    var maxSisi = 1200;
+    var skala = Math.min(1, maxSisi / Math.max(w, h));
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+    var cw = Math.max(1, Math.round(w * skala));
+    var ch = Math.max(1, Math.round(h * skala));
+    var data = "";
+
+    function gambarUlang() {
+      canvas.width = cw;
+      canvas.height = ch;
+      ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, cw, ch);
+      ctx.drawImage(img, 0, 0, cw, ch);
+      data = canvas.toDataURL("image/webp", 0.82);
+      if (!/^data:image\/webp/i.test(data)) data = canvas.toDataURL("image/jpeg", 0.82);
+    }
+
+    gambarUlang();
+
+    var percobaan = 0;
+    while (data.length > 700000 && percobaan < 4) {
+      cw = Math.max(1, Math.round(cw * 0.78));
+      ch = Math.max(1, Math.round(ch * 0.78));
+      gambarUlang();
+      percobaan++;
+    }
+    return data;
+  }
+
+  function pilihGambar(input) {
+    var file = input.files && input.files[0];
+    input.value = "";
+    if (!file) return;
+    if (!/^image\//i.test(file.type)) {
+      U.toast("Berkas yang dipilih bukan gambar.", "galat");
+      return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      U.toast("Ukuran gambar maksimal 20 MB.", "galat");
+      return;
+    }
+
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onload = function () {
+      try {
+        var data = kompresGambar(img);
+        URL.revokeObjectURL(url);
+        if (!data) throw new Error("Gambar tidak dapat diproses.");
+        if (data.length > 1800000) {
+          throw new Error("Gambar terlalu besar setelah dikompres. Pilih gambar dengan ukuran lebih kecil.");
+        }
+        pasangGambar(data);
+        U.toast("Gambar siap. Jangan lupa simpan artikel.", "sukses");
+      } catch (e) {
+        U.toast(e.message || "Gagal memproses gambar.", "galat", 5200);
+      }
+    };
+    img.onerror = function () {
+      URL.revokeObjectURL(url);
+      U.toast("Gambar tidak dapat dibaca.", "galat");
+    };
+    img.src = url;
   }
 
   function keBaris(teks) {
@@ -906,10 +1027,7 @@
                 { nilai: "publik", label: "Terbit (publik)" },
                 { nilai: "draf", label: "Draf (belum tampil)" }
               ] }) +
-              field("Gambar Sampul (URL)", "gambar", p.gambar, {
-                penuh: true, placeholder: "https://… atau /assets/img/…",
-                petunjuk: "Opsional. Kosongkan untuk memakai sampul warna bawaan."
-              }) +
+              gambarEditor(p) +
               field("Ringkasan", "ringkasan", p.ringkasan, {
                 tipe: "textarea", penuh: true, baris: 3,
                 petunjuk: "Ringkasan singkat 1–2 kalimat untuk kartu dan mesin pencari."
@@ -1783,6 +1901,12 @@
       } catch (e) {
         U.toast("JSON tidak valid: " + e.message, "galat", 6000);
       }
+      return;
+    }
+
+    if (aksi === "hapus-gambar") {
+      pasangGambar("");
+      U.toast("Gambar dihapus dari formulir.", "info");
       return;
     }
 

@@ -17,7 +17,7 @@ Kredensial tidak ditampilkan di halaman mana pun. Di dalam kode, hanya sidik SHA
 | Modul | Fungsi |
 |---|---|
 | Ringkasan | Statistik konten dan status perubahan |
-| Blog | Membuat, mengedit, menghapus, dan menerbitkan artikel blog |
+| Blog | Membuat, mengedit, menghapus, dan menerbitkan artikel blog; unggah gambar sampul dengan tombol **Choose File** |
 | Berita | Mengelola berita fakultas |
 | Halaman & Profil | Identitas, kontak, hero, pengumuman, statistik, keunggulan, program studi, SEO |
 | Academy | Katalog kelas, kuota, jadwal, biaya, manfaat, silabus |

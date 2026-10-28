@@ -20,6 +20,20 @@
   var BASE = window.FAST_BASE || "/";
   var SITE_DATA = null;
 
+  function urlLayanan(l) {
+    var u = (l && l.url) ? l.url : (BASE + (l && l.id ? l.id + "/" : ""));
+    if (/^https?:\/\//i.test(u)) return u;
+    return BASE + String(u).replace(/^\/+/, "");
+  }
+
+  function cariLayanan(id) {
+    return (CFG.layanan || []).filter(function (l) { return l.id === id; })[0] || null;
+  }
+
+  function tautanLuar(url) {
+    return /^https?:\/\//i.test(url);
+  }
+
   /* ---------------- Utilitas ---------------- */
   function el(tag, attr, isi) {
     var n = document.createElement(tag);
@@ -105,26 +119,30 @@
     /* Menu utama */
     var menu = el("nav", { class: "fnav-menu", id: "fnavMenu", "aria-label": "Navigasi utama" });
 
-    CFG.layanan.forEach(function (l) {
-      var aktif = (PAGE.modul === l.id) || (l.id === "berita" && PAGE.modul === "berita");
-      menu.appendChild(el("a", {
-        href: BASE + l.id + "/",
-        class: "fnav-layanan" + (aktif ? " aktif" : ""),
-        title: l.tagline
-      }, aman(l.nama)));
-    });
+    var academy = cariLayanan("academy");
+    var academyUrl = urlLayanan(academy);
+    var navUtama = [
+      { label: "Layanan", href: BASE + "#layanan", aktif: PAGE.modul === "portal" },
+      { label: "Berita", href: BASE + "berita/", aktif: PAGE.modul === "berita" },
+      {
+        label: "Fast Academy",
+        href: academyUrl,
+        aktif: PAGE.modul === "academy",
+        luar: tautanLuar(academyUrl),
+        title: (academy && academy.tagline) || "Fast Academy"
+      },
+      { label: "Kontak", href: BASE + "#kontak", aktif: false }
+    ];
 
-    if (Array.isArray(PAGE.nav)) {
-      var pemisah = el("span", { class: "fnav-sep", "aria-hidden": "true" });
-      menu.appendChild(pemisah);
-      PAGE.nav.forEach(function (n) {
-        if (n.khusus) {
-          menu.appendChild(el("a", { href: n.href, class: "fnav-link fnav-khusus" }, aman(n.label)));
-        } else {
-          menu.appendChild(el("a", { href: n.href, class: "fnav-link" }, aman(n.label)));
-        }
-      });
-    }
+    navUtama.forEach(function (n) {
+      var attr = {
+        href: n.href,
+        class: "fnav-layanan" + (n.aktif ? " aktif" : ""),
+        title: n.title || n.label
+      };
+      if (n.luar) { attr.target = "_blank"; attr.rel = "noopener"; }
+      menu.appendChild(el("a", attr, aman(n.label)));
+    });
     inner.appendChild(menu);
 
     /* Area pengguna (SSO) */
@@ -252,7 +270,10 @@
           '<div class="ffoot-kolom">' +
             "<h4>Layanan</h4>" +
             CFG.layanan.map(function (l) {
-              return '<a href="' + BASE + l.id + '/">' + aman(l.nama) + "</a>";
+              var u = urlLayanan(l);
+              return '<a href="' + aman(u) + '"' +
+                (tautanLuar(u) ? ' target="_blank" rel="noopener"' : "") + ">" +
+                aman(l.nama) + "</a>";
             }).join("") +
           "</div>" +
           '<div class="ffoot-kolom">' +

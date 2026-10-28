@@ -15,9 +15,11 @@
     if (!host) return;
     host.innerHTML = "";
     CFG.layanan.forEach(function (l) {
-      var k = el("a", { href: l.url, class: "kartu-layanan", style: "--warna:" + l.warna });
+      var luar = /^https?:\/\//i.test(l.url);
+      var attr = { href: l.url, class: "kartu-layanan", style: "--warna:" + l.warna };
+      if (luar) { attr.target = "_blank"; attr.rel = "noopener"; }
+      var k = el("a", attr);
       k.innerHTML =
-        '<div class="kl-ikon">' + l.ikon + "</div>" +
         "<h3>" + U.aman(l.nama) + "</h3>" +
         "<p>" + U.aman(l.tagline) + "</p>" +
         '<span class="kl-tautan">Buka ' + U.aman(l.nama) + " →</span>";
@@ -239,6 +241,9 @@
   /* Kartu kelas dipakai portal & halaman academy. */
   function kartuKelas(c) {
     var penuh = c.status === "penuh" || (c.terdaftar >= c.kuota);
+    var academy = (CFG.layanan || []).filter(function (l) { return l.id === "academy"; })[0];
+    var academyUrl = (academy && academy.url) ? academy.url : "/academy/";
+    var academyLuar = /^https?:\/\//i.test(academyUrl);
     var kartu = el("div", { class: "kelas-kartu" });
     kartu.innerHTML =
       '<div class="kelas-atas">' +
@@ -255,7 +260,8 @@
       "</div>" +
       '<div class="kelas-kaki">' +
         '<span class="kelas-biaya">' + U.aman(c.biayaTampil || "Gratis") + "</span>" +
-        '<a class="btn btn-hijau btn-kecil" href="/academy/kelas.html?slug=' + encodeURIComponent(c.slug) + '">Detail Kelas</a>' +
+        '<a class="btn btn-hijau btn-kecil" href="' + U.aman(academyUrl) + '"' +
+          (academyLuar ? ' target="_blank" rel="noopener"' : "") + '>Buka Fast Academy</a>' +
       "</div>";
     return kartu;
   }

@@ -49,8 +49,8 @@
       },
       {
         id: "academy",
-        nama: "FAST Academy",
-        url: "/academy/",
+        nama: "Fast Academy",
+        url: "https://script.google.com/macros/s/AKfycbxTc4rtNssp0LhMGoki5HW8PzXGcHeCmduIZ-xv4vrhisEWEd77s3qkzeuM16XjlFhzEQ/exec",
         ikon: "🧠",
         warna: "#16a34a",
         tagline: "Pelatihan, sertifikasi, dan kelas keterampilan digital"
@@ -130,7 +130,7 @@
     },
 
     /* ---------- Versi aset (cache-busting) ---------- */
-    versi: "20260217"
+    versi: "20260218"
   };
 
   /* Ekspos sebagai global. */

@@ -19,6 +19,7 @@
     radial-gradient(circle at 85% 80%, rgba(8, 145, 178, .22), transparent 32%),
     linear-gradient(135deg, #071e42 0%, #0d3b8c 58%, #082a66 100%);
 }
+.admin-login-wrap[hidden] { display: none; }
 .admin-login-kartu {
   width: 100%;
   max-width: 420px;
@@ -276,6 +277,13 @@
 }
 .ed-field textarea { resize: vertical; min-height: 90px; font-family: inherit; }
 .ed-field textarea.kode { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .82rem; line-height: 1.65; }
+.ed-gambar-baris { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.ed-gambar-baris > input[type="text"] { flex: 1 1 240px; min-width: 200px; }
+.ed-pilih-berkas { position: relative; overflow: hidden; cursor: pointer; }
+.ed-pilih-berkas input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.ed-gambar-pratinjau { margin-top: 10px; max-width: 440px; border: 1px solid var(--garis); border-radius: 10px; overflow: hidden; background: var(--bg-alt); }
+.ed-gambar-pratinjau[hidden] { display: none; }
+.ed-gambar-pratinjau img { width: 100%; max-height: 240px; object-fit: cover; display: block; }
 .ed-check { display: flex; align-items: center; gap: 8px; font-size: .85rem; font-weight: 600; padding-top: 22px; }
 .ed-check input { width: auto; accent-color: var(--utama); }
 .ed-petunjuk { font-size: .75rem; color: var(--teks-redup); line-height: 1.6; }

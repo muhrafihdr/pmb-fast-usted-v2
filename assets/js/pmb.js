@@ -431,5 +431,5 @@
 
   if (!modeFormulir()) modeStatus();
 
-  window.FAST.pmb = { versi: "20260217" };
+  window.FAST.pmb = { versi: "20260218" };
 })();
