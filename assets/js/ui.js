@@ -111,7 +111,7 @@
         href: BASE + l.id + "/",
         class: "fnav-layanan" + (aktif ? " aktif" : ""),
         title: l.tagline
-      }, '<span aria-hidden="true">' + l.ikon + "</span> " + aman(l.nama)));
+      }, aman(l.nama)));
     });
 
     if (Array.isArray(PAGE.nav)) {
@@ -164,8 +164,7 @@
     var s = A.sesi();
 
     if (!s) {
-      var masuk = el("a", { href: BASE + "#masuk", class: "btn btn-garis btn-kecil" }, "Masuk SSO");
-      host.appendChild(masuk);
+      /* Tombol Masuk SSO di kanan atas dihilangkan sesuai permintaan. */
       return;
     }
 
@@ -253,9 +252,8 @@
           '<div class="ffoot-kolom">' +
             "<h4>Layanan</h4>" +
             CFG.layanan.map(function (l) {
-              return '<a href="' + BASE + l.id + '/">' + l.ikon + " " + aman(l.nama) + "</a>";
+              return '<a href="' + BASE + l.id + '/">' + aman(l.nama) + "</a>";
             }).join("") +
-            '<a href="' + BASE + 'monitoring/">📊 Monitoring</a>' +
           "</div>" +
           '<div class="ffoot-kolom">' +
             "<h4>Program Studi</h4>" +
