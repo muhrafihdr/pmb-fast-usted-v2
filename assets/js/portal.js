@@ -125,10 +125,13 @@
     if (aksi && Array.isArray(h.cta) && h.cta.length) {
       aksi.innerHTML = "";
       h.cta.forEach(function (c) {
-        var a = el("a", {
+        var luar = /^https?:\/\//i.test(c.href || "");
+        var attr = {
           href: c.href || "#",
           class: "btn " + (c.gaya || "btn-aksen") + " btn-besar"
-        }, U.aman(c.label || "Selengkapnya"));
+        };
+        if (luar) { attr.target = "_blank"; attr.rel = "noopener"; }
+        var a = el("a", attr, U.aman(c.label || "Selengkapnya"));
         aksi.appendChild(a);
       });
     }

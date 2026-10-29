@@ -29,7 +29,7 @@
     "sub": "Satu pintu untuk berita kampus, artikel blog, penerimaan mahasiswa baru, dan pelatihan bersertifikat — terintegrasi dengan satu akun SSO.",
     "cta": [
       { "label": "Daftar Kuliah", "href": "/pmb/", "gaya": "btn-aksen" },
-      { "label": "Ikuti Pelatihan", "href": "/academy/", "gaya": "btn-putih" }
+      { "label": "Ikuti Pelatihan", "href": "https://script.google.com/macros/s/AKfycbxTc4rtNssp0LhMGoki5HW8PzXGcHeCmduIZ-xv4vrhisEWEd77s3qkzeuM16XjlFhzEQ/exec", "gaya": "btn-putih" }
     ]
   },
   "pengumuman": [
