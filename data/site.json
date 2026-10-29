@@ -3,7 +3,7 @@
   "diperbarui": "2026-02-15T08:00:00.000Z",
   "meta": {
     "title": "FAST USTEDI — Fakultas Sains dan Teknologi",
-    "description": "Portal resmi Fakultas Sains dan Teknologi USTEDI — Berita, Blog, Penerimaan Mahasiswa Baru (PMB), dan FAST Academy dalam satu sistem terintegrasi SSO."
+    "description": "Portal resmi Fakultas Sains dan Teknologi USTEDI — Berita, Blog, Penerimaan Mahasiswa Baru (PMB), dan Faster Academy dalam satu sistem terintegrasi SSO."
   },
   "org": {
     "kampus": "Universitas Sains Teknologi Ekonomi Digital Indonesia",
@@ -28,10 +28,9 @@
     "sorot": "USTEDI",
     "sub": "Satu pintu untuk berita kampus, artikel blog, penerimaan mahasiswa baru, dan pelatihan bersertifikat — terintegrasi dengan satu akun SSO.",
     "cta": [
-      { "label": "🎓 Daftar Kuliah", "href": "/pmb/", "gaya": "btn-aksen" },
-      { "label": "🧠 Ikuti Pelatihan", "href": "/academy/", "gaya": "btn-putih" }
-    ],
-    "ssoTeks": "Masuk dengan SSO untuk memantau pendaftaran, kelas, dan konten."
+      { "label": "Daftar Kuliah", "href": "/pmb/", "gaya": "btn-aksen" },
+      { "label": "Ikuti Pelatihan", "href": "/academy/", "gaya": "btn-putih" }
+    ]
   },
   "pengumuman": [
     {
@@ -43,22 +42,22 @@
     }
   ],
   "statistik": [
-    { "label": "Program Studi", "nilai": "3", "ikon": "🎓" },
-    { "label": "Mahasiswa Aktif", "nilai": "1.200+", "ikon": "👩‍🎓" },
-    { "label": "Mitra Industri", "nilai": "40+", "ikon": "🤝" },
-    { "label": "Alumni Tersebar", "nilai": "900+", "ikon": "🌏" }
+    { "label": "Program Studi", "nilai": "3" },
+    { "label": "Mahasiswa Aktif", "nilai": "1.200+" },
+    { "label": "Mitra Industri", "nilai": "40+" },
+    { "label": "Alumni Tersebar", "nilai": "900+" }
   ],
   "keunggulan": [
-    { "ikon": "🎓", "judul": "Dosen Berkualitas", "teks": "Diajar dosen berpengalaman dengan latar akademik dan industri." },
-    { "ikon": "💻", "judul": "Kurikulum Modern", "teks": "Berbasis kompetensi dan selalu diperbarui mengikuti teknologi." },
-    { "ikon": "🏢", "judul": "Fasilitas Lengkap", "teks": "Laboratorium, ruang praktik, dan lingkungan kampus yang nyaman." },
-    { "ikon": "🤝", "judul": "Kerja Sama Industri", "teks": "Jaringan mitra untuk magang, praktik kerja, dan karier lulusan." },
-    { "ikon": "🏅", "judul": "Beasiswa", "teks": "Berbagai jalur beasiswa prestasi akademik dan non-akademik." },
-    { "ikon": "📱", "judul": "Serba Digital", "teks": "Pendaftaran, berita, blog, dan pelatihan terintegrasi dalam satu akun SSO." }
+    { "judul": "Dosen Berkualitas", "teks": "Diajar dosen berpengalaman dengan latar akademik dan industri." },
+    { "judul": "Kurikulum Modern", "teks": "Berbasis kompetensi dan selalu diperbarui mengikuti teknologi." },
+    { "judul": "Fasilitas Lengkap", "teks": "Laboratorium, ruang praktik, dan lingkungan kampus yang nyaman." },
+    { "judul": "Kerja Sama Industri", "teks": "Jaringan mitra untuk magang, praktik kerja, dan karier lulusan." },
+    { "judul": "Beasiswa", "teks": "Berbagai jalur beasiswa prestasi akademik dan non-akademik." },
+    { "judul": "Serba Digital", "teks": "Pendaftaran, berita, blog, dan pelatihan terintegrasi dalam satu akun SSO." }
   ],
   "programStudi": [
-    { "kode": "IF", "nama": "S1 Informatika", "ikon": "🖥️", "teks": "Pemrograman, kecerdasan artifisial, dan rekayasa perangkat lunak.", "instagram": "https://www.instagram.com/informatika.ustedi/" },
-    { "kode": "SD", "nama": "S1 Sains Data", "ikon": "📊", "teks": "Statistika, big data, dan machine learning untuk pengambilan keputusan.", "instagram": "https://www.instagram.com/sainsdata.ustedi/" },
-    { "kode": "TI", "nama": "S1 Teknik Industri", "ikon": "🏭", "teks": "Optimalisasi sistem produksi, manajemen operasi, dan perbaikan proses.", "instagram": "https://www.instagram.com/teknikindustri.ustedi/" }
+    { "kode": "IF", "nama": "S1 Informatika", "teks": "Pemrograman, kecerdasan artifisial, dan rekayasa perangkat lunak.", "instagram": "https://www.instagram.com/informatika.ustedi/" },
+    { "kode": "SD", "nama": "S1 Sains Data", "teks": "Statistika, big data, dan machine learning untuk pengambilan keputusan.", "instagram": "https://www.instagram.com/sainsdata.ustedi/" },
+    { "kode": "TI", "nama": "S1 Teknik Industri", "teks": "Optimalisasi sistem produksi, manajemen operasi, dan perbaikan proses.", "instagram": "https://www.instagram.com/teknikindustri.ustedi/" }
   ]
 }

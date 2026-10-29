@@ -153,6 +153,18 @@
   /* =========================================================
      Login / sesi
      ========================================================= */
+  /* Ikon SVG untuk tombol tampilkan/sembunyikan kata sandi. */
+  var SVG_EYE =
+    '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path>' +
+      '<circle cx="12" cy="12" r="3"></circle>' +
+    "</svg>";
+  var SVG_EYE_OFF =
+    '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>' +
+      '<line x1="1" y1="1" x2="23" y2="23"></line>' +
+    "</svg>";
+
   function pasangLogin() {
     var form = document.getElementById("formLogin");
     var toggle = document.getElementById("togglePass");
@@ -162,7 +174,7 @@
       toggle.addEventListener("click", function () {
         var tampil = inputPass.type === "password";
         inputPass.type = tampil ? "text" : "password";
-        toggle.textContent = tampil ? "🙈" : "👁";
+        toggle.innerHTML = tampil ? SVG_EYE_OFF : SVG_EYE;
         toggle.setAttribute("aria-pressed", String(tampil));
         toggle.setAttribute("aria-label", tampil ? "Sembunyikan kata sandi" : "Tampilkan kata sandi");
         toggle.setAttribute("title", tampil ? "Sembunyikan kata sandi" : "Tampilkan kata sandi");
@@ -218,19 +230,19 @@
           pesanLogin("Username atau password salah. Sisa percobaan: " + (MAKS_GAGAL - g.n) + ".");
         }
         if (btn) btn.disabled = false;
-        if (teksBtn) teksBtn.textContent = "🔐 Masuk";
+        if (teksBtn) teksBtn.textContent = "Masuk";
         return;
       }
 
       tulisGagal({ n: 0, sampai: 0 });
       tulisSesi({ exp: Date.now() + MASA_SESI, mulai: Date.now() });
       if (btn) btn.disabled = false;
-      if (teksBtn) teksBtn.textContent = "🔐 Masuk";
+      if (teksBtn) teksBtn.textContent = "Masuk";
       tampilkanShell();
       U.toast("Berhasil masuk ke Panel Admin.", "sukses");
     }).catch(function (e) {
       if (btn) btn.disabled = false;
-      if (teksBtn) teksBtn.textContent = "🔐 Masuk";
+      if (teksBtn) teksBtn.textContent = "Masuk";
       pesanLogin(e.message || "Gagal memverifikasi login.");
     });
   }
@@ -520,19 +532,16 @@
       { k: "aktif", label: "Aktif", t: "checkbox", bawaan: true }
     ],
     statistik: [
-      { k: "ikon", label: "Ikon", ph: "🎓" },
       { k: "nilai", label: "Nilai", ph: "1.200+" },
       { k: "label", label: "Keterangan", ph: "Mahasiswa Aktif", lebar: true }
     ],
     keunggulan: [
-      { k: "ikon", label: "Ikon", ph: "✨" },
       { k: "judul", label: "Judul", ph: "Keunggulan" },
       { k: "teks", label: "Penjelasan", t: "textarea", lebar: true, baris: 2 }
     ],
     prodi: [
       { k: "kode", label: "Kode", ph: "IF" },
       { k: "nama", label: "Nama prodi", ph: "S1 Informatika" },
-      { k: "ikon", label: "Ikon", ph: "🖥️" },
       { k: "teks", label: "Deskripsi", t: "textarea", lebar: true, baris: 2 },
       { k: "instagram", label: "Instagram", ph: "https://instagram.com/…", lebar: true }
     ],
@@ -548,8 +557,7 @@
     prodiPmb: [
       { k: "kode", label: "Kode", ph: "IF" },
       { k: "nama", label: "Nama prodi", ph: "S1 Informatika" },
-      { k: "jenjang", label: "Jenjang", ph: "S1" },
-      { k: "ikon", label: "Ikon", ph: "🖥️" }
+      { k: "jenjang", label: "Jenjang", ph: "S1" }
     ],
     biayaItem: [
       { k: "label", label: "Komponen", ph: "SPP" },
@@ -773,7 +781,7 @@
       }).slice(0, 5);
 
       var barisTerbaru = terbaru.length ? terbaru.map(function (p) {
-        return '<tr><td class="judul-sel"><strong>' + aman(p.judul) + "</strong><small>✍️ " +
+        return '<tr><td class="judul-sel"><strong>' + aman(p.judul) + "</strong><small>" +
           aman(p.penulis || "Humas FAST") + " · " + aman(p.tanggal || "-") + "</small></td>" +
           '<td><span class="admin-pill ' + (p.status === "draf" ? "aksen" : "hijau") + '">' +
           (p.status === "draf" ? "Draf" : "Terbit") + "</span></td>" +
@@ -785,10 +793,10 @@
 
       isi(
         '<div class="admin-grid">' +
-          kartuStat("✍️", blog.length, "Artikel Blog", drafBlog.length + " draf") +
-          kartuStat("📰", berita.length, "Berita", "Kabar fakultas") +
-          kartuStat("🧠", academy.length, "Kelas Academy", academy.filter(function (x) { return x.status !== "selesai"; }).length + " aktif") +
-          kartuStat("💾", C.jumlah(), "Perubahan Lokal", "Berkas di browser") +
+          kartuStat(blog.length, "Artikel Blog", drafBlog.length + " draf") +
+          kartuStat(berita.length, "Berita", "Kabar fakultas") +
+          kartuStat(academy.length, "Kelas Academy", academy.filter(function (x) { return x.status !== "selesai"; }).length + " aktif") +
+          kartuStat(C.jumlah(), "Perubahan Lokal", "Berkas di browser") +
         "</div>" +
 
         '<div class="admin-kartu mt-3">' +
@@ -829,8 +837,8 @@
     });
   }
 
-  function kartuStat(ikon, nilai, label, ket) {
-    return '<div class="admin-stat"><div class="ikon">' + ikon + '</div><div class="nilai">' +
+  function kartuStat(nilai, label, ket) {
+    return '<div class="admin-stat"><div class="nilai">' +
       aman(nilai) + '</div><div class="label">' + aman(label) + '</div><div class="ket">' +
       aman(ket || "") + "</div></div>";
   }
@@ -1044,13 +1052,13 @@
             "<h2>Isi Artikel</h2>" +
             '<p>Gunakan Markdown: <code># Judul</code>, <code>**tebal**</code>, <code>- daftar</code>, <code>&gt; kutipan</code>, <code>[tautan](/pmb/)</code>.</p>' +
             field("Isi", "isi", p.isi, { tipe: "textarea", penuh: true, baris: 20, kode: true }) +
-            '<div class="admin-aksi mt-2"><button type="button" class="btn btn-garis btn-kecil" data-aksi="pratinjau-post">👁 Pratinjau</button></div>' +
+            '<div class="admin-aksi mt-2"><button type="button" class="btn btn-garis btn-kecil" data-aksi="pratinjau-post">Pratinjau</button></div>' +
             '<div class="ed-pratinjau" id="pratinjauPost" hidden></div>' +
           "</div>" +
 
           '<div class="ed-seksi">' +
             '<div class="admin-aksi-bawah" style="border-top:none;padding-top:0;margin-top:0">' +
-              '<button type="submit" class="btn btn-utama">💾 Simpan ' + label + "</button>" +
+              '<button type="submit" class="btn btn-utama">Simpan ' + label + "</button>" +
               '<a class="btn btn-garis" href="#/' + jenis + '">Batal</a>' +
               (slug ? '<a class="btn btn-garis" target="_blank" rel="noopener" href="/' + jenis +
                 '/artikel.html?slug=' + encodeURIComponent(slug) + '">Lihat Artikel</a>' : "") +
@@ -1205,7 +1213,6 @@
               field("Judul Utama", "heroJudul", hero.judul) +
               field("Kata Sorot", "heroSorot", hero.sorot) +
               field("Deskripsi", "heroSub", hero.sub, { tipe: "textarea", penuh: true, baris: 3 }) +
-              field("Teks Setelah Tombol SSO", "heroSso", hero.ssoTeks, { penuh: true }) +
             "</div>" +
             "<h3 style=\"margin:18px 0 10px\">Tombol Aksi</h3>" +
             daftarHTML("cta", hero.cta, "Tambah tombol") +
@@ -1242,7 +1249,7 @@
 
           '<div class="ed-seksi">' +
             '<div class="admin-aksi-bawah" style="border-top:none;padding-top:0;margin-top:0">' +
-              '<button type="submit" class="btn btn-utama">💾 Simpan Halaman</button>' +
+              '<button type="submit" class="btn btn-utama">Simpan Halaman</button>' +
               '<a class="btn btn-garis" href="#/ringkasan">Kembali</a>' +
             "</div>" +
             '<details class="ed-json">' +
@@ -1288,7 +1295,6 @@
     site.hero.judul = d.heroJudul || "";
     site.hero.sorot = d.heroSorot || "";
     site.hero.sub = d.heroSub || "";
-    site.hero.ssoTeks = d.heroSso || "";
     site.hero.cta = bacaDaftar(form, "cta").map(function (c) {
       return { label: c.label, href: c.href, gaya: c.gaya || "btn-aksen" };
     });
@@ -1303,13 +1309,13 @@
       };
     });
     site.statistik = bacaDaftar(form, "statistik").map(function (s) {
-      return { ikon: s.ikon, nilai: s.nilai, label: s.label };
+      return { nilai: s.nilai, label: s.label };
     });
     site.keunggulan = bacaDaftar(form, "keunggulan").map(function (k) {
-      return { ikon: k.ikon, judul: k.judul, teks: k.teks };
+      return { judul: k.judul, teks: k.teks };
     });
     site.programStudi = bacaDaftar(form, "prodi").map(function (p) {
-      return { kode: p.kode, nama: p.nama, ikon: p.ikon, teks: p.teks, instagram: p.instagram };
+      return { kode: p.kode, nama: p.nama, teks: p.teks, instagram: p.instagram };
     });
     site.diperbarui = nowISO();
     site.versi = (Number(site.versi) || 1) + 1;
@@ -1379,7 +1385,7 @@
   }
 
   function editorAcademy(slug) {
-    judul(slug ? "Edit Kelas" : "Tambah Kelas", "Lengkapi informasi kelas yang akan tampil di FAST Academy.");
+    judul(slug ? "Edit Kelas" : "Tambah Kelas", "Lengkapi informasi kelas yang akan tampil di Faster Academy.");
     memuat("Menyiapkan editor kelas…");
 
     dataEfektif("academy/index.json").then(function (idx) {
@@ -1468,7 +1474,7 @@
 
           '<div class="ed-seksi">' +
             '<div class="admin-aksi-bawah" style="border-top:none;padding-top:0;margin-top:0">' +
-              '<button type="submit" class="btn btn-utama">💾 Simpan Kelas</button>' +
+              '<button type="submit" class="btn btn-utama">Simpan Kelas</button>' +
               '<a class="btn btn-garis" href="#/academy">Batal</a>' +
               (slug ? '<a class="btn btn-garis" target="_blank" rel="noopener" href="/academy/kelas.html?slug=' +
                 encodeURIComponent(slug) + '">Lihat Kelas</a>' : "") +
@@ -1620,7 +1626,7 @@
 
           '<div class="ed-seksi">' +
             '<div class="admin-aksi-bawah" style="border-top:none;padding-top:0;margin-top:0">' +
-              '<button type="submit" class="btn btn-utama">💾 Simpan Pengaturan PMB</button>' +
+              '<button type="submit" class="btn btn-utama">Simpan Pengaturan PMB</button>' +
               '<a class="btn btn-garis" href="#/ringkasan">Kembali</a>' +
             "</div>" +
             '<details class="ed-json">' +
@@ -1685,17 +1691,17 @@
 
     isi(
       '<div class="admin-grid">' +
-        kartuStat("📄", files.length, "Berkas Diubah", "Tersimpan di browser") +
-        kartuStat("🕒", C.diperbarui() ? U.tanggal(C.diperbarui(), "pendek") : "-", "Terakhir Diperbarui", "Perubahan lokal") +
-        kartuStat("🏷️", "GitHub", "Repositori Tujuan", CFG.data.owner + "/" + CFG.data.repo) +
+        kartuStat(files.length, "Berkas Diubah", "Tersimpan di browser") +
+        kartuStat(C.diperbarui() ? U.tanggal(C.diperbarui(), "pendek") : "-", "Terakhir Diperbarui", "Perubahan lokal") +
+        kartuStat("GitHub", "Repositori Tujuan", CFG.data.owner + "/" + CFG.data.repo) +
       "</div>" +
 
       '<div class="admin-kartu mt-3">' +
         '<div class="admin-kartu-kepala"><div><h2>Cadangan Konten</h2>' +
           "<p>Unduh cadangan untuk menyimpan perubahan, atau pulihkan dari berkas cadangan.</p></div>" +
           '<div class="admin-aksi">' +
-            '<button type="button" class="btn btn-utama btn-kecil" data-aksi="ekspor">⬇️ Unduh Cadangan</button>' +
-            '<label class="btn btn-garis btn-kecil admin-unggah">📥 Impor Cadangan<input type="file" id="fileImpor" accept="application/json" /></label>' +
+            '<button type="button" class="btn btn-utama btn-kecil" data-aksi="ekspor">Unduh Cadangan</button>' +
+            '<label class="btn btn-garis btn-kecil admin-unggah">Impor Cadangan<input type="file" id="fileImpor" accept="application/json" /></label>' +
             '<button type="button" class="btn btn-bahaya btn-kecil" data-aksi="reset-semua">Reset Semua</button>' +
           "</div></div>" +
         '<div class="admin-tabel-bungkus"><table class="admin-tabel"><thead><tr><th>Berkas</th><th>Status</th><th class="aksi-sel">Aksi</th></tr></thead><tbody>' +
@@ -1714,7 +1720,7 @@
         "</div>" +
         '<div class="admin-catatan kuning mt-2">Token hanya disimpan di <strong>sessionStorage</strong> tab ini dan tidak dikirim ke mana pun selain GitHub API. Jangan gunakan token ini pada komputer bersama. Setelah terbit, tunggu proses deploy GitHub Pages/Netlify selesai.</div>' +
         '<div class="admin-aksi-bawah">' +
-          '<button type="button" class="btn btn-utama" data-aksi="publish">🚀 Terbitkan Sekarang</button>' +
+          '<button type="button" class="btn btn-utama" data-aksi="publish">Terbitkan Sekarang</button>' +
           '<span class="admin-status" id="statusPublish"></span>' +
         "</div>" +
       "</div>" +
@@ -1722,7 +1728,7 @@
       '<div class="admin-kartu">' +
         '<h2>Pemeliharaan</h2>' +
         '<p style="margin:8px 0 14px">Bersihkan cache data di memori lalu muat ulang tampilan panel. Perubahan lokal tidak dihapus.</p>' +
-        '<button type="button" class="btn btn-garis btn-kecil" data-aksi="muat-ulang">🔄 Muat Ulang Data</button>' +
+        '<button type="button" class="btn btn-garis btn-kecil" data-aksi="muat-ulang">Muat Ulang Data</button>' +
       "</div>" +
 
       '<div class="admin-catatan mt-3">' +

@@ -16,16 +16,6 @@
 .academy-kepala + .bilah-alat .pil-filter button.aktif { background: var(--hijau); }
 
 /* Detail kelas */
-.kelas-detail-sampul {
-  height: 230px;
-  border-radius: var(--radius-besar);
-  background: linear-gradient(135deg, #16a34a, #063e22);
-  display: grid;
-  place-items: center;
-  color: #fff;
-  font-size: 4rem;
-  margin-bottom: 26px;
-}
 .kelas-detail-judul { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800; line-height: 1.22; letter-spacing: -.025em; margin: 14px 0 12px; }
 .kelas-detail-ringkas { color: var(--teks-redup); font-size: 1.02rem; margin-bottom: 20px; }
 .kelas-info-grid {
@@ -48,7 +38,3 @@
 .kelas-detail-isi ol { list-style: decimal; margin: 0 0 18px 22px; }
 .kelas-detail-isi p { margin-bottom: 14px; color: #253449; }
 .kelas-detail-aksi { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--garis); }
-
-@media (max-width: 620px) {
-  .kelas-detail-sampul { height: 170px; }
-}

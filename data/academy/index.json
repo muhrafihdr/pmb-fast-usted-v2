@@ -2,13 +2,13 @@
   "versi": 1,
   "diperbarui": "2026-01-08T08:30:00.000Z",
   "kategori": [
-    { "id": "data", "nama": "Data & Analitik", "ikon": "📊" },
-    { "id": "pemrograman", "nama": "Pemrograman", "ikon": "💻" },
-    { "id": "ai", "nama": "Kecerdasan Artifisial", "ikon": "🤖" },
-    { "id": "desain", "nama": "Desain & Multimedia", "ikon": "🎨" },
-    { "id": "manajemen", "nama": "Manajemen & Bisnis", "ikon": "📈" },
-    { "id": "keamanan", "nama": "Keamanan Siber", "ikon": "🔐" },
-    { "id": "guru", "nama": "Peningkatan Guru", "ikon": "🧑‍🏫" }
+    { "id": "data", "nama": "Data & Analitik" },
+    { "id": "pemrograman", "nama": "Pemrograman" },
+    { "id": "ai", "nama": "Kecerdasan Artifisial" },
+    { "id": "desain", "nama": "Desain & Multimedia" },
+    { "id": "manajemen", "nama": "Manajemen & Bisnis" },
+    { "id": "keamanan", "nama": "Keamanan Siber" },
+    { "id": "guru", "nama": "Peningkatan Guru" }
   ],
   "item": [
     {
@@ -282,7 +282,7 @@
       "mulai": "2026-02-03",
       "selesai": "2026-03-03",
       "tutupPendaftaran": "2026-01-29",
-      "pengajar": "Tim FAST Academy",
+      "pengajar": "Tim Faster Academy",
       "sertifikat": true,
       "unggulan": false,
       "status": "buka",
@@ -316,7 +316,7 @@
       "mulai": "2026-01-20",
       "selesai": "2026-02-24",
       "tutupPendaftaran": "2026-01-15",
-      "pengajar": "Tim FAST Academy",
+      "pengajar": "Tim Faster Academy",
       "sertifikat": true,
       "unggulan": false,
       "status": "penuh",

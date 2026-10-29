@@ -125,11 +125,11 @@
       { label: "Layanan", href: BASE + "#layanan", aktif: PAGE.modul === "portal" },
       { label: "Berita", href: BASE + "berita/", aktif: PAGE.modul === "berita" },
       {
-        label: "Fast Academy",
+        label: "Faster Academy",
         href: academyUrl,
         aktif: PAGE.modul === "academy",
         luar: tautanLuar(academyUrl),
-        title: (academy && academy.tagline) || "Fast Academy"
+        title: (academy && academy.tagline) || "Faster Academy"
       },
       { label: "Kontak", href: BASE + "#kontak", aktif: false }
     ];
@@ -211,25 +211,25 @@
       "</div>";
 
     if (A.boleh("admin")) {
-      drop.appendChild(el("a", { href: BASE + "admin/", class: "fnav-drop-item" }, "⚙️ Panel Admin"));
+      drop.appendChild(el("a", { href: BASE + "admin/", class: "fnav-drop-item" }, "Panel Admin"));
     }
     if (A.boleh("berita")) {
-      drop.appendChild(el("a", { href: BASE + "admin/#/berita", class: "fnav-drop-item" }, "📰 Kelola Berita"));
+      drop.appendChild(el("a", { href: BASE + "admin/#/berita", class: "fnav-drop-item" }, "Kelola Berita"));
     }
     if (A.boleh("blog")) {
-      drop.appendChild(el("a", { href: BASE + "admin/#/blog", class: "fnav-drop-item" }, "✍️ Kelola Blog"));
+      drop.appendChild(el("a", { href: BASE + "admin/#/blog", class: "fnav-drop-item" }, "Kelola Blog"));
     }
     if (A.boleh("academy")) {
-      drop.appendChild(el("a", { href: BASE + "admin/#/academy", class: "fnav-drop-item" }, "🧠 Kelola Academy"));
+      drop.appendChild(el("a", { href: BASE + "admin/#/academy", class: "fnav-drop-item" }, "Kelola Academy"));
     }
-    drop.appendChild(el("a", { href: BASE + "pmb/#status", class: "fnav-drop-item" }, "🎓 Status Pendaftaran"));
+    drop.appendChild(el("a", { href: BASE + "pmb/#status", class: "fnav-drop-item" }, "Status Pendaftaran"));
     drop.appendChild(el("button", {
       class: "fnav-drop-item fnav-drop-keluar", type: "button",
       onclick: function () {
         A.keluar();
         toast("Anda telah keluar dari SSO.", "info");
       }
-    }, "🚪 Keluar"));
+    }, "Keluar"));
 
     kotak.appendChild(drop);
 
@@ -282,9 +282,9 @@
           "</div>" +
           '<div class="ffoot-kolom">' +
             "<h4>Kontak</h4>" +
-            '<p><a href="https://wa.me/' + aman(o.whatsapp) + '" target="_blank" rel="noopener">💬 ' + aman(o.teleponTampil) + "</a></p>" +
-            '<p><a href="mailto:' + aman(o.email) + '">📧 ' + aman(o.email) + "</a></p>" +
-            "<p>📍 " + aman(o.alamat) + "</p>" +
+            '<p><a href="https://wa.me/' + aman(o.whatsapp) + '" target="_blank" rel="noopener">' + aman(o.teleponTampil) + "</a></p>" +
+            '<p><a href="mailto:' + aman(o.email) + '">' + aman(o.email) + "</a></p>" +
+            "<p>" + aman(o.alamat) + "</p>" +
             "<h4>Instagram</h4>" +
             ig(igData.informatika, "Informatika") +
             ig(igData.sainsdata, "Sains Data") +
@@ -293,7 +293,7 @@
         "</div>" +
         '<div class="ffoot-bawah"><div class="wadah">' +
           "<p>© <span id=\"fast-tahun\"></span> " + aman(o.fakultas) + " " + aman(o.singkatan) + " · " + aman(o.kampus) + "</p>" +
-          '<p class="ffoot-sso">Sistem terintegrasi SSO · <a href="' + BASE + 'docs/SSO.md">Dokumentasi</a> · <a href="' + BASE + 'admin/" class="ffoot-admin" title="Panel pengelolaan konten">🔒 Admin</a></p>' +
+          '<p class="ffoot-sso">Sistem terintegrasi SSO · <a href="' + BASE + 'docs/SSO.md">Dokumentasi</a> · <a href="' + BASE + 'admin/" class="ffoot-admin" title="Panel pengelolaan konten">Admin</a></p>' +
         "</div></div>" +
       "</footer>";
     var th = document.getElementById("fast-tahun");

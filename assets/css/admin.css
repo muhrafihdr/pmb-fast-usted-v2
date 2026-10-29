@@ -202,7 +202,6 @@
 .admin-kartu > p, .admin-kartu-kepala p { color: var(--teks-redup); font-size: .86rem; }
 .admin-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 .admin-stat { background: #fff; border: 1px solid var(--garis); border-radius: 14px; padding: 18px 20px; }
-.admin-stat .ikon { font-size: 1.35rem; }
 .admin-stat .nilai { font-size: 1.7rem; font-weight: 800; color: var(--utama); line-height: 1.15; margin: 6px 0 2px; }
 .admin-stat .label { font-size: .75rem; color: var(--teks-redup); text-transform: uppercase; letter-spacing: .06em; }
 .admin-stat .ket { font-size: .76rem; color: var(--teks-redup); margin-top: 4px; word-break: break-word; }

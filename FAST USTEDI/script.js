@@ -7,7 +7,7 @@
    ========================================================= */
 
 /* =========================================================
-   ⚙️ KONFIGURASI — WAJIB DIISI
+   KONFIGURASI — WAJIB DIISI
    ---------------------------------------------------------
    Isi URL Web App dari Google Apps Script (lihat README.md
    untuk panduan lengkap pembuatannya).
@@ -262,7 +262,7 @@ async function submitToSheet(data) {
     throw new Error(result.message || "Gagal menyimpan data.");
   }
 
-  // ⚠️ Respons bukan JSON. Google Apps Script memproses POST (doPost)
+  // Respons bukan JSON. Google Apps Script memproses POST (doPost)
   // SEBELUM mengarahkan (redirect) ke URL echo, jadi jika kita menerima
   // respons apa pun (bukan error jaringan), berarti data sudah tersimpan
   // di spreadsheet. Di sebagian browser (mis. Safari) respons akhir
@@ -295,7 +295,7 @@ form.addEventListener("submit", async (e) => {
     formSuccess.scrollIntoView({ behavior: "smooth", block: "center" });
   } catch (err) {
     showGlobalError(
-      "⚠️ Gagal mengirim data: " +
+      "Gagal mengirim data: " +
         err.message +
         " Silakan coba lagi atau hubungi panitia PMB melalui kontak di bawah."
     );

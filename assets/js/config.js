@@ -35,7 +35,6 @@
         id: "berita",
         nama: "Berita FAST",
         url: "/berita/",
-        ikon: "📰",
         warna: "#0d3b8c",
         tagline: "Kabar, agenda, dan prestasi Fakultas Sains dan Teknologi"
       },
@@ -43,15 +42,13 @@
         id: "pmb",
         nama: "PMB FAST",
         url: "/pmb/",
-        ikon: "🎓",
         warna: "#f5b301",
         tagline: "Penerimaan Mahasiswa Baru — daftar online, mudah & cepat"
       },
       {
         id: "academy",
-        nama: "Fast Academy",
+        nama: "Faster Academy",
         url: "https://script.google.com/macros/s/AKfycbxTc4rtNssp0LhMGoki5HW8PzXGcHeCmduIZ-xv4vrhisEWEd77s3qkzeuM16XjlFhzEQ/exec",
-        ikon: "🧠",
         warna: "#16a34a",
         tagline: "Pelatihan, sertifikasi, dan kelas keterampilan digital"
       },
@@ -59,7 +56,6 @@
         id: "blog",
         nama: "Blog FAST",
         url: "/blog/",
-        ikon: "✍️",
         warna: "#0891b2",
         tagline: "Artikel, wawasan, dan gagasan sivitas akademika FAST"
       }
@@ -130,7 +126,7 @@
     },
 
     /* ---------- Versi aset (cache-busting) ---------- */
-    versi: "20260219"
+    versi: "20261029"
   };
 
   /* Ekspos sebagai global. */

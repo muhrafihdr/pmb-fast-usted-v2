@@ -1,7 +1,7 @@
 /* =========================================================
    Monitoring FAST USTEDI — Dashboard Script
    ---------------------------------------------------------
-   ⚙️ SUMBER DATA (pilih salah satu):
+   SUMBER DATA (pilih salah satu):
 
    CARA A (DEFAULT — paling mudah, TANPA Apps Script):
    Spreadsheet di-share "Anyone with the link can view",
@@ -38,6 +38,15 @@ const DATA_SOURCE = {
     if (c.type) DATA_SOURCE.type = c.type;
   }
 })();
+
+const ICO_EDIT =
+  '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>' +
+  '</svg>';
+const ICO_DEL =
+  '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v5M14 11v5"></path>' +
+  '</svg>';
 
 function csvUrl() {
   return "https://docs.google.com/spreadsheets/d/" +
@@ -350,7 +359,7 @@ async function loadData(silent) {
       $("#loading").hidden = true;
       $("#errorState").hidden = true;
       $("#emptyState").hidden = false;
-      $("#lastUpdated").textContent = "⏱️ " + fmtTime(new Date());
+      $("#lastUpdated").textContent = "" + fmtTime(new Date());
       scheduleAutoRefresh();
       return;
     }
@@ -366,7 +375,7 @@ async function loadData(silent) {
     $("#content").hidden = false;
 
     lastLoadedAt = new Date();
-    $("#lastUpdated").textContent = "⏱️ " + fmtTime(lastLoadedAt);
+    $("#lastUpdated").textContent = "" + fmtTime(lastLoadedAt);
 
     scheduleAutoRefresh();
   } catch (err) {
@@ -413,9 +422,9 @@ function renderInsight() {
   const strip = $("#insightStrip");
   strip.hidden = false;
   strip.innerHTML = `
-    <span class="insight-pill">🟢 <strong>${RAW.total}</strong> total pendaftar</span>
-    <span class="insight-pill">📅 Hari ini: <strong>${todayCount}</strong> pendaftar</span>
-    <span class="insight-pill">🗓️ Bulan ${today.toLocaleDateString("id-ID", { month: "long" })}: <strong>${monthCount}</strong> pendaftar</span>
+    <span class="insight-pill"><strong>${RAW.total}</strong> total pendaftar</span>
+    <span class="insight-pill">Hari ini: <strong>${todayCount}</strong> pendaftar</span>
+    <span class="insight-pill">Bulan ${today.toLocaleDateString("id-ID", { month: "long" })}: <strong>${monthCount}</strong> pendaftar</span>
   `;
 }
 
@@ -464,27 +473,27 @@ function renderKpi() {
 
   const kpis = [
     {
-      cls: "", label: "👥 Total Pendaftar", value: RAW.total.toLocaleString("id-ID"),
+      cls: "", label: "Total Pendaftar", value: RAW.total.toLocaleString("id-ID"),
       sub: "Seluruh periode",
     },
     {
-      cls: "kpi-accent", label: "📅 Hari Ini", value: countToday.toLocaleString("id-ID"),
+      cls: "kpi-accent", label: "Hari Ini", value: countToday.toLocaleString("id-ID"),
       sub: deltaBadge(countToday, countYesterday) + " vs kemarin",
     },
     {
-      cls: "kpi-teal", label: "🗓️ 7 Hari Terakhir", value: countWeek.toLocaleString("id-ID"),
+      cls: "kpi-teal", label: "7 Hari Terakhir", value: countWeek.toLocaleString("id-ID"),
       sub: deltaBadge(countWeek, countPrevWeek) + " vs 7 hari sblmnya",
     },
     {
-      cls: "kpi-green", label: "🌙 Bulan Ini", value: countMonth.toLocaleString("id-ID"),
+      cls: "kpi-green", label: "Bulan Ini", value: countMonth.toLocaleString("id-ID"),
       sub: deltaBadge(countMonth, countPrevMonth) + " vs bulan lalu",
     },
     {
-      cls: "kpi-orange", label: "🎓 Prodi Terpopuler", value: esc(topProdi),
+      cls: "kpi-orange", label: "Prodi Terpopuler", value: esc(topProdi),
       sub: topProdiN + " pendaftar", small: true,
     },
     {
-      cls: "kpi-accent", label: "🚀 Jalur Terpopuler", value: esc(topJalur),
+      cls: "kpi-accent", label: "Jalur Terpopuler", value: esc(topJalur),
       sub: topJalurN + " pendaftar", small: true,
     },
   ];
@@ -752,12 +761,12 @@ function renderStatKpi() {
     : gL ? `Laki-laki ${gL.count}` : gP ? `Perempuan ${gP.count}` : "—";
 
   const kpis = [
-    { label: "📊 Pendaftar (rentang)", value: rows.length.toLocaleString("id-ID"), sub: `${from || "—"} s.d. ${to}` },
-    { label: "📈 Rata-rata / hari", value: avg.toFixed(1), sub: `dalam ${totalDays} hari` },
-    { label: "🔥 Hari tersibuk", value: dayEntries.length ? fmtDate(new Date(dayEntries[0][0])) : "—", sub: dayEntries.length ? `${dayEntries[0][1]} pendaftar` : "", small: true },
-    { label: "🎓 Prodi terpopuler", value: esc(topProdi.label), sub: `${topProdi.count} pendaftar`, small: true },
-    { label: "🚀 Jalur terpopuler", value: esc(topJalur.label), sub: `${topJalur.count} pendaftar`, small: true },
-    { label: "⚖️ Rasio gender", value: esc(ratio), sub: `${rows.length} pendaftar`, small: true },
+    { label: "Pendaftar (rentang)", value: rows.length.toLocaleString("id-ID"), sub: `${from || "—"} s.d. ${to}` },
+    { label: "Rata-rata / hari", value: avg.toFixed(1), sub: `dalam ${totalDays} hari` },
+    { label: "Hari tersibuk", value: dayEntries.length ? fmtDate(new Date(dayEntries[0][0])) : "—", sub: dayEntries.length ? `${dayEntries[0][1]} pendaftar` : "", small: true },
+    { label: "Prodi terpopuler", value: esc(topProdi.label), sub: `${topProdi.count} pendaftar`, small: true },
+    { label: "Jalur terpopuler", value: esc(topJalur.label), sub: `${topJalur.count} pendaftar`, small: true },
+    { label: "Rasio gender", value: esc(ratio), sub: `${rows.length} pendaftar`, small: true },
   ];
 
   $("#statKpi").innerHTML = kpis.map((k, i) => `
@@ -992,8 +1001,8 @@ function renderDataTable() {
           return `<td>${esc(fullNumber(val(r, k)))}</td>`;
         }).join("")}
         <td class="row-actions">
-          <button class="btn-icon" data-act="edit" data-key="${esc(r.__key)}" title="Edit">✏️</button>
-          <button class="btn-icon danger" data-act="del" data-key="${esc(r.__key)}" title="Hapus">🗑️</button>
+          <button class="btn-icon" data-act="edit" data-key="${esc(r.__key)}" title="Edit">${ICO_EDIT}</button>
+          <button class="btn-icon danger" data-act="del" data-key="${esc(r.__key)}" title="Hapus">${ICO_DEL}</button>
         </td>
       </tr>
     `).join("");
@@ -1281,10 +1290,10 @@ function fillKegForm(row) {
 
 function setKegEditing(key, row) {
   kegEditingKey = key;
-  $("#kegFormTitle").textContent = "✏️ Edit Kegiatan";
+  $("#kegFormTitle").textContent = "Edit Kegiatan";
   $("#kegEditBanner").hidden = false;
   $("#kegEditName").textContent = kegVal(row, "nama") || "";
-  $("#btnKegSubmit").textContent = "💾 Simpan Perubahan";
+  $("#btnKegSubmit").textContent = "Simpan Perubahan";
   $("#kegFormCard").classList.add("editing");
   $("#kegFormCard").scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -1292,9 +1301,9 @@ function setKegEditing(key, row) {
 function resetKegForm() {
   kegEditingKey = null;
   $("#kegForm").reset();
-  $("#kegFormTitle").textContent = "➕ Catat Kegiatan Baru";
+  $("#kegFormTitle").textContent = "Catat Kegiatan Baru";
   $("#kegEditBanner").hidden = true;
-  $("#btnKegSubmit").textContent = "💾 Simpan Kegiatan";
+  $("#btnKegSubmit").textContent = "Simpan Kegiatan";
   $("#kegFormCard").classList.remove("editing");
 }
 
@@ -1406,8 +1415,8 @@ function renderPendFormFields() {
 
 function openPendModal(mode, key) {
   pendEditingKey = mode === "edit" ? key : null;
-  $("#pendModalTitle").textContent = pendEditingKey ? "✏️ Edit Pendaftar" : "➕ Tambah Pendaftar";
-  $("#pendModalSave").textContent = pendEditingKey ? "💾 Simpan Perubahan" : "💾 Simpan";
+  $("#pendModalTitle").textContent = pendEditingKey ? "Edit Pendaftar" : "Tambah Pendaftar";
+  $("#pendModalSave").textContent = pendEditingKey ? "Simpan Perubahan" : "Simpan";
   renderPendFormFields();
   if (pendEditingKey) {
     const row = RAW.list.find((r) => r.__key === pendEditingKey);
@@ -1435,7 +1444,7 @@ function closePendModal() {
 async function submitPendForm(e) {
   if (e && e.preventDefault) e.preventDefault();
   const nama = String($("#pend_nama").value || "").trim();
-  if (!nama) { alert("⚠️ Nama Lengkap wajib diisi."); $("#pend_nama").focus(); return; }
+  if (!nama) { alert("Nama Lengkap wajib diisi."); $("#pend_nama").focus(); return; }
 
   const headerFor = (aliasKey) => {
     const i = colIndex(aliasKey);
@@ -1686,13 +1695,13 @@ async function loadKegiatan(silent) {
 function renderKegMode() {
   const el = $("#kegMode");
   if (KEG.mode === "cloud") {
-    el.textContent = "☁️ Tersinkron dengan spreadsheet";
+    el.textContent = "Tersinkron dengan spreadsheet";
     el.className = "keg-mode cloud";
   } else if (KEG.mode === "csv") {
     el.textContent = "";
     el.className = "keg-mode";
   } else {
-    el.textContent = "📁 Tersimpan lokal di perangkat";
+    el.textContent = "Tersimpan lokal di perangkat";
     el.className = "keg-mode local";
   }
 }
@@ -1710,10 +1719,10 @@ function renderDashKeg() {
   const bulanIni = list.filter((r) => kegBulanKey(r) === bulanIniKey).length;
 
   $("#dashKegKpi").innerHTML = `
-    <div class="kpi-card"><div class="kpi-label">🗓️ Total Kegiatan</div><div class="kpi-value">${list.length.toLocaleString("id-ID")}</div><div class="kpi-sub">Tercatat di spreadsheet</div></div>
-    <div class="kpi-card kpi-green"><div class="kpi-label">✅ Selesai</div><div class="kpi-value">${selesai.toLocaleString("id-ID")}</div><div class="kpi-sub">${list.length ? Math.round((selesai / list.length) * 100) : 0}% dari total</div></div>
-    <div class="kpi-card kpi-orange"><div class="kpi-label">⏳ Dalam Proses</div><div class="kpi-value">${proses.toLocaleString("id-ID")}</div><div class="kpi-sub">Rencana + Berlangsung + Proses</div></div>
-    <div class="kpi-card kpi-accent"><div class="kpi-label">📅 Bulan Ini</div><div class="kpi-value">${bulanIni.toLocaleString("id-ID")}</div><div class="kpi-sub">${bulanIniKey}</div></div>
+    <div class="kpi-card"><div class="kpi-label">Total Kegiatan</div><div class="kpi-value">${list.length.toLocaleString("id-ID")}</div><div class="kpi-sub">Tercatat di spreadsheet</div></div>
+    <div class="kpi-card kpi-green"><div class="kpi-label">Selesai</div><div class="kpi-value">${selesai.toLocaleString("id-ID")}</div><div class="kpi-sub">${list.length ? Math.round((selesai / list.length) * 100) : 0}% dari total</div></div>
+    <div class="kpi-card kpi-orange"><div class="kpi-label">Dalam Proses</div><div class="kpi-value">${proses.toLocaleString("id-ID")}</div><div class="kpi-sub">Rencana + Berlangsung + Proses</div></div>
+    <div class="kpi-card kpi-accent"><div class="kpi-label">Bulan Ini</div><div class="kpi-value">${bulanIni.toLocaleString("id-ID")}</div><div class="kpi-sub">${bulanIniKey}</div></div>
   `;
 
   const sorted = list
@@ -1763,12 +1772,12 @@ function renderKegKpi() {
   const topProg = prog.length ? prog[0] : { label: "—", count: 0 };
 
   const kpis = [
-    { cls: "", label: "🗓️ Total Kegiatan", value: list.length.toLocaleString("id-ID"), sub: "Semua periode" },
-    { cls: "kpi-green", label: "✅ Selesai", value: selesai.toLocaleString("id-ID"), sub: (list.length ? Math.round((selesai / list.length) * 100) : 0) + "% dari total" },
-    { cls: "kpi-orange", label: "⏳ Dalam Proses", value: proses.toLocaleString("id-ID"), sub: "Rencana + Berlangsung + Proses" },
-    { cls: "kpi-accent", label: "📅 Bulan Ini", value: bulanIni.toLocaleString("id-ID"), sub: bulanIniKey },
-    { cls: "kpi-teal", label: "🚨 Prioritas Tinggi", value: prioritasTinggi.toLocaleString("id-ID"), sub: "Kegiatan prioritas" },
-    { cls: "kpi-accent", label: "🏷️ Program Teratas", value: esc(topProg.label), sub: topProg.count + " kegiatan", small: true },
+    { cls: "", label: "Total Kegiatan", value: list.length.toLocaleString("id-ID"), sub: "Semua periode" },
+    { cls: "kpi-green", label: "Selesai", value: selesai.toLocaleString("id-ID"), sub: (list.length ? Math.round((selesai / list.length) * 100) : 0) + "% dari total" },
+    { cls: "kpi-orange", label: "Dalam Proses", value: proses.toLocaleString("id-ID"), sub: "Rencana + Berlangsung + Proses" },
+    { cls: "kpi-accent", label: "Bulan Ini", value: bulanIni.toLocaleString("id-ID"), sub: bulanIniKey },
+    { cls: "kpi-teal", label: "Prioritas Tinggi", value: prioritasTinggi.toLocaleString("id-ID"), sub: "Kegiatan prioritas" },
+    { cls: "kpi-accent", label: "Program Teratas", value: esc(topProg.label), sub: topProg.count + " kegiatan", small: true },
   ];
 
   $("#kegKpi").innerHTML = kpis.map((k) => `
@@ -1952,10 +1961,10 @@ function renderKegTable() {
         <td>${esc(kegVal(r, "pic"))}</td>
         <td style="max-width:220px">${esc(kegVal(r, "target"))}</td>
         <td>${esc(kegVal(r, "statusTarget"))}</td>
-        <td>${out ? `<a href="${esc(out)}" target="_blank" rel="noopener" style="color:#0d3b8c">🔗 Lihat</a>` : "—"}</td>
+        <td>${out ? `<a href="${esc(out)}" target="_blank" rel="noopener" style="color:#0d3b8c">Lihat</a>` : "—"}</td>
         <td class="row-actions">
-          <button class="btn-icon" data-act="edit" data-key="${esc(r.__key)}" title="Edit">✏️</button>
-          <button class="btn-icon danger" data-act="del" data-key="${esc(r.__key)}" title="Hapus">🗑️</button>
+          <button class="btn-icon" data-act="edit" data-key="${esc(r.__key)}" title="Edit">${ICO_EDIT}</button>
+          <button class="btn-icon danger" data-act="del" data-key="${esc(r.__key)}" title="Hapus">${ICO_DEL}</button>
         </td>
       </tr>`;
     }).join("");
@@ -2007,8 +2016,8 @@ async function submitKegiatan(e) {
   const nama = $("#kegNama").value.trim();
   const progres = $("#kegProgres").value;
 
-  if (!nama) { alert("⚠️ Nama kegiatan wajib diisi."); $("#kegNama").focus(); return; }
-  if (!progres) { alert("⚠️ Progres wajib dipilih."); $("#kegProgres").focus(); return; }
+  if (!nama) { alert("Nama kegiatan wajib diisi."); $("#kegNama").focus(); return; }
+  if (!progres) { alert("Progres wajib dipilih."); $("#kegProgres").focus(); return; }
 
   // Baris dari spreadsheet → key = ID_Monitoring; baris lokal (new:) → simpan lokal
   const kegKeyIsRemote = kegEditingKey && String(kegEditingKey).startsWith("id:");
@@ -2117,7 +2126,7 @@ async function submitKegiatan(e) {
   }
 
   btn.disabled = false;
-  btn.textContent = "💾 Simpan Kegiatan";
+  btn.textContent = "Simpan Kegiatan";
   resetKegForm();
   kegState.page = 1;
   await loadKegiatan(true);
@@ -2293,7 +2302,7 @@ function exportKegPrintFallback(rows) {
   <h1>Monitoring FAST — Fakultas Sains dan Teknologi USTEDI</h1>
   <p>Rekap Pencatatan Kegiatan — ${fmtDateTime(new Date())}</p>
   <p>Total data: ${rows.length}</p>
-  <button onclick="window.print()">🖨️ Cetak / Simpan PDF</button>
+  <button onclick="window.print()">Cetak / Simpan PDF</button>
   <table><thead><tr><th>ID</th><th>Nama Kegiatan</th><th>Program</th><th>Bulan</th><th>Progres</th><th>Prioritas</th><th>Penanggung Jawab</th><th>Target</th><th>Status Target</th><th>Hasil / Output</th></tr></thead><tbody>${trs}</tbody></table>
   </body></html>`);
   w.document.close();

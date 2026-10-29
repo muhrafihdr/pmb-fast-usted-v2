@@ -18,9 +18,8 @@
       "</span></div>";
   }
 
-  function kartu(ikon, judul, teks) {
-    return '<div class="kartu kartu-hover"><div class="kartu-ikon">' + (ikon || "✨") +
-      "</div><h3>" + U.aman(judul) + "</h3><p>" + U.aman(teks) + "</p></div>";
+  function kartu(judul, teks) {
+    return '<div class="kartu kartu-hover"><h3>' + U.aman(judul) + "</h3><p>" + U.aman(teks) + "</p></div>";
   }
 
   function isiKontak(host) {
@@ -28,11 +27,11 @@
     var o = CFG.org;
     host.innerHTML =
       '<a class="kontak-kartu" href="https://wa.me/' + U.aman(o.whatsapp) + '" target="_blank" rel="noopener">' +
-        '<div class="kontak-ikon">💬</div><h3>WhatsApp</h3><p>' + U.aman(o.teleponTampil) + "</p><small>Klik untuk chat</small></a>" +
+        "<h3>WhatsApp</h3><p>" + U.aman(o.teleponTampil) + "</p><small>Klik untuk chat</small></a>" +
       '<a class="kontak-kartu" href="mailto:' + U.aman(o.email) + '">' +
-        '<div class="kontak-ikon">📧</div><h3>Email</h3><p>' + U.aman(o.email) + "</p><small>Kirim email</small></a>" +
+        "<h3>Email</h3><p>" + U.aman(o.email) + "</p><small>Kirim email</small></a>" +
       '<div class="kontak-kartu">' +
-        '<div class="kontak-ikon">📍</div><h3>Alamat Kampus</h3><p>' + U.aman(o.alamat) + "</p><small>" +
+        "<h3>Alamat Kampus</h3><p>" + U.aman(o.alamat) + "</p><small>" +
         U.aman(o.jamLayanan || "Senin–Jumat, 08.00–16.00") + "</small></div>";
   }
 
@@ -78,21 +77,21 @@
       var keunggulan = document.getElementById("keunggulanGrid");
       if (keunggulan) {
         keunggulan.innerHTML = (site.keunggulan || []).map(function (k) {
-          return kartu(k.ikon, k.judul, k.teks);
+          return kartu(k.judul, k.teks);
         }).join("");
       }
 
       var prodi = document.getElementById("prodiGrid");
       if (prodi) {
         prodi.innerHTML = (cfg.programStudi || []).map(function (p) {
-          return kartu(p.ikon, p.nama, "Jenjang " + (p.jenjang || "S1") + " · Fakultas Sains dan Teknologi");
+          return kartu(p.nama, "Jenjang " + (p.jenjang || "S1") + " · Fakultas Sains dan Teknologi");
         }).join("");
       }
 
       var jalur = document.getElementById("jalurGrid");
       if (jalur) {
         jalur.innerHTML = (cfg.jalur || []).map(function (j) {
-          return kartu("🎯", j.nama, j.teks);
+          return kartu(j.nama, j.teks);
         }).join("");
       }
 
@@ -151,7 +150,7 @@
         kotak.innerHTML = (cfg.programStudi || []).map(function (p, i) {
           return '<div class="prodi-opsi">' +
             '<input type="radio" name="pilihanProdi" id="prodi_' + i + '" value="' + U.aman(p.nama) + '" />' +
-            '<label for="prodi_' + i + '"><span class="ikon">' + (p.ikon || "🎓") + "</span>" +
+            '<label for="prodi_' + i + '">' +
             "<strong>" + U.aman(p.nama) + "</strong><small>Jenjang " + U.aman(p.jenjang || "S1") + "</small></label></div>";
         }).join("");
         Array.prototype.forEach.call(kotak.querySelectorAll('input[type="radio"]'), function (r) {

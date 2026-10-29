@@ -33,16 +33,16 @@
 
       <nav class="sidebar-nav">
         <a href="#dashboard" class="nav-link active" data-nav="Dashboard">
-          <span class="nav-ico">📊</span> Dashboard
+          Dashboard
         </a>
         <a href="#kegiatan" class="nav-link" data-nav="Kegiatan">
-          <span class="nav-ico">🗓️</span> Pencatatan Kegiatan
+          Pencatatan Kegiatan
         </a>
         <a href="#statistik" class="nav-link" data-nav="Statistik">
-          <span class="nav-ico">📈</span> Statistik
+          Statistik
         </a>
         <a href="#data" class="nav-link" data-nav="Data">
-          <span class="nav-ico">🗂️</span> Data Pendaftar
+          Data Pendaftar
         </a>
       </nav>
 
@@ -66,7 +66,7 @@
           <p id="pageSubtitle">Ringkasan pendaftar mahasiswa baru FAST USTEDI</p>
         </div>
         <div class="topbar-actions">
-          <span class="updated" id="lastUpdated" title="Terakhir diperbarui">⏱️ —</span>
+          <span class="updated" id="lastUpdated" title="Terakhir diperbarui">—</span>
           <label class="autorefresh" title="Penyegaran otomatis">
             <span>Auto</span>
             <select id="autoRefresh">
@@ -90,18 +90,16 @@
 
       <!-- State: error -->
       <div class="state" id="errorState" hidden>
-        <div class="state-emoji">⚠️</div>
         <h2>Gagal Memuat Data</h2>
         <p id="errorMessage">Terjadi kesalahan saat mengambil data.</p>
-        <button class="btn-refresh" id="btnRetry">🔄 Coba Lagi</button>
+        <button class="btn-refresh" id="btnRetry">Coba Lagi</button>
       </div>
 
       <!-- State: kosong -->
       <div class="state" id="emptyState" hidden>
-        <div class="state-emoji">📭</div>
         <h2>Belum Ada Data</h2>
         <p>Spreadsheet data pendaftar tidak ditemukan atau belum memiliki baris header. Periksa konfigurasi <code>DATA_SOURCE.sheetId</code> di <code>script.js</code>.</p>
-        <button class="btn-refresh" id="btnEmptyRetry">🔄 Muat Ulang</button>
+        <button class="btn-refresh" id="btnEmptyRetry">Muat Ulang</button>
       </div>
 
       <!-- Konten utama -->
@@ -142,7 +140,7 @@
 
           <div class="card">
             <div class="card-head">
-              <h3>🕒 Pendaftar Terbaru</h3>
+              <h3>Pendaftar Terbaru</h3>
               <a href="#data" class="link-more">Lihat semua →</a>
             </div>
             <div class="table-wrap">
@@ -165,7 +163,7 @@
 
           <div class="card">
             <div class="card-head">
-              <h3>🗓️ Catatan Kegiatan</h3>
+              <h3>Catatan Kegiatan</h3>
               <a href="#kegiatan" class="link-more">Kelola Kegiatan →</a>
             </div>
             <div class="kpi-grid keg-mini" id="dashKegKpi"></div>
@@ -191,16 +189,16 @@
         <section class="section" id="kegiatan" hidden>
           <div class="card filter-card" id="kegFormCard">
             <div class="filter-head">
-              <h3 id="kegFormTitle">➕ Catat Kegiatan Baru</h3>
-              <span class="keg-mode" id="kegMode">⏳ …</span>
+              <h3 id="kegFormTitle">Catat Kegiatan Baru</h3>
+              <span class="keg-mode" id="kegMode">…</span>
             </div>
             <form id="kegForm" novalidate>
               <div class="form-banner" id="kegEditBanner" hidden>
-                <span>✏️ Mengedit: <strong id="kegEditName"></strong></span>
-                <button type="button" class="btn-ghost btn-sm" id="btnKegCancelEdit">✖ Batal</button>
+                <span>Mengedit: <strong id="kegEditName"></strong></span>
+                <button type="button" class="btn-ghost btn-sm" id="btnKegCancelEdit">Batal</button>
               </div>
               <div class="keg-form-section">
-                <h4>📌 Informasi Kegiatan</h4>
+                <h4>Informasi Kegiatan</h4>
                 <div class="filter-grid">
                   <div class="filter-item filter-search">
                     <label for="kegNama">Nama Kegiatan <span class="req">*</span></label>
@@ -279,7 +277,7 @@
               </div>
 
               <div class="keg-form-section">
-                <h4>🎯 Target &amp; Evaluasi</h4>
+                <h4>Target &amp; Evaluasi</h4>
                 <div class="filter-grid">
                   <div class="filter-item filter-search">
                     <label for="kegTarget">Target</label>
@@ -315,7 +313,7 @@
                     <textarea id="kegEvaluasi" rows="2" placeholder="Evaluasi kegiatan…"></textarea>
                   </div>
                   <div class="filter-item filter-btn">
-                    <button type="submit" class="btn-primary btn-block" id="btnKegSubmit">💾 Simpan Kegiatan</button>
+                    <button type="submit" class="btn-primary btn-block" id="btnKegSubmit">Simpan Kegiatan</button>
                   </div>
                 </div>
               </div>
@@ -341,11 +339,11 @@
 
           <div class="card table-card">
             <div class="filter-head">
-              <h3>🗂️ Rekap Kegiatan</h3>
+              <h3>Rekap Kegiatan</h3>
               <div class="filter-actions">
                 <button class="btn-ghost" id="btnResetKeg">Reset</button>
-                <button class="btn-primary" id="btnExportKeg">⬇️ Export CSV</button>
-                <button class="btn-primary btn-pdf" id="btnExportKegPdf">📄 Export PDF</button>
+                <button class="btn-primary" id="btnExportKeg">Export CSV</button>
+                <button class="btn-primary btn-pdf" id="btnExportKegPdf">Export PDF</button>
               </div>
             </div>
             <div class="filter-grid">
@@ -381,7 +379,7 @@
         <section class="section" id="statistik" hidden>
           <div class="card filter-card">
             <div class="filter-head">
-              <h3>🔎 Filter Statistik</h3>
+              <h3>Filter Statistik</h3>
               <button class="btn-ghost" id="btnResetStat">Reset</button>
             </div>
             <div class="filter-grid">
@@ -441,11 +439,11 @@
         <section class="section" id="data" hidden>
           <div class="card filter-card">
             <div class="filter-head">
-              <h3>🔍 Cari &amp; Filter Data</h3>
+              <h3>Cari &amp; Filter Data</h3>
               <div class="filter-actions">
                 <button class="btn-ghost" id="btnResetData">Reset</button>
-                <button class="btn-primary" id="btnAddPend">➕ Tambah Pendaftar</button>
-                <button class="btn-primary" id="btnExport">⬇️ Export CSV</button>
+                <button class="btn-primary" id="btnAddPend">Tambah Pendaftar</button>
+                <button class="btn-primary" id="btnExport">Export CSV</button>
               </div>
             </div>
             <div class="filter-grid">
@@ -505,14 +503,14 @@
       <div class="modal-backdrop" id="modalBackdrop" hidden>
         <div class="modal">
           <div class="modal-head">
-            <h3 id="pendModalTitle">➕ Tambah Pendaftar</h3>
+            <h3 id="pendModalTitle">Tambah Pendaftar</h3>
             <button class="modal-close" id="pendModalClose" aria-label="Tutup">✕</button>
           </div>
           <form id="pendForm" novalidate>
             <div class="filter-grid" id="pendFormFields"></div>
             <div class="modal-foot">
               <button type="button" class="btn-ghost" id="pendModalCancel">Batal</button>
-              <button type="submit" class="btn-primary" id="pendModalSave">💾 Simpan</button>
+              <button type="submit" class="btn-primary" id="pendModalSave">Simpan</button>
             </div>
           </form>
         </div>
@@ -529,6 +527,6 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 
-  <script src="script.js?v=20260830"></script>
+  <script src="script.js?v=20261029"></script>
 </body>
 </html>

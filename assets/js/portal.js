@@ -52,7 +52,6 @@
     site.statistik.forEach(function (s) {
       var d = el("div", { class: "stat-kartu" });
       d.innerHTML =
-        '<div class="stat-ikon">' + (s.ikon || "•") + "</div>" +
         '<div class="stat-nilai">' + U.aman(s.nilai) + "</div>" +
         '<div class="stat-label">' + U.aman(s.label) + "</div>";
       host.appendChild(d);
@@ -66,7 +65,6 @@
     site.keunggulan.forEach(function (k) {
       var d = el("div", { class: "kartu kartu-hover" });
       d.innerHTML =
-        '<div class="kartu-ikon">' + (k.ikon || "✨") + "</div>" +
         "<h3>" + U.aman(k.judul) + "</h3>" +
         "<p>" + U.aman(k.teks) + "</p>";
       host.appendChild(d);
@@ -80,7 +78,6 @@
     site.programStudi.forEach(function (p) {
       var d = el("div", { class: "kartu kartu-hover" });
       d.innerHTML =
-        '<div class="kartu-ikon">' + (p.ikon || "🎓") + "</div>" +
         "<h3>" + U.aman(p.nama) + "</h3>" +
         "<p>" + U.aman(p.teks) + "</p>" +
         (p.instagram
@@ -96,11 +93,11 @@
     var o = CFG.org;
     host.innerHTML =
       '<a class="kontak-kartu" href="https://wa.me/' + U.aman(o.whatsapp) + '" target="_blank" rel="noopener">' +
-        '<div class="kontak-ikon">💬</div><h3>WhatsApp</h3><p>' + U.aman(o.teleponTampil) + "</p><small>Klik untuk chat</small></a>" +
+        "<h3>WhatsApp</h3><p>" + U.aman(o.teleponTampil) + "</p><small>Klik untuk chat</small></a>" +
       '<a class="kontak-kartu" href="mailto:' + U.aman(o.email) + '">' +
-        '<div class="kontak-ikon">📧</div><h3>Email</h3><p>' + U.aman(o.email) + "</p><small>Klik untuk kirim email</small></a>" +
+        "<h3>Email</h3><p>" + U.aman(o.email) + "</p><small>Klik untuk kirim email</small></a>" +
       '<div class="kontak-kartu">' +
-        '<div class="kontak-ikon">📍</div><h3>Alamat Kampus</h3><p>' + U.aman(o.alamat) + "</p><small>Senin–Jumat, 08.00–16.00</small></div>";
+        "<h3>Alamat Kampus</h3><p>" + U.aman(o.alamat) + "</p><small>Senin–Jumat, 08.00–16.00</small></div>";
   }
 
   function terapkanMeta(site) {
@@ -119,7 +116,6 @@
     var judul = document.getElementById("heroJudul");
     var sub = document.getElementById("heroSub");
     var aksi = document.getElementById("heroAksi");
-    var sso = document.getElementById("heroSso");
 
     if (label && h.label) label.textContent = h.label;
     if (judul && h.judul) {
@@ -136,9 +132,6 @@
         aksi.appendChild(a);
       });
     }
-    if (sso && h.ssoTeks) {
-      sso.innerHTML = '🔐 <a href="#masuk">Masuk dengan SSO</a> ' + U.aman(h.ssoTeks);
-    }
   }
 
   function blogTerbaru() {
@@ -149,7 +142,7 @@
       item.sort(function (a, b) { return String(b.tanggal).localeCompare(String(a.tanggal)); });
       var tampil = item.slice(0, 3);
       if (!tampil.length) {
-        host.innerHTML = '<div class="kosong"><div class="kosong-ikon">✍️</div><h3>Belum ada artikel</h3><p>Nantikan tulisan terbaru dari sivitas akademika FAST.</p></div>';
+        host.innerHTML = '<div class="kosong"><h3>Belum ada artikel</h3><p>Nantikan tulisan terbaru dari sivitas akademika FAST.</p></div>';
         return;
       }
       var peta = {};
@@ -161,21 +154,20 @@
         var kartu = el("a", { href: "/blog/artikel.html?slug=" + encodeURIComponent(b.slug), class: "berita-kartu" });
         kartu.innerHTML =
           '<div class="berita-sampul"' + (b.gambar ? ' style="background:url(' + U.aman(b.gambar) + ') center/cover"' : "") + ">" +
-            (b.gambar ? "" : "✍️") +
           "</div>" +
           '<div class="berita-isi">' +
             '<div class="berita-meta">' +
               '<span class="tag" style="background:' + U.aman(kat.warna) + '1a;color:' + U.aman(kat.warna) + '">' + U.aman(kat.nama) + "</span>" +
-              "<span>📅 " + U.tanggal(b.tanggal, "pendek") + "</span>" +
+              "<span>" + U.tanggal(b.tanggal, "pendek") + "</span>" +
             "</div>" +
             "<h3>" + U.aman(b.judul) + "</h3>" +
             '<p class="berita-ringkas">' + U.aman(b.ringkasan || "") + "</p>" +
-            '<div class="berita-meta" style="margin-top:12px"><span>✍️ ' + U.aman(b.penulis || "Humas FAST") + "</span></div>" +
+            '<div class="berita-meta" style="margin-top:12px"><span>' + U.aman(b.penulis || "Humas FAST") + "</span></div>" +
           "</div>";
         host.appendChild(kartu);
       });
     }).catch(function () {
-      host.innerHTML = '<div class="kosong"><div class="kosong-ikon">⚠️</div><h3>Gagal memuat artikel</h3><p>Periksa koneksi atau berkas data.</p></div>';
+      host.innerHTML = '<div class="kosong"><h3>Gagal memuat artikel</h3><p>Periksa koneksi atau berkas data.</p></div>';
     });
   }
 
@@ -188,7 +180,7 @@
       var unggulan = item.filter(function (x) { return x.unggulan; });
       var tampil = (unggulan.length ? unggulan : item).slice(0, 3);
       if (!tampil.length) {
-        host.innerHTML = '<div class="kosong"><div class="kosong-ikon">📰</div><h3>Belum ada berita</h3><p>Nantikan kabar terbaru dari fakultas.</p></div>';
+        host.innerHTML = '<div class="kosong"><h3>Belum ada berita</h3><p>Nantikan kabar terbaru dari fakultas.</p></div>';
         return;
       }
       var petaKategori = {};
@@ -200,12 +192,11 @@
         var kartu = el("a", { href: "/berita/artikel.html?slug=" + encodeURIComponent(b.slug), class: "berita-kartu" });
         kartu.innerHTML =
           '<div class="berita-sampul"' + (b.gambar ? ' style="background:url(' + U.aman(b.gambar) + ') center/cover"' : "") + ">" +
-            (b.gambar ? "" : "📰") +
           "</div>" +
           '<div class="berita-isi">' +
             '<div class="berita-meta">' +
               '<span class="tag" style="background:' + U.aman(kat.warna) + '1a;color:' + U.aman(kat.warna) + '">' + U.aman(kat.nama) + "</span>" +
-              "<span>📅 " + U.tanggal(b.tanggal, "pendek") + "</span>" +
+              "<span>" + U.tanggal(b.tanggal, "pendek") + "</span>" +
             "</div>" +
             "<h3>" + U.aman(b.judul) + "</h3>" +
             '<p class="berita-ringkas">' + U.aman(b.ringkasan || "") + "</p>" +
@@ -213,7 +204,7 @@
         host.appendChild(kartu);
       });
     }).catch(function () {
-      host.innerHTML = '<div class="kosong"><div class="kosong-ikon">⚠️</div><h3>Gagal memuat berita</h3><p>Periksa koneksi atau berkas data.</p></div>';
+      host.innerHTML = '<div class="kosong"><h3>Gagal memuat berita</h3><p>Periksa koneksi atau berkas data.</p></div>';
     });
   }
 
@@ -226,7 +217,7 @@
       var unggulan = item.filter(function (c) { return c.unggulan; });
       var tampil = (unggulan.length ? unggulan : item).slice(0, 3);
       if (!tampil.length) {
-        host.innerHTML = '<div class="kosong"><div class="kosong-ikon">🧠</div><h3>Belum ada kelas</h3><p>Jadwal pelatihan akan segera diumumkan.</p></div>';
+        host.innerHTML = '<div class="kosong"><h3>Belum ada kelas</h3><p>Jadwal pelatihan akan segera diumumkan.</p></div>';
         return;
       }
       host.innerHTML = "";
@@ -234,7 +225,7 @@
         host.appendChild(kartuKelas(c));
       });
     }).catch(function () {
-      host.innerHTML = '<div class="kosong"><div class="kosong-ikon">⚠️</div><h3>Gagal memuat kelas</h3></div>';
+      host.innerHTML = '<div class="kosong"><h3>Gagal memuat kelas</h3></div>';
     });
   }
 
@@ -253,15 +244,15 @@
       "<h3>" + U.aman(c.judul) + "</h3>" +
       '<p style="color:var(--teks-redup);font-size:.9rem">' + U.aman(c.ringkasan || "") + "</p>" +
       '<div class="kelas-rinci">' +
-        "<span>🕒 " + U.aman(c.durasi || "-") + "</span>" +
-        "<span>📍 " + U.aman(c.mode || "-") + "</span>" +
-        "<span>📅 " + U.tanggal(c.mulai, "pendek") + "</span>" +
-        "<span>👥 " + (c.kuota - (c.terdaftar || 0)) + " sisa kuota</span>" +
+        "<span>" + U.aman(c.durasi || "-") + "</span>" +
+        "<span>" + U.aman(c.mode || "-") + "</span>" +
+        "<span>" + U.tanggal(c.mulai, "pendek") + "</span>" +
+        "<span>" + (c.kuota - (c.terdaftar || 0)) + " sisa kuota</span>" +
       "</div>" +
       '<div class="kelas-kaki">' +
         '<span class="kelas-biaya">' + U.aman(c.biayaTampil || "Gratis") + "</span>" +
         '<a class="btn btn-hijau btn-kecil" href="' + U.aman(academyUrl) + '"' +
-          (academyLuar ? ' target="_blank" rel="noopener"' : "") + '>Buka Fast Academy</a>' +
+          (academyLuar ? ' target="_blank" rel="noopener"' : "") + '>Buka Faster Academy</a>' +
       "</div>";
     return kartu;
   }

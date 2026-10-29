@@ -34,7 +34,6 @@
 .kartu-form fieldset { margin-bottom: 30px; }
 .kartu-form legend { font-size: 1rem; }
 .sukses { text-align: center; padding: 40px 20px; }
-.sukses-ikon { font-size: 3.2rem; margin-bottom: 14px; }
 .sukses h3 { font-size: 1.4rem; margin-bottom: 10px; }
 .sukses p { color: var(--teks-redup); margin-bottom: 20px; }
 .catatan-aman { display: flex; gap: 12px; align-items: flex-start; background: var(--utama-terang); border-radius: var(--radius-kecil); padding: 14px 18px; font-size: .87rem; color: var(--utama-gelap); margin-bottom: 20px; }
@@ -49,8 +48,8 @@
 }
 .prodi-opsi label:hover { border-color: var(--utama); }
 .prodi-opsi input:checked + label { border-color: var(--utama); background: var(--utama-terang); box-shadow: 0 0 0 3px rgba(13, 59, 140, .1); }
-.prodi-opsi .ikon { font-size: 1.5rem; }
-.prodi-opsi strong { display: block; margin: 8px 0 4px; font-size: .98rem; }
+.prodi-opsi .ikon { display: none; }
+.prodi-opsi strong { display: block; margin: 0 0 4px; font-size: .98rem; }
 .prodi-opsi small { color: var(--teks-redup); font-size: .82rem; }
 
 /* ----- FAQ ----- */

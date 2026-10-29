@@ -1,5 +1,5 @@
 /* =========================================================
-   FAST Academy — daftar & detail kelas (academy.js)
+   Faster Academy — daftar & detail kelas (academy.js)
    ========================================================= */
 (function () {
   "use strict";
@@ -12,21 +12,21 @@
   function kartuKelas(c, peta) {
     var penuh = c.status === "penuh" || (c.terdaftar >= c.kuota);
     var selesai = c.status === "selesai";
-    var kat = peta[c.kategori] || { nama: c.kategori || "Umum", ikon: "🧠" };
+    var kat = peta[c.kategori] || { nama: c.kategori || "Umum" };
     var kartu = el("div", { class: "kelas-kartu" });
     kartu.innerHTML =
       '<div class="kelas-atas">' +
-        '<span class="tag">' + U.aman(kat.ikon ? kat.ikon + " " + kat.nama : kat.nama) + "</span>" +
+        '<span class="tag">' + U.aman(kat.nama) + "</span>" +
         '<span class="tag ' + (selesai ? "tag-abu" : penuh ? "tag-merah" : "tag-hijau") + '">' +
           (selesai ? "Selesai" : penuh ? "Kuota Penuh" : "Terbuka") + "</span>" +
       "</div>" +
       "<h3>" + U.aman(c.judul) + "</h3>" +
       '<p style="color:var(--teks-redup);font-size:.9rem">' + U.aman(c.ringkasan || "") + "</p>" +
       '<div class="kelas-rinci">' +
-        "<span>🕒 " + U.aman(c.durasi || "-") + "</span>" +
-        "<span>📍 " + U.aman(c.mode || "-") + "</span>" +
-        "<span>📅 " + U.tanggal(c.mulai, "pendek") + "</span>" +
-        "<span>👥 " + Math.max(0, (c.kuota || 0) - (c.terdaftar || 0)) + " sisa kuota</span>" +
+        "<span>" + U.aman(c.durasi || "-") + "</span>" +
+        "<span>" + U.aman(c.mode || "-") + "</span>" +
+        "<span>" + U.tanggal(c.mulai, "pendek") + "</span>" +
+        "<span>" + Math.max(0, (c.kuota || 0) - (c.terdaftar || 0)) + " sisa kuota</span>" +
       "</div>" +
       '<div class="kelas-kaki">' +
         '<span class="kelas-biaya">' + U.aman(c.biayaTampil || "Gratis") + "</span>" +
@@ -63,7 +63,7 @@
         semua.addEventListener("click", function () { pilih("semua", semua); });
         kotakKategori.appendChild(semua);
         (idx.kategori || []).forEach(function (k) {
-          var b = el("button", { type: "button" }, (k.ikon ? k.ikon + " " : "") + k.nama);
+          var b = el("button", { type: "button" }, k.nama);
           b.addEventListener("click", function () { pilih(k.id, b); });
           kotakKategori.appendChild(b);
         });
@@ -93,7 +93,7 @@
       function gambar(peta) {
         var hasil = state.semua.filter(cocok);
         if (!hasil.length) {
-          host.innerHTML = '<div class="kosong" style="grid-column:1/-1"><div class="kosong-ikon">🔍</div><h3>Tidak ada kelas ditemukan</h3><p>Coba kata kunci atau kategori lain.</p></div>';
+          host.innerHTML = '<div class="kosong" style="grid-column:1/-1"><h3>Tidak ada kelas ditemukan</h3><p>Coba kata kunci atau kategori lain.</p></div>';
           return;
         }
         host.innerHTML = "";
@@ -111,7 +111,7 @@
         });
       }
     }).catch(function () {
-      host.innerHTML = '<div class="kosong" style="grid-column:1/-1"><div class="kosong-ikon">⚠️</div><h3>Gagal memuat kelas</h3><p>Periksa koneksi atau berkas data academy.</p></div>';
+      host.innerHTML = '<div class="kosong" style="grid-column:1/-1"><h3>Gagal memuat kelas</h3><p>Periksa koneksi atau berkas data academy.</p></div>';
     });
 
     return true;
@@ -133,11 +133,11 @@
 
       var peta = {};
       (idx.kategori || []).forEach(function (k) { peta[k.id] = k; });
-      var kat = peta[c.kategori] || { nama: c.kategori || "Umum", ikon: "🧠" };
+      var kat = peta[c.kategori] || { nama: c.kategori || "Umum" };
       var penuh = c.status === "penuh" || (c.terdaftar >= c.kuota);
       var selesai = c.status === "selesai";
 
-      document.title = c.judul + " — FAST Academy";
+      document.title = c.judul + " — Faster Academy";
       var jj = document.getElementById("jejakKelas");
       if (jj) jj.textContent = U.singkat(c.judul, 48);
       var desc = document.querySelector('meta[name="description"]');
@@ -146,14 +146,13 @@
       var wa = document.getElementById("waKelas");
       if (wa) {
         wa.href = "https://wa.me/" + CFG.org.whatsapp + "?text=" +
-          encodeURIComponent("Halo FAST Academy, saya ingin bertanya tentang kelas " + c.judul + ".");
+          encodeURIComponent("Halo Faster Academy, saya ingin bertanya tentang kelas " + c.judul + ".");
       }
 
       var manfaat = (c.manfaat || []).map(function (m) { return "<li>" + U.aman(m) + "</li>"; }).join("");
       var silabus = (c.silabus || []).map(function (s) { return "<li>" + U.aman(s) + "</li>"; }).join("");
 
       host.innerHTML =
-        '<div class="kelas-detail-sampul">' + U.aman(kat.ikon || "🧠") + "</div>" +
         '<span class="tag">' + U.aman(kat.nama) + "</span> " +
         '<span class="tag ' + (selesai ? "tag-abu" : penuh ? "tag-merah" : "tag-hijau") + '">' +
           (selesai ? "Selesai" : penuh ? "Kuota Penuh" : "Terbuka") + "</span>" +
@@ -174,7 +173,7 @@
         '<div class="kelas-detail-isi">' +
           (manfaat ? "<h2>Manfaat yang Didapat</h2><ul>" + manfaat + "</ul>" : "") +
           (silabus ? "<h2>Silabus</h2><ol>" + silabus + "</ol>" : "") +
-          (c.sertifikat ? '<p>🏅 Peserta yang menyelesaikan kelas akan memperoleh sertifikat.</p>' : "") +
+          (c.sertifikat ? '<p>Peserta yang menyelesaikan kelas akan memperoleh sertifikat.</p>' : "") +
         "</div>" +
 
         '<div class="kelas-detail-aksi">' +
@@ -183,7 +182,7 @@
             : penuh
               ? '<a class="btn btn-garis" href="/academy/">Lihat Kelas Lain</a>'
               : '<a class="btn btn-hijau" href="/academy/">Lihat Kelas Lain</a>') +
-          '<a class="btn btn-utama" href="/pmb/">🎓 Daftar Kuliah di FAST</a>' +
+          '<a class="btn btn-utama" href="/pmb/">Daftar Kuliah di FAST</a>' +
         "</div>";
     }).catch(function (e) { gagal(e.message); });
 
@@ -195,7 +194,7 @@
 
     function gagal(pesan) {
       host.innerHTML =
-        '<div class="kosong"><div class="kosong-ikon">📭</div><h3>Kelas tidak dapat ditampilkan</h3>' +
+        '<div class="kosong"><h3>Kelas tidak dapat ditampilkan</h3>' +
         "<p>" + U.aman(pesan) + "</p>" +
         '<a href="/academy/" class="btn btn-utama mt-2">Kembali ke daftar kelas</a></div>';
     }

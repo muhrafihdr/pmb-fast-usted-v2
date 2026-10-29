@@ -18,9 +18,9 @@
     { "id": "beasiswa-alumni", "nama": "Beasiswa Alumni", "teks": "Keringanan khusus bagi keluarga alumni USTEDI." }
   ],
   "programStudi": [
-    { "kode": "IF", "nama": "S1 Informatika", "jenjang": "S1", "ikon": "🖥️" },
-    { "kode": "SD", "nama": "S1 Sains Data", "jenjang": "S1", "ikon": "📊" },
-    { "kode": "TI", "nama": "S1 Teknik Industri", "jenjang": "S1", "ikon": "🏭" }
+    { "kode": "IF", "nama": "S1 Informatika", "jenjang": "S1" },
+    { "kode": "SD", "nama": "S1 Sains Data", "jenjang": "S1" },
+    { "kode": "TI", "nama": "S1 Teknik Industri", "jenjang": "S1" }
   ],
   "biaya": {
     "catatan": "Biaya registrasi hanya dibayarkan sekali, tanpa uang gedung. Tersedia diskon 50% SPP khusus FAST.",

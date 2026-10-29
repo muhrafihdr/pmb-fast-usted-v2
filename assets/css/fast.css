@@ -147,10 +147,6 @@ hr { border: none; border-top: 1px solid var(--garis); margin: 22px 0; }
   padding: 24px; transition: var(--transisi);
 }
 .kartu-hover:hover { transform: translateY(-4px); box-shadow: var(--bayang-besar); border-color: var(--utama-terang); }
-.kartu-ikon {
-  width: 52px; height: 52px; display: grid; place-items: center; font-size: 1.5rem;
-  background: var(--utama-terang); border-radius: 14px; margin-bottom: 16px;
-}
 .kartu h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
 .kartu p { color: var(--teks-redup); font-size: .94rem; }
 
@@ -332,7 +328,6 @@ table.tabel tbody tr:hover { background: #fafcff; }
 .pemuat-lingkar { width: 36px; height: 36px; border: 3px solid var(--utama-terang); border-top-color: var(--utama); border-radius: 50%; animation: fastPusing .8s linear infinite; }
 @keyframes fastPusing { to { transform: rotate(360deg); } }
 .kosong { text-align: center; padding: 56px 24px; color: var(--teks-redup); }
-.kosong-ikon { font-size: 2.6rem; margin-bottom: 12px; }
 .kosong h3 { color: var(--teks); font-size: 1.1rem; margin-bottom: 6px; }
 
 /* ---------------------------------------------------------

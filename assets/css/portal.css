@@ -6,7 +6,6 @@
 .pengumuman { background: var(--utama-gelap); color: #fff; }
 .pengumuman[hidden] { display: none; }
 .pengumuman-inner { display: flex; align-items: center; gap: 14px; padding-top: 11px; padding-bottom: 11px; flex-wrap: wrap; }
-.pengumuman-ikon { font-size: 1.05rem; }
 .pengumuman p { flex: 1; font-size: .88rem; min-width: 200px; }
 .pengumuman .btn { flex-shrink: 0; }
 
@@ -28,14 +27,11 @@
 .hero-sub { font-size: clamp(1rem, 1.9vw, 1.14rem); color: #d5e2f8; max-width: 620px; margin-bottom: 30px; }
 .hero-sub strong { color: #fff; }
 .hero-aksi { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
-.hero-sso { font-size: .88rem; color: #b3c8ea; }
-.hero-sso a { color: var(--aksen); font-weight: 600; text-decoration: underline; }
 
 /* ----- Kartu layanan ----- */
 .kartu-layanan { position: relative; overflow: hidden; padding: 28px 24px; border-radius: var(--radius-besar); border: 1px solid var(--garis); background: #fff; display: flex; flex-direction: column; transition: var(--transisi); }
 .kartu-layanan::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 5px; background: var(--warna, var(--utama)); }
 .kartu-layanan:hover { transform: translateY(-6px); box-shadow: var(--bayang-besar); border-color: transparent; }
-.kl-ikon { width: 58px; height: 58px; display: grid; place-items: center; font-size: 1.7rem; border-radius: 16px; background: color-mix(in srgb, var(--warna, #0d3b8c) 12%, #fff); margin-bottom: 16px; }
 .kartu-layanan h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
 .kartu-layanan p { color: var(--teks-redup); font-size: .93rem; flex: 1; margin-bottom: 18px; }
 .kl-tautan { font-weight: 700; font-size: .9rem; color: var(--warna, var(--utama)); display: inline-flex; align-items: center; gap: 6px; }
@@ -43,7 +39,6 @@
 
 /* ----- Statistik ----- */
 .stat-kartu { background: #fff; border: 1px solid var(--garis); border-radius: var(--radius); padding: 24px; text-align: center; }
-.stat-ikon { font-size: 1.7rem; margin-bottom: 8px; }
 .stat-nilai { font-size: 1.8rem; font-weight: 800; color: var(--utama); line-height: 1.1; }
 .stat-label { font-size: .82rem; color: var(--teks-redup); margin-top: 5px; text-transform: uppercase; letter-spacing: .07em; }
 
@@ -70,7 +65,6 @@
 /* ----- Kontak ----- */
 .kontak-kartu { background: #fff; border: 1px solid var(--garis); border-radius: var(--radius); padding: 26px; text-align: center; transition: var(--transisi); }
 .kontak-kartu:hover { transform: translateY(-4px); box-shadow: var(--bayang); }
-.kontak-ikon { font-size: 1.9rem; margin-bottom: 12px; }
 .kontak-kartu h3 { font-size: 1.02rem; margin-bottom: 6px; }
 .kontak-kartu p { color: var(--teks-redup); font-size: .9rem; }
 .kontak-kartu small { color: var(--utama); font-size: .8rem; display: block; margin-top: 8px; font-weight: 600; }
