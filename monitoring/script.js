@@ -2364,6 +2364,205 @@ async function exportKegPdf() {
 
 /* ---- Export Word Kegiatan ---- */
 async function exportKegWord() {
+  if (!window.docx || typeof window.docx.Document !== "function") {
+    return exportKegWordHtml();
+  }
+
+  const rows = kegFiltered();
+  if (!rows.length) {
+    alert("Tidak ada data kegiatan untuk diexport.");
+    return;
+  }
+
+  try {
+    const now = new Date();
+    const fname = `monitoring-fast-kegiatan-${now.getFullYear()}${pad2(now.getMonth() + 1)}${pad2(now.getDate())}-${pad2(now.getHours())}${pad2(now.getMinutes())}.docx`;
+    const selesai = rows.filter((r) => String(kegVal(r, "progres")).toLowerCase() === "selesai").length;
+    const proses = rows.length - selesai;
+    const pct = rows.length ? Math.round((selesai / rows.length) * 100) : 0;
+    const flt = labelFilterKegiatan();
+
+    const [logoFast, logoUstedi] = await Promise.all([
+      muatGambarPdf("/assets/img/logo-fast.png"),
+      muatGambarPdf("/assets/img/logo-usted.png"),
+    ]);
+
+    const d = window.docx;
+    const {
+      Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+      WidthType, AlignmentType, BorderStyle, PageOrientation, Header, Footer,
+      ImageRun, VerticalAlign, TableLayoutType, convertMillimetersToTwip, PageNumber,
+    } = d;
+
+    const dataUrlBytes = function (dataUrl) {
+      const b64 = String(dataUrl || "").split(",")[1] || "";
+      const biner = atob(b64);
+      const bytes = new Uint8Array(biner.length);
+      for (let i = 0; i < biner.length; i++) bytes[i] = biner.charCodeAt(i);
+      return bytes;
+    };
+
+    const logoImages = [];
+    [logoFast, logoUstedi].forEach(function (logo) {
+      if (!logo) return;
+      const h = 50;
+      const w = Math.max(1, Math.round(h * (logo.ratio || 1)));
+      logoImages.push(new ImageRun({
+        data: dataUrlBytes(logo.data),
+        transformation: { width: w, height: h },
+      }));
+    });
+
+    const noBorder = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
+    const headerTable = new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      layout: TableLayoutType.FIXED,
+      borders: { top: noBorder, bottom: noBorder, left: noBorder, right: noBorder, insideHorizontal: noBorder, insideVertical: noBorder },
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              width: { size: 18, type: WidthType.PERCENTAGE },
+              shading: { fill: "0D3B8C" },
+              verticalAlign: VerticalAlign.CENTER,
+              margins: { top: 80, bottom: 80, left: 100, right: 60 },
+              children: [new Paragraph({ alignment: AlignmentType.CENTER, children: logoImages })],
+            }),
+            new TableCell({
+              width: { size: 82, type: WidthType.PERCENTAGE },
+              shading: { fill: "0D3B8C" },
+              verticalAlign: VerticalAlign.CENTER,
+              margins: { top: 80, bottom: 80, left: 60, right: 120 },
+              children: [
+                new Paragraph({ spacing: { after: 20 }, children: [new TextRun({ text: "Monitoring FAST — Fakultas Sains dan Teknologi USTEDI", bold: true, color: "FFFFFF", size: 26 })] }),
+                new Paragraph({ spacing: { after: 40 }, children: [new TextRun({ text: "Rekap Pencatatan Kegiatan", color: "FFFFFF", size: 20 })] }),
+                new Paragraph({ spacing: { after: 20 }, children: [new TextRun({ text: "JL. MR. Koesbiyono Tjondrowibowo, Gunungpati, Semarang", color: "DBEAFE", size: 18 })] }),
+                new Paragraph({ spacing: { after: 20 }, children: [new TextRun({ text: "https://fastustedi.web.id/  •  fast.ustedi@gmail.com", color: "DBEAFE", size: 16 })] }),
+                new Paragraph({ children: [new TextRun({ text: "Dicetak: " + fmtDateTime(now), color: "DBEAFE", size: 16 })] }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+
+    const border = { style: BorderStyle.SINGLE, size: 4, color: "CBD5E1" };
+    const cellBorders = { top: border, bottom: border, left: border, right: border };
+    const widths = [8, 19, 12, 9, 8, 7, 13, 12, 7, 5];
+    const labels = ["ID", "Nama Kegiatan", "Program", "Bulan", "Progres", "Prioritas", "Kepala Program Studi / Dekan", "Target", "Status Target", "Hasil / Output"];
+
+    const headerRow = new TableRow({
+      tableHeader: true,
+      children: labels.map(function (label, i) {
+        return new TableCell({
+          width: { size: widths[i], type: WidthType.PERCENTAGE },
+          shading: { fill: "0D3B8C" },
+          margins: { top: 60, bottom: 60, left: 80, right: 80 },
+          borders: cellBorders,
+          children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, color: "FFFFFF", size: 15 })] })],
+        });
+      }),
+    });
+
+    const dataRows = rows.map(function (r, idx) {
+      const dte = kegDate(r);
+      const bulanLabel = dte ? dte.toLocaleDateString("id-ID", { month: "long", year: "numeric" }) : kegVal(r, "bulan");
+      let out = String(kegVal(r, "output") || kegVal(r, "link") || "");
+      if (out.length > 42) out = out.slice(0, 41) + "…";
+      const vals = [
+        kegVal(r, "id"), kegVal(r, "nama"), kegVal(r, "program"), bulanLabel,
+        kegVal(r, "progres"), kegVal(r, "prioritas"), kegVal(r, "pic"),
+        kegVal(r, "target"), kegVal(r, "statusTarget"), out || "—",
+      ];
+      return new TableRow({
+        children: vals.map(function (val, i) {
+          return new TableCell({
+            width: { size: widths[i], type: WidthType.PERCENTAGE },
+            shading: idx % 2 ? { fill: "F1F5F9" } : undefined,
+            margins: { top: 50, bottom: 50, left: 80, right: 80 },
+            borders: cellBorders,
+            children: [new Paragraph({ children: [new TextRun({ text: String(val || "—"), size: 14 })] })],
+          });
+        }),
+      });
+    });
+
+    const totalWidth = convertMillimetersToTwip(281);
+    const table = new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      columnWidths: widths.map(function (w) { return Math.round(totalWidth * w / 100); }),
+      layout: TableLayoutType.FIXED,
+      borders: cellBorders,
+      rows: [headerRow].concat(dataRows),
+    });
+
+    const summary = new Paragraph({
+      spacing: { before: 120, after: 40 },
+      children: [new TextRun({ text: `Total: ${rows.length}   |   Selesai: ${selesai} (${pct}%)   |   Dalam Proses: ${proses}`, bold: true, size: 20 })],
+    });
+    const filterPara = flt.length ? new Paragraph({
+      spacing: { after: 100 },
+      children: [new TextRun({ text: "Filter: " + flt.join("  •  "), italics: true, color: "64748B", size: 16 })],
+    }) : null;
+
+    const children = [summary];
+    if (filterPara) children.push(filterPara);
+    children.push(table);
+
+    const doc = new Document({
+      styles: { default: { document: { run: { font: "Arial" } } } },
+      sections: [{
+        properties: {
+          page: {
+            size: {
+              // docx menukar width/height saat orientation = LANDSCAPE.
+              // Kirim ukuran portrait agar hasil akhirnya A4 landscape.
+              width: convertMillimetersToTwip(210),
+              height: convertMillimetersToTwip(297),
+              orientation: PageOrientation.LANDSCAPE,
+            },
+            margin: {
+              top: convertMillimetersToTwip(42),
+              right: convertMillimetersToTwip(8),
+              bottom: convertMillimetersToTwip(12),
+              left: convertMillimetersToTwip(8),
+              header: convertMillimetersToTwip(6),
+              footer: convertMillimetersToTwip(6),
+            },
+          },
+        },
+        headers: { default: new Header({ children: [headerTable] }) },
+        footers: {
+          default: new Footer({
+            children: [new Paragraph({
+              alignment: AlignmentType.RIGHT,
+              children: [
+                new TextRun({ text: "Monitoring FAST • Dicetak otomatis — " + fmtDateTime(now) + "   |   ", size: 14, color: "94A3B8" }),
+                new TextRun({ children: ["Hal. ", PageNumber.CURRENT], size: 14, color: "94A3B8" }),
+              ],
+            })],
+          }),
+        },
+        children: children,
+      }],
+    });
+
+    const blob = await Packer.toBlob(doc);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fname;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  } catch (err) {
+    console.warn("Export DOCX gagal, memakai fallback HTML:", err);
+    return exportKegWordHtml();
+  }
+}
+
+async function exportKegWordHtml() {
   const rows = kegFiltered();
   if (!rows.length) {
     alert("Tidak ada data kegiatan untuk diexport.");
