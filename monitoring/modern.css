@@ -640,3 +640,4 @@ body {
   font-size: .75rem;
   color: #92400e;
 }
+.notice a { color: #b45309; font-weight: 700; text-decoration: underline; }

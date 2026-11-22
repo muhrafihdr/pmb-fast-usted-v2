@@ -1709,7 +1709,7 @@ async function loadKegiatan(silent) {
     const lama = KEG.mode === "cloud" && !backendBaru;
     notice.hidden = !lama;
     if (lama) {
-      notice.innerHTML = "<strong>Backend Apps Script belum diperbarui.</strong> Data kegiatan masih tersimpan di spreadsheet lama. Perbarui <code>Code.gs</code> lalu Deploy versi baru agar kegiatan tersimpan di sheet <code>MONITORING</code> pada spreadsheet PMB.";
+      notice.innerHTML = "<strong>Backend Apps Script belum diperbarui.</strong> Data kegiatan masih tersimpan di spreadsheet lama. <a href=\"https://raw.githubusercontent.com/muhrafihdr/pmb-fast-usted-v2/main/Code.gs\" target=\"_blank\" rel=\"noopener\">Salin Code.gs terbaru</a>, tempel di editor Apps Script, lalu <strong>Deploy → New version</strong>. Setelah itu sheet <code>MONITORING</code> dibuat otomatis dan seluruh data lama disalin.";
     }
   }
 }
