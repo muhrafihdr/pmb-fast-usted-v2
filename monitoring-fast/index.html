@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/monitoring-fast/style.css?v=20261122c" />
+  <link rel="stylesheet" href="/monitoring-fast/style.css?v=20261122d" />
 </head>
 <body>
 
@@ -46,7 +46,7 @@
             referrerpolicy="strict-origin-when-cross-origin"></iframe>
   </main>
 
-  <script src="/assets/js/config.js?v=20261122c"></script>
+  <script src="/assets/js/config.js?v=20261122d"></script>
   <script>
     (function () {
       "use strict";
@@ -76,13 +76,15 @@
       var loading = document.getElementById("monLoading");
 
       frame.addEventListener("load", function () {
-        loading.classList.add("siap");
+        /* Hapus overlay dari DOM (bukan sekadar disembunyikan) agar
+           iframe lintas-origin dapat dilukis dengan benar. */
+        if (loading && loading.parentNode) loading.parentNode.removeChild(loading);
       });
       frame.src = APP;
 
       /* Muat ulang isi dashboard tanpa memuat ulang halaman. */
       document.getElementById("monReload").addEventListener("click", function () {
-        loading.classList.remove("siap");
+        if (loading) loading.classList.remove("siap");
         frame.src = APP;
       });
 

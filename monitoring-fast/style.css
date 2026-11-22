@@ -149,7 +149,6 @@ body {
   background: var(--bg);
   color: var(--teks-redup);
   font-size: .9rem;
-  transition: opacity .28s ease, visibility .28s ease;
 }
 
 .mon-loading.siap {

@@ -142,7 +142,7 @@
     },
 
     /* ---------- Versi aset (cache-busting) ---------- */
-    versi: "20261122c"
+    versi: "20261122d"
   };
 
   /* Ekspos sebagai global. */
