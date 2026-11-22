@@ -145,9 +145,9 @@ const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
 const PALETTE = [
-  "#0d3b8c", "#f5b301", "#0e7490", "#ea580c", "#7c3aed",
-  "#db2777", "#16a34a", "#2563eb", "#dc2626", "#0891b2",
-  "#ca8a04", "#65a30d", "#9333ea", "#f43f5e", "#0f766e",
+  "#2563eb", "#06b6d4", "#10b981", "#f59e0b", "#8b5cf6",
+  "#ec4899", "#f97316", "#14b8a6", "#6366f1", "#84cc16",
+  "#ef4444", "#0ea5e9", "#a855f7", "#f43f5e", "#0d9488",
 ];
 
 function esc(s) {
@@ -608,12 +608,12 @@ function renderDashCharts() {
       datasets: [{
         label: "Pendaftar",
         data: trenData,
-        borderColor: "#0d3b8c",
-        backgroundColor: "rgba(13,59,140,0.12)",
+        borderColor: "#2563eb",
+        backgroundColor: "rgba(37,99,235,0.12)",
         fill: true,
         tension: 0.35,
         pointRadius: 4,
-        pointBackgroundColor: "#f5b301",
+        pointBackgroundColor: "#06b6d4",
         pointBorderColor: "#fff",
         pointBorderWidth: 1.5,
         borderWidth: 2.5,
@@ -631,7 +631,7 @@ function renderDashCharts() {
       datasets: [{
         data: genderCounts.map((p) => p.count),
         backgroundColor: genderCounts.map((p) =>
-          /laki/i.test(p.label) ? "#0d3b8c" : /perempuan/i.test(p.label) ? "#db2777" : "#94a3b8"
+          /laki/i.test(p.label) ? "#0d3b8c" : /perempuan/i.test(p.label) ? "#ec4899" : "#94a3b8"
         ),
         borderWidth: 2,
         borderColor: "#fff",
@@ -819,12 +819,12 @@ function renderStatCharts() {
       datasets: [{
         label: "Pendaftar",
         data,
-        borderColor: "#0e7490",
-        backgroundColor: "rgba(14,116,144,0.14)",
+        borderColor: "#0891b2",
+        backgroundColor: "rgba(8,145,178,0.14)",
         fill: true,
         tension: 0.35,
         pointRadius: 3,
-        pointBackgroundColor: "#f5b301",
+        pointBackgroundColor: "#06b6d4",
         pointBorderColor: "#fff",
         borderWidth: 2.5,
       }],
@@ -1857,12 +1857,12 @@ function renderKegCharts() {
       datasets: [{
         label: "Kegiatan",
         data: mKeys.map((k) => months[k]),
-        borderColor: "#0e7490",
-        backgroundColor: "rgba(14,116,144,0.14)",
+        borderColor: "#0891b2",
+        backgroundColor: "rgba(8,145,178,0.14)",
         fill: true,
         tension: 0.35,
         pointRadius: 4,
-        pointBackgroundColor: "#f5b301",
+        pointBackgroundColor: "#06b6d4",
         pointBorderColor: "#fff",
         borderWidth: 2.5,
       }],
@@ -2328,7 +2328,9 @@ function activateSection(id) {
   $("#pageTitle").textContent = t;
   $("#pageSubtitle").textContent = s;
 
-  $$(".nav-link").forEach((a) => a.classList.toggle("active", a.dataset.nav === t));
+  $$(".nav-link").forEach((a) => {
+    a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+  });
 
   if (id === "dashboard") {
     renderDashKeg();
@@ -2369,6 +2371,16 @@ function scheduleAutoRefresh() {
 document.addEventListener("DOMContentLoaded", () => {
   $("#year").textContent = new Date().getFullYear();
 
+  const validSections = ["dashboard", "kegiatan", "statistik", "data"];
+  const sectionFromHash = () => {
+    const id = (window.location.hash || "").replace("#", "");
+    return validSections.includes(id) ? id : null;
+  };
+
+  // Tampilkan bagian sesuai hash lebih awal (mis. /monitoring/#kegiatan).
+  const awal = sectionFromHash();
+  if (awal) activateSection(awal);
+
   // Sidebar
   $("#menuBtn").addEventListener("click", () => openSidebar(true));
   $("#sidebarClose").addEventListener("click", () => openSidebar(false));
@@ -2376,9 +2388,15 @@ document.addEventListener("DOMContentLoaded", () => {
   $$(".nav-link").forEach((a) => {
     a.addEventListener("click", (e) => {
       e.preventDefault();
-      activateSection(a.getAttribute("href").slice(1));
+      const id = a.getAttribute("href").slice(1);
+      if (window.location.hash === "#" + id) activateSection(id);
+      else window.location.hash = id;
       openSidebar(false);
     });
+  });
+  window.addEventListener("hashchange", () => {
+    const id = sectionFromHash();
+    if (id) activateSection(id);
   });
 
   // Refresh
@@ -2504,6 +2522,16 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (btn.dataset.act === "del") deleteKegiatan(key);
   });
   $("#btnKegCancelEdit").addEventListener("click", resetKegForm);
+
+  // Tombol tambah cepat: gulir ke formulir kegiatan dan fokuskan input nama.
+  const btnQuickKeg = document.getElementById("btnQuickKeg");
+  if (btnQuickKeg) {
+    btnQuickKeg.addEventListener("click", () => {
+      const card = document.getElementById("kegFormCard");
+      if (card) card.scrollIntoView({ behavior: "smooth", block: "start" });
+      setTimeout(() => document.getElementById("kegNama")?.focus(), 420);
+    });
+  }
 
   // CRUD Pendaftar — modal tambah/edit + tombol aksi baris (delegasi)
   $("#btnAddPend").addEventListener("click", () => openPendModal("add", null));

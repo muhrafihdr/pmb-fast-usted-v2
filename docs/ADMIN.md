@@ -81,10 +81,11 @@ Ganti nilai `HASH_USER` dan `HASH_PASS` dengan hasil perintah tersebut, lalu dep
 
 Menu **🔒 Monitoring FAST** tampil di navigasi utama setiap halaman publik. Menu ini tidak langsung membuka tautan apa pun; pengguna harus memasukkan **username dan password yang sama dengan Panel Admin** terlebih dahulu.
 
-- Setelah verifikasi berhasil, dashboard dibuka di tab yang sama pada halaman lokal **`/monitoring-fast/`**.
-- Halaman tersebut menempelkan (embed) aplikasi dashboard Google Apps Script resmi di dalam iframe — **bukan** mengarahkan ke Google Sites.
-- Akses berlaku 2 jam dan disimpan di `sessionStorage` (berakhir saat tab ditutup).
+- Setelah verifikasi berhasil, dashboard dibuka di tab yang sama pada **`/monitoring/#kegiatan`** — dashboard lokal dengan tampilan modern.
+- Dashboard lokal membaca spreadsheet PMB dan kegiatan FAST, mendukung CRUD, filter, grafik, serta export CSV/PDF.
+- Halaman **`/monitoring-fast/`** tetap tersedia sebagai cadangan dan menempelkan (embed) aplikasi Google Apps Script resmi — bukan pengalihan ke Google Sites.
+- Akses berlaku 2 jam dan disimpan di `sessionStorage` (berakhir saat tab ditutup). Halaman `/monitoring/` juga dilindungi gerbang yang sama.
 - Setelah 5 percobaan gagal, akses dikunci selama 60 detik.
-- URL halaman diatur di `assets/js/config.js` pada `monitoring.url`, sedangkan URL aplikasi yang di-embed ada di `monitoring.appUrl`. Gerbang loginnya ada di `assets/js/monitoring.js`.
+- URL dashboard diatur di `assets/js/config.js` pada `monitoring.url`. URL aplikasi Apps Script cadangan ada di `monitoring.appUrl`. Gerbang loginnya ada di `assets/js/monitoring.js`.
 
 > Karena situs ini statis, gerbang ini melindungi navigasi di sisi klien. Aplikasi dashboard Google Apps Script tetap dapat diakses langsung apabila seseorang mengetahui URL `monitoring.appUrl`. Untuk perlindungan penuh, gunakan autentikasi di sisi server atau batasi akses deployment Apps Script sesuai kebutuhan.

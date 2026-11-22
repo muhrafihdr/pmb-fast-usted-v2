@@ -87,13 +87,13 @@
        dengan username & password yang sama dengan Panel Admin
        (lihat assets/js/monitoring.js).
 
-       `url`    : halaman lokal yang menampilkan dashboard.
-       `appUrl` : aplikasi dashboard Google Apps Script yang
-                  ditempel (embed) di halaman lokal tersebut.
+       `url`    : halaman dashboard lokal (tema modern).
+       `appUrl` : aplikasi dashboard Google Apps Script cadangan
+                  yang dipakai halaman /monitoring-fast/.
     --------------------------------------------------------- */
     monitoring: {
       nama: "Monitoring FAST",
-      url: "/monitoring-fast/",
+      url: "/monitoring/?v=20261122e#kegiatan",
       appUrl: "https://script.google.com/macros/s/AKfycbwWswpHsePmGHDAcorw5kSQwCrcqP5Y4PC4yAE71IAafFSbEqBuf-5pXqenXeObRAff9g/exec",
       masaBukaMenit: 120
     },
@@ -142,7 +142,7 @@
     },
 
     /* ---------- Versi aset (cache-busting) ---------- */
-    versi: "20261122d"
+    versi: "20261122e"
   };
 
   /* Ekspos sebagai global. */

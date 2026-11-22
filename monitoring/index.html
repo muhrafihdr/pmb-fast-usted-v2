@@ -6,6 +6,20 @@
   <meta name="description" content="Dashboard Monitoring FAST — Fakultas Sains dan Teknologi USTEDI. Pantau data pendaftar mahasiswa baru secara real-time: statistik, grafik, dan rekap data." />
   <title>Monitoring FAST — Dashboard Fakultas Sains &amp; Teknologi USTEDI</title>
 
+  <!-- Gerbang akses: halaman ini hanya terbuka setelah login dari menu Monitoring FAST. -->
+  <script>
+    (function () {
+      var KUNCI = "fast_monitoring_buka_v1";
+      var boleh = false;
+      try {
+        var sesi = JSON.parse(sessionStorage.getItem(KUNCI) || "null");
+        boleh = !!(sesi && sesi.exp && Date.now() <= sesi.exp);
+        if (!boleh) sessionStorage.removeItem(KUNCI);
+      } catch (e) { boleh = false; }
+      if (!boleh) window.location.replace("/#monitoring");
+    })();
+  </script>
+
   <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,6 +30,7 @@
 
   <!-- Cache-busting: ganti ?v= setiap deploy agar browser selalu ambil file terbaru -->
   <link rel="stylesheet" href="style.css?v=20260830" />
+  <link rel="stylesheet" href="modern.css?v=20261122c" />
 </head>
 <body>
 
@@ -33,16 +48,20 @@
 
       <nav class="sidebar-nav">
         <a href="#dashboard" class="nav-link active" data-nav="Dashboard">
-          Dashboard
+          <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="2"></rect><rect x="14" y="3" width="7" height="7" rx="2"></rect><rect x="3" y="14" width="7" height="7" rx="2"></rect><rect x="14" y="14" width="7" height="7" rx="2"></rect></svg></span>
+          <span>Dashboard</span>
         </a>
         <a href="#kegiatan" class="nav-link" data-nav="Kegiatan">
-          Pencatatan Kegiatan
+          <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M8 11h8M8 16h5"></path></svg></span>
+          <span>Pencatatan Kegiatan</span>
         </a>
         <a href="#statistik" class="nav-link" data-nav="Statistik">
-          Statistik
+          <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><rect x="7" y="12" width="3" height="6" rx="1"></rect><rect x="12" y="8" width="3" height="10" rx="1"></rect><rect x="17" y="4" width="3" height="14" rx="1"></rect></svg></span>
+          <span>Statistik</span>
         </a>
         <a href="#data" class="nav-link" data-nav="Data">
-          Data Pendaftar
+          <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
+          <span>Data Pendaftar</span>
         </a>
       </nav>
 
@@ -66,6 +85,10 @@
           <p id="pageSubtitle">Ringkasan pendaftar mahasiswa baru FAST USTEDI</p>
         </div>
         <div class="topbar-actions">
+          <a class="btn-ghost btn-portal" href="/" title="Kembali ke Portal FAST">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
+            <span>Portal</span>
+          </a>
           <span class="updated" id="lastUpdated" title="Terakhir diperbarui">—</span>
           <label class="autorefresh" title="Penyegaran otomatis">
             <span>Auto</span>
@@ -187,6 +210,23 @@
 
         <!-- ================= KEGIATAN ================= -->
         <section class="section" id="kegiatan" hidden>
+          <div class="kpi-grid" id="kegKpi"></div>
+
+          <div class="charts-grid">
+            <div class="card chart-card">
+              <div class="card-head"><h3>Kegiatan per Kategori</h3></div>
+              <div class="chart-box"><canvas id="chartKegKategori" aria-label="Grafik kegiatan per kategori"></canvas></div>
+            </div>
+            <div class="card chart-card">
+              <div class="card-head"><h3>Status Kegiatan</h3></div>
+              <div class="chart-box"><canvas id="chartKegStatus" aria-label="Grafik status kegiatan"></canvas></div>
+            </div>
+            <div class="card chart-card chart-wide">
+              <div class="card-head"><h3>Kegiatan per Bulan — 6 Bulan Terakhir</h3></div>
+              <div class="chart-box chart-tall"><canvas id="chartKegBulan" aria-label="Grafik kegiatan per bulan"></canvas></div>
+            </div>
+          </div>
+
           <div class="card filter-card" id="kegFormCard">
             <div class="filter-head">
               <h3 id="kegFormTitle">Catat Kegiatan Baru</h3>
@@ -320,23 +360,6 @@
             </form>
           </div>
 
-          <div class="kpi-grid" id="kegKpi"></div>
-
-          <div class="charts-grid">
-            <div class="card chart-card">
-              <div class="card-head"><h3>Kegiatan per Kategori</h3></div>
-              <div class="chart-box"><canvas id="chartKegKategori" aria-label="Grafik kegiatan per kategori"></canvas></div>
-            </div>
-            <div class="card chart-card">
-              <div class="card-head"><h3>Status Kegiatan</h3></div>
-              <div class="chart-box"><canvas id="chartKegStatus" aria-label="Grafik status kegiatan"></canvas></div>
-            </div>
-            <div class="card chart-card chart-wide">
-              <div class="card-head"><h3>Kegiatan per Bulan — 6 Bulan Terakhir</h3></div>
-              <div class="chart-box chart-tall"><canvas id="chartKegBulan" aria-label="Grafik kegiatan per bulan"></canvas></div>
-            </div>
-          </div>
-
           <div class="card table-card">
             <div class="filter-head">
               <h3>Rekap Kegiatan</h3>
@@ -373,6 +396,8 @@
             </div>
             <div class="pagination" id="kegPagination"></div>
           </div>
+
+          <button type="button" class="fab" id="btnQuickKeg" aria-label="Tambah kegiatan" title="Tambah kegiatan">+</button>
         </section>
 
         <!-- ================= STATISTIK ================= -->
@@ -527,6 +552,6 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 
-  <script src="script.js?v=20261029"></script>
+  <script src="script.js?v=20261122c"></script>
 </body>
 </html>
