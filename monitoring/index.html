@@ -30,7 +30,7 @@
 
   <!-- Cache-busting: ganti ?v= setiap deploy agar browser selalu ambil file terbaru -->
   <link rel="stylesheet" href="style.css?v=20260830" />
-  <link rel="stylesheet" href="modern.css?v=20261122e" />
+  <link rel="stylesheet" href="modern.css?v=20261122j" />
 </head>
 <body>
 
@@ -199,7 +199,7 @@
                     <th>Program</th>
                     <th>Progres</th>
                     <th>Prioritas</th>
-                    <th>Penanggung Jawab</th>
+                    <th>Kepala Program Studi / Dekan</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -280,8 +280,8 @@
                     </select>
                   </div>
                   <div class="filter-item">
-                    <label for="kegPic">Penanggung Jawab</label>
-                    <input type="text" id="kegPic" placeholder="Nama dosen/staf" />
+                    <label for="kegPic">Kepala Program Studi / Dekan</label>
+                    <input type="text" id="kegPic" placeholder="Nama Kaprodi / Dekan" />
                   </div>
                   <div class="filter-item">
                     <label for="kegTempat">Tempat / Lokasi</label>
@@ -367,12 +367,13 @@
               <div class="filter-actions">
                 <button class="btn-ghost" id="btnResetKeg">Reset</button>
                 <button class="btn-primary" id="btnExportKeg">Export CSV</button>
+                <button class="btn-primary btn-word" id="btnExportKegWord">Export Word</button>
                 <button class="btn-primary btn-pdf" id="btnExportKegPdf">Export PDF</button>
               </div>
             </div>
             <div class="filter-grid">
               <div class="filter-item filter-search">
-                <label for="kegSearch">Cari kegiatan, program, PIC…</label>
+                <label for="kegSearch">Cari kegiatan, program, kepala prodi/dekan…</label>
                 <input type="search" id="kegSearch" placeholder="Ketik untuk mencari…" />
               </div>
               <div class="filter-item">
@@ -553,6 +554,6 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 
-  <script src="script.js?v=20261122i"></script>
+  <script src="script.js?v=20261122j"></script>
 </body>
 </html>

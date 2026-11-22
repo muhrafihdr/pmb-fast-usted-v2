@@ -52,7 +52,7 @@ const PMB_HEADERS = [
 const KEGIATAN_HEADERS = [
   "ID_Monitoring", "Timestamp_Input", "Tanggal_Kegiatan", "Bulan_Laporan", "Tahun_Laporan", "Periode",
   "Program_Studi", "Program", "Kegiatan", "Progres", "Tindak_Lanjut",
-  "Target", "Status_Target", "Prioritas", "Penanggung_Jawab", "Hasil_Output",
+  "Target", "Status_Target", "Prioritas", "Kepala Program Studi / Dekan", "Hasil_Output",
   "Catatan", "Evaluasi_Feedback", "Updated_At",
 ];
 
@@ -77,7 +77,7 @@ function doGet(e) {
   try {
     if (action === "getKegiatan") {
       const sheet = getSheet_(KEGIATAN_SHEET_ID, KEGIATAN_SHEET);
-      ensureHeader_(sheet, KEGIATAN_HEADERS);
+      ensureKegiatanHeader_(sheet);
       migrateLegacyKegiatan_(sheet);
       return getSheetData_(KEGIATAN_SHEET_ID, KEGIATAN_SHEET);
     }
@@ -97,7 +97,7 @@ function doPost(e) {
     /* ---------- KEGIATAN → spreadsheet PMB, sheet MONITORING ---------- */
     if (data._tipe === "kegiatan") {
       const sheet = getSheet_(KEGIATAN_SHEET_ID, KEGIATAN_SHEET);
-      ensureHeader_(sheet, KEGIATAN_HEADERS);
+      ensureKegiatanHeader_(sheet);
       migrateLegacyKegiatan_(sheet);
       const aksi = data._aksi || "create";
       const id = String(data._key || "").replace(/^id:/, "").trim();
@@ -147,7 +147,7 @@ function doPost(e) {
         data.target || "",                               // Target
         data.statusTarget || "",                         // Status_Target
         data.prioritas || "",                            // Prioritas
-        data.pic || "",                                  // Penanggung_Jawab
+        data.pic || "",                                  // Kepala Program Studi / Dekan
         data.hasilOutput || data.linkDokumentasi || "",  // Hasil_Output
         catatan,                                         // Catatan
         data.evaluasiFeedback || "",                     // Evaluasi_Feedback
@@ -224,6 +224,26 @@ function doPost(e) {
 /* ============================================================
    Helper
    ============================================================ */
+/** Pastikan header sheet MONITORING ada dan ganti header lama
+    "Penanggung_Jawab" menjadi "Kepala Program Studi / Dekan" tanpa
+    mengubah urutan/posisi kolom data. */
+function ensureKegiatanHeader_(sheet) {
+  ensureHeader_(sheet, KEGIATAN_HEADERS);
+  const idx = KEGIATAN_HEADERS.indexOf("Kepala Program Studi / Dekan");
+  if (idx < 0) return;
+  const current = String(sheet.getRange(1, idx + 1).getValue() || "").trim();
+  if (!current || /^(penanggung jawab|penanggung_jawab|pic|pj)$/i.test(current)) {
+    sheet.getRange(1, idx + 1).setValue("Kepala Program Studi / Dekan");
+  }
+}
+
+/** Jalankan manual bila ingin mengganti header kolom tanpa deploy ulang. */
+function renameKepalaProdiSekarang() {
+  const sheet = getSheet_(KEGIATAN_SHEET_ID, KEGIATAN_SHEET);
+  ensureKegiatanHeader_(sheet);
+  Logger.log("Header kolom Kepala Program Studi / Dekan siap.");
+}
+
 /** Salin sekali data kegiatan lama (sheet Monitoring_FAST) ke sheet MONITORING
     apabila sheet tujuan masih kosong (hanya header). Aman dipanggil berulang. */
 function migrateLegacyKegiatan_(targetSheet) {
@@ -239,6 +259,12 @@ function migrateLegacyKegiatan_(targetSheet) {
       const obj = {};
       oldHeaders.forEach(function (h, i) { obj[h] = r[i]; });
       return KEGIATAN_HEADERS.map(function (h) {
+        if (h === "Kepala Program Studi / Dekan") {
+          if (obj[h] !== undefined) return obj[h];
+          if (obj["Penanggung_Jawab"] !== undefined) return obj["Penanggung_Jawab"];
+          if (obj["Penanggung Jawab"] !== undefined) return obj["Penanggung Jawab"];
+          return "";
+        }
         if (h === "Tanggal_Kegiatan") return obj[h] !== undefined ? obj[h] : "";
         return obj[h] !== undefined ? obj[h] : "";
       });
@@ -391,7 +417,7 @@ function ensureHeader_(sheet, headers) {
 /** (Opsional) Salin data kegiatan lama ke sheet MONITORING secara manual. */
 function migrateKegiatanSekarang() {
   const sheet = getSheet_(KEGIATAN_SHEET_ID, KEGIATAN_SHEET);
-  ensureHeader_(sheet, KEGIATAN_HEADERS);
+  ensureKegiatanHeader_(sheet);
   migrateLegacyKegiatan_(sheet);
   Logger.log("Migrasi selesai. Total baris sheet MONITORING: " + sheet.getLastRow());
 }
@@ -399,7 +425,7 @@ function migrateKegiatanSekarang() {
 /** (Opsional) Buat header kedua sheet — jalankan sekali dari editor. */
 function setupHeaders() {
   ensureHeader_(getSheet_(PMB_SHEET_ID, PMB_SHEET), PMB_HEADERS);
-  ensureHeader_(getSheet_(KEGIATAN_SHEET_ID, KEGIATAN_SHEET), KEGIATAN_HEADERS);
+  ensureKegiatanHeader_(getSheet_(KEGIATAN_SHEET_ID, KEGIATAN_SHEET));
   Logger.log("Header siap: " + PMB_SHEET + " & " + KEGIATAN_SHEET);
 }
 

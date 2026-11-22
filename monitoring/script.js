@@ -1147,7 +1147,7 @@ const KEG_COLS = {
   tahun: ["tahun laporan", "tahun"],
   periode: ["periode"],
   progres: ["progres", "progres kegiatan"],
-  pic: ["penanggung jawab", "pic", "pj", "penanggungjawab"],
+  pic: ["penanggung jawab", "pic", "pj", "penanggungjawab", "kepala program studi / dekan", "kepala program studi/dekan", "kepala program studi", "kaprodi / dekan", "kaprodi", "dekan"],
   tempat: ["tempat", "lokasi"],
   peserta: ["jumlah peserta", "peserta", "jumlah"],
   prioritas: ["prioritas"],
@@ -1945,7 +1945,7 @@ function renderKegTable() {
     { key: "bulan", label: "Bulan" },
     { key: "progres", label: "Progres" },
     { key: "prioritas", label: "Prioritas" },
-    { key: "pic", label: "Penanggung Jawab" },
+    { key: "pic", label: "Kepala Program Studi / Dekan" },
     { key: "target", label: "Target" },
     { key: "statusTarget", label: "Status Target" },
     { key: "output", label: "Hasil / Output" },
@@ -2114,7 +2114,7 @@ async function submitKegiatan(e) {
       [H("tahun", "Tahun Laporan")]: data.tahunLaporan,
       [H("periode", "Periode")]: data.periode,
       [H("progres", "Progres")]: data.progres,
-      [H("pic", "Penanggung Jawab")]: data.pic,
+      [H("pic", "Kepala Program Studi / Dekan")]: data.pic,
       [H("tempat", "Tempat")]: data.tempat,
       [H("peserta", "Jumlah Peserta")]: data.jumlahPeserta,
       [H("prioritas", "Prioritas")]: data.prioritas,
@@ -2186,6 +2186,19 @@ function exportKegCsv() {
   URL.revokeObjectURL(url);
 }
 
+/* ---- Filter aktif untuk export PDF/Word ---- */
+function labelFilterKegiatan() {
+  const flt = [];
+  if (kegState.program) flt.push("Program: " + kegState.program);
+  if (kegState.progres) flt.push("Progres: " + kegState.progres);
+  if (kegState.bulan) {
+    const [yy, mm] = kegState.bulan.split("-");
+    flt.push("Bulan: " + new Date(Number(yy), Number(mm) - 1, 1).toLocaleDateString("id-ID", { month: "long", year: "numeric" }));
+  }
+  if (kegState.search) flt.push("Cari: \u201C" + kegState.search + "\u201D");
+  return flt;
+}
+
 /* ---- Export PDF Kegiatan ---- */
 function muatGambarPdf(src) {
   return new Promise(function (resolve) {
@@ -2202,7 +2215,11 @@ function muatGambarPdf(src) {
         const canvas = document.createElement("canvas");
         canvas.width = w;
         canvas.height = h;
-        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        const ctx = canvas.getContext("2d");
+        // Latar putih agar logo transparan tidak menjadi hitam di Word.
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
         resolve({ data: canvas.toDataURL("image/png"), ratio: w / h });
       } catch (e) {
         resolve({
@@ -2305,14 +2322,7 @@ async function exportKegPdf() {
   doc.text(`Total: ${rows.length}   |   Selesai: ${selesai} (${pct}%)   |   Dalam Proses: ${proses}`, 10, y);
 
   // Filter aktif
-  const flt = [];
-  if (kegState.program) flt.push("Program: " + kegState.program);
-  if (kegState.progres) flt.push("Progres: " + kegState.progres);
-  if (kegState.bulan) {
-    const [yy, mm] = kegState.bulan.split("-");
-    flt.push("Bulan: " + new Date(Number(yy), Number(mm) - 1, 1).toLocaleDateString("id-ID", { month: "long", year: "numeric" }));
-  }
-  if (kegState.search) flt.push("Cari: \u201C" + kegState.search + "\u201D");
+  const flt = labelFilterKegiatan();
   if (flt.length) {
     doc.setFont("helvetica", "italic");
     doc.setFontSize(9);
@@ -2327,7 +2337,7 @@ async function exportKegPdf() {
 
   doc.autoTable({
     startY: flt.length ? y + 10 : y + 6,
-    head: [["ID", "Nama Kegiatan", "Program", "Bulan", "Progres", "Prioritas", "Penanggung Jawab", "Target", "Status Target", "Hasil / Output"]],
+    head: [["ID", "Nama Kegiatan", "Program", "Bulan", "Progres", "Prioritas", "Kepala Program Studi / Dekan", "Target", "Status Target", "Hasil / Output"]],
     body,
     theme: "striped",
     styles: { font: "helvetica", fontSize: 7.5, cellPadding: 2, overflow: "linebreak", valign: "middle" },
@@ -2350,6 +2360,125 @@ async function exportKegPdf() {
   });
 
   doc.save(fname);
+}
+
+/* ---- Export Word Kegiatan ---- */
+async function exportKegWord() {
+  const rows = kegFiltered();
+  if (!rows.length) {
+    alert("Tidak ada data kegiatan untuk diexport.");
+    return;
+  }
+  const now = new Date();
+  const fname = `monitoring-fast-kegiatan-${now.getFullYear()}${pad2(now.getMonth() + 1)}${pad2(now.getDate())}-${pad2(now.getHours())}${pad2(now.getMinutes())}.doc`;
+
+  const selesai = rows.filter((r) => String(kegVal(r, "progres")).toLowerCase() === "selesai").length;
+  const proses = rows.length - selesai;
+  const pct = rows.length ? Math.round((selesai / rows.length) * 100) : 0;
+  const flt = labelFilterKegiatan();
+
+  const [logoFast, logoUstedi] = await Promise.all([
+    muatGambarPdf("/assets/img/logo-fast.png"),
+    muatGambarPdf("/assets/img/logo-usted.png"),
+  ]);
+  const LOGO_PX = 50;
+  const logoImg = function (logo, alt) {
+    if (!logo) return "";
+    const w = Math.max(1, Math.round(LOGO_PX * (logo.ratio || 1)));
+    return `<img src="${logo.data}" width="${w}" height="${LOGO_PX}" alt="${alt}" style="width:${w}px;height:${LOGO_PX}px;background:#fff;padding:2px;border-radius:5px;margin-right:5px;" />`;
+  };
+  const logoHtml = logoImg(logoFast, "Logo FAST") + logoImg(logoUstedi, "Logo USTEDI");
+
+  const trs = rows.map((r, i) => {
+    const d = kegDate(r);
+    const bulanLabel = d ? d.toLocaleDateString("id-ID", { month: "long", year: "numeric" }) : kegVal(r, "bulan");
+    const out = String(kegVal(r, "output") || kegVal(r, "link") || "");
+    return `<tr style="${i % 2 ? "background:#f1f5f9;" : ""}">
+      <td>${esc(kegVal(r, "id"))}</td>
+      <td>${esc(kegVal(r, "nama"))}</td>
+      <td>${esc(kegVal(r, "program"))}</td>
+      <td>${esc(bulanLabel)}</td>
+      <td>${esc(kegVal(r, "progres"))}</td>
+      <td>${esc(kegVal(r, "prioritas"))}</td>
+      <td>${esc(kegVal(r, "pic"))}</td>
+      <td>${esc(kegVal(r, "target"))}</td>
+      <td>${esc(kegVal(r, "statusTarget"))}</td>
+      <td style="word-break:break-all;">${out ? esc(out) : "&mdash;"}</td>
+    </tr>`;
+  }).join("");
+
+  const html = `<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="utf-8">
+<title>Rekap Kegiatan — Monitoring FAST</title>
+<style>
+  @page { size: A4 landscape; margin: 12mm; }
+  body { font-family: Arial, Helvetica, sans-serif; color: #1e293b; font-size: 10px; }
+  table { border-collapse: collapse; }
+  .doc-head { width: 100%; background: #0d3b8c; color: #ffffff; border-collapse: collapse; }
+  .doc-head td { vertical-align: middle; }
+  .doc-title { font-size: 16px; font-weight: bold; line-height: 1.2; }
+  .doc-sub { font-size: 12px; margin-top: 2px; }
+  .doc-addr { font-size: 11px; margin-top: 6px; color: #dbeafe; }
+  .doc-contact { font-size: 10px; margin-top: 2px; color: #dbeafe; }
+  .doc-meta { font-size: 10px; text-align: right; white-space: nowrap; }
+  .doc-summary { font-size: 11px; font-weight: bold; margin: 10px 0 4px; }
+  .doc-filter { font-size: 10px; color: #64748b; margin: 0 0 6px; }
+  .doc-table { width: 100%; border-collapse: collapse; font-size: 9px; }
+  .doc-table th { background: #0d3b8c; color: #ffffff; border: 1px solid #1e3a8a; padding: 5px 4px; text-align: left; }
+  .doc-table td { border: 1px solid #cbd5e1; padding: 4px; vertical-align: top; }
+  .doc-foot { font-size: 9px; color: #94a3b8; margin-top: 10px; }
+</style>
+</head>
+<body>
+  <table class="doc-head" width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+      <td style="padding: 12px 8px; width: 150px;">${logoHtml}</td>
+      <td style="padding: 12px 8px;">
+        <div class="doc-title">Monitoring FAST — Fakultas Sains dan Teknologi USTEDI</div>
+        <div class="doc-sub">Rekap Pencatatan Kegiatan</div>
+        <div class="doc-addr">JL. MR. Koesbiyono Tjondrowibowo, Gunungpati, Semarang</div>
+        <div class="doc-contact">https://fastustedi.web.id/ &nbsp;•&nbsp; fast.ustedi@gmail.com</div>
+        <div style="font-size:10px;margin-top:6px;color:#dbeafe;">Dicetak: ${esc(fmtDateTime(now))}</div>
+      </td>
+    </tr>
+  </table>
+
+  <p class="doc-summary">Total: ${rows.length} &nbsp;|&nbsp; Selesai: ${selesai} (${pct}%) &nbsp;|&nbsp; Dalam Proses: ${proses}</p>
+  ${flt.length ? `<p class="doc-filter">Filter: ${esc(flt.join("  •  "))}</p>` : ""}
+
+  <table class="doc-table" width="100%" cellspacing="0" cellpadding="0">
+    <thead>
+      <tr>
+        <th style="width:8%">ID</th>
+        <th style="width:19%">Nama Kegiatan</th>
+        <th style="width:12%">Program</th>
+        <th style="width:9%">Bulan</th>
+        <th style="width:8%">Progres</th>
+        <th style="width:7%">Prioritas</th>
+        <th style="width:12%">Kepala Program Studi / Dekan</th>
+        <th style="width:12%">Target</th>
+        <th style="width:7%">Status Target</th>
+        <th style="width:6%">Hasil / Output</th>
+      </tr>
+    </thead>
+    <tbody>${trs}</tbody>
+  </table>
+
+  <p class="doc-foot">Monitoring FAST • Dicetak otomatis — ${esc(fmtDateTime(now))}</p>
+</body>
+</html>`;
+
+  const blob = new Blob(["\ufeff", html], { type: "application/msword" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fname;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
 }
 
 function exportKegPrintFallback(rows) {
@@ -2395,7 +2524,7 @@ function exportKegPrintFallback(rows) {
   </div>
   <p>Total data: ${rows.length}</p>
   <button onclick="window.print()">Cetak / Simpan PDF</button>
-  <table><thead><tr><th>ID</th><th>Nama Kegiatan</th><th>Program</th><th>Bulan</th><th>Progres</th><th>Prioritas</th><th>Penanggung Jawab</th><th>Target</th><th>Status Target</th><th>Hasil / Output</th></tr></thead><tbody>${trs}</tbody></table>
+  <table><thead><tr><th>ID</th><th>Nama Kegiatan</th><th>Program</th><th>Bulan</th><th>Progres</th><th>Prioritas</th><th>Kepala Program Studi / Dekan</th><th>Target</th><th>Status Target</th><th>Hasil / Output</th></tr></thead><tbody>${trs}</tbody></table>
   </body></html>`);
   w.document.close();
   w.focus();
@@ -2575,6 +2704,7 @@ document.addEventListener("DOMContentLoaded", () => {
   $("#kegForm").addEventListener("submit", submitKegiatan);
   $("#btnExportKeg").addEventListener("click", exportKegCsv);
   $("#btnExportKegPdf").addEventListener("click", exportKegPdf);
+  $("#btnExportKegWord").addEventListener("click", exportKegWord);
   $("#btnResetKeg").addEventListener("click", () => {
     kegState.search = ""; kegState.program = ""; kegState.progres = ""; kegState.bulan = "";
     kegState.page = 1;
