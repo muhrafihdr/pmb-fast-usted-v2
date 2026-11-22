@@ -2187,7 +2187,36 @@ function exportKegCsv() {
 }
 
 /* ---- Export PDF Kegiatan ---- */
-function exportKegPdf() {
+function muatGambarPdf(src) {
+  return new Promise(function (resolve) {
+    const img = new Image();
+    img.onload = function () {
+      try {
+        // Perkecil logo agar ukuran PDF tetap ringan.
+        const maxH = 180;
+        const sw = img.naturalWidth || 1;
+        const sh = img.naturalHeight || 1;
+        const skala = Math.min(1, maxH / sh);
+        const w = Math.max(1, Math.round(sw * skala));
+        const h = Math.max(1, Math.round(sh * skala));
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        resolve({ data: canvas.toDataURL("image/png"), ratio: w / h });
+      } catch (e) {
+        resolve({
+          data: img,
+          ratio: (img.naturalWidth || 1) / (img.naturalHeight || 1),
+        });
+      }
+    };
+    img.onerror = function () { resolve(null); };
+    img.src = src;
+  });
+}
+
+async function exportKegPdf() {
   const rows = kegFiltered();
   if (!rows.length) {
     alert("Tidak ada data kegiatan untuk diexport.");
@@ -2220,23 +2249,56 @@ function exportKegPdf() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const HEADER_H = 38;
 
-  // Header biru
-  doc.setFillColor(13, 59, 140);
-  doc.rect(0, 0, pageW, 26, "F");
-  doc.setTextColor(255, 255, 255);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(15);
-  doc.text("Monitoring FAST — Fakultas Sains dan Teknologi USTEDI", 10, 11);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.text("Rekap Pencatatan Kegiatan", 10, 18);
-  doc.setFontSize(9);
-  doc.text("Dicetak: " + fmtDateTime(now), pageW - 10, 11, { align: "right" });
+  // Logo FAST dan USTEDI (opsional; tetap jalan bila gagal dimuat)
+  const [logoFast, logoUstedi] = await Promise.all([
+    muatGambarPdf("/assets/img/logo-fast.png"),
+    muatGambarPdf("/assets/img/logo-usted.png"),
+  ]);
+
+  function gambarHeader() {
+    doc.setFillColor(13, 59, 140);
+    doc.rect(0, 0, pageW, HEADER_H, "F");
+
+    let x = 10;
+    const yLogo = 4.5;
+    const LOGO_H = 17;
+    [logoFast, logoUstedi].forEach(function (img) {
+      if (!img) return;
+      const rasio = img.ratio || 1;
+      const w = Math.min(LOGO_H * rasio, 24);
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(x - 1, yLogo - 1, w + 2, LOGO_H + 2, 2, 2, "F");
+      doc.addImage(img.data, "PNG", x, yLogo, w, LOGO_H);
+      x += w + 4;
+    });
+
+    const textX = x > 12 ? x + 3 : 10;
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.text("Monitoring FAST — Fakultas Sains dan Teknologi USTEDI", textX, 12);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9.5);
+    doc.text("Rekap Pencatatan Kegiatan", textX, 18);
+    doc.setTextColor(219, 234, 254);
+    doc.setFontSize(8.8);
+    doc.text("JL. MR. Koesbiyono Tjondrowibowo, Gunungpati, Semarang", textX, 24);
+    doc.setFontSize(8.2);
+    doc.text("https://fastustedi.web.id/  •  fast.ustedi@gmail.com", textX, 29.5);
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8.5);
+    doc.text("Dicetak: " + fmtDateTime(now), pageW - 10, 11, { align: "right" });
+  }
+
+  gambarHeader();
 
   // Ringkasan
   const pct = rows.length ? Math.round((selesai / rows.length) * 100) : 0;
-  let y = 32;
+  let y = HEADER_H + 6;
   doc.setTextColor(30, 41, 59);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
@@ -2276,9 +2338,9 @@ function exportKegPdf() {
       4: { cellWidth: 19 }, 5: { cellWidth: 16 }, 6: { cellWidth: 26 },
       7: { cellWidth: 34 }, 8: { cellWidth: 20 }, 9: { cellWidth: 33 },
     },
-    margin: { left: 10, right: 10, top: 42, bottom: 18 },
-    didDrawPage: () => {
-      const pageH = doc.internal.pageSize.getHeight();
+    margin: { left: 10, right: 10, top: HEADER_H + 6, bottom: 18 },
+    didDrawPage: (data) => {
+      if (data.pageNumber > 1) gambarHeader();
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
       doc.setTextColor(148, 163, 184);
@@ -2321,8 +2383,16 @@ function exportKegPrintFallback(rows) {
     button{margin:10px 0;padding:8px 14px;font-size:13px}
     @media print{button{display:none}}
   </style></head><body>
-  <h1>Monitoring FAST — Fakultas Sains dan Teknologi USTEDI</h1>
-  <p>Rekap Pencatatan Kegiatan — ${fmtDateTime(new Date())}</p>
+  <div style="display:flex;align-items:center;gap:14px;border-bottom:3px solid #0d3b8c;padding-bottom:10px;margin-bottom:12px">
+    <img src="${window.location.origin}/assets/img/logo-fast.png" alt="Logo FAST" style="height:52px;width:auto" />
+    <img src="${window.location.origin}/assets/img/logo-usted.png" alt="Logo USTEDI" style="height:52px;width:auto" />
+    <div>
+      <h1 style="margin:0">Monitoring FAST — Fakultas Sains dan Teknologi USTEDI</h1>
+      <p style="margin:2px 0">Rekap Pencatatan Kegiatan — ${fmtDateTime(new Date())}</p>
+      <p style="margin:2px 0">JL. MR. Koesbiyono Tjondrowibowo, Gunungpati, Semarang</p>
+      <p style="margin:2px 0">https://fastustedi.web.id/ &nbsp;•&nbsp; fast.ustedi@gmail.com</p>
+    </div>
+  </div>
   <p>Total data: ${rows.length}</p>
   <button onclick="window.print()">Cetak / Simpan PDF</button>
   <table><thead><tr><th>ID</th><th>Nama Kegiatan</th><th>Program</th><th>Bulan</th><th>Progres</th><th>Prioritas</th><th>Penanggung Jawab</th><th>Target</th><th>Status Target</th><th>Hasil / Output</th></tr></thead><tbody>${trs}</tbody></table>
