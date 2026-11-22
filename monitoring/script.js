@@ -2202,7 +2202,15 @@ function labelFilterKegiatan() {
       const [yy, mm] = v.split("-");
       return new Date(Number(yy), Number(mm) - 1, 1).toLocaleDateString("id-ID", { month: "long", year: "numeric" });
     };
-    flt.push("Bulan: " + labelBulan(kegState.bulanDari) + " s.d. " + labelBulan(kegState.bulanSampai));
+    if (kegState.bulanDari && kegState.bulanSampai && kegState.bulanDari === kegState.bulanSampai) {
+      flt.push("Bulan: " + labelBulan(kegState.bulanDari));
+    } else if (kegState.bulanDari && kegState.bulanSampai) {
+      flt.push("Bulan: " + labelBulan(kegState.bulanDari) + " s.d. " + labelBulan(kegState.bulanSampai));
+    } else if (kegState.bulanDari) {
+      flt.push("Bulan: dari " + labelBulan(kegState.bulanDari));
+    } else {
+      flt.push("Bulan: sampai " + labelBulan(kegState.bulanSampai));
+    }
   }
   if (kegState.search) flt.push("Cari: \u201C" + kegState.search + "\u201D");
   return flt;
