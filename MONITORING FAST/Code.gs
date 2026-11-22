@@ -52,7 +52,7 @@ const PMB_HEADERS = [
 const KEGIATAN_HEADERS = [
   "ID_Monitoring", "Timestamp_Input", "Tanggal_Kegiatan", "Bulan_Laporan", "Tahun_Laporan", "Periode",
   "Program_Studi", "Program", "Kegiatan", "Progres", "Tindak_Lanjut",
-  "Target", "Status_Target", "Prioritas", "Kepala Program Studi / Dekan", "Hasil_Output",
+  "Target", "Status_Target", "Prioritas", "Penanggung_Jawab", "Hasil_Output",
   "Catatan", "Evaluasi_Feedback", "Updated_At",
 ];
 
@@ -147,7 +147,7 @@ function doPost(e) {
         data.target || "",                               // Target
         data.statusTarget || "",                         // Status_Target
         data.prioritas || "",                            // Prioritas
-        data.pic || "",                                  // Kepala Program Studi / Dekan
+        data.pic || "",                                  // Penanggung_Jawab
         data.hasilOutput || data.linkDokumentasi || "",  // Hasil_Output
         catatan,                                         // Catatan
         data.evaluasiFeedback || "",                     // Evaluasi_Feedback
@@ -224,24 +224,29 @@ function doPost(e) {
 /* ============================================================
    Helper
    ============================================================ */
-/** Pastikan header sheet MONITORING ada dan ganti header lama
-    "Penanggung_Jawab" menjadi "Kepala Program Studi / Dekan" tanpa
-    mengubah urutan/posisi kolom data. */
+/** Pastikan header sheet MONITORING ada dan kembalikan header kolom
+    ke "Penanggung_Jawab" bila sebelumnya sempat diubah, tanpa mengubah
+    urutan/posisi kolom data. */
 function ensureKegiatanHeader_(sheet) {
   ensureHeader_(sheet, KEGIATAN_HEADERS);
-  const idx = KEGIATAN_HEADERS.indexOf("Kepala Program Studi / Dekan");
+  const idx = KEGIATAN_HEADERS.indexOf("Penanggung_Jawab");
   if (idx < 0) return;
   const current = String(sheet.getRange(1, idx + 1).getValue() || "").trim();
-  if (!current || /^(penanggung jawab|penanggung_jawab|pic|pj)$/i.test(current)) {
-    sheet.getRange(1, idx + 1).setValue("Kepala Program Studi / Dekan");
+  if (!current || /^(kepala program studi\s*\/?\s*dekan|kaprodi\s*\/?\s*dekan)$/i.test(current)) {
+    sheet.getRange(1, idx + 1).setValue("Penanggung_Jawab");
   }
 }
 
-/** Jalankan manual bila ingin mengganti header kolom tanpa deploy ulang. */
-function renameKepalaProdiSekarang() {
+/** Jalankan manual bila ingin mengembalikan header kolom tanpa deploy ulang. */
+function renamePenanggungJawabSekarang() {
   const sheet = getSheet_(KEGIATAN_SHEET_ID, KEGIATAN_SHEET);
   ensureKegiatanHeader_(sheet);
-  Logger.log("Header kolom Kepala Program Studi / Dekan siap.");
+  Logger.log("Header kolom Penanggung_Jawab siap.");
+}
+
+/** Alias lama agar tetap kompatibel dengan instruksi sebelumnya. */
+function renameKepalaProdiSekarang() {
+  renamePenanggungJawabSekarang();
 }
 
 /** Salin sekali data kegiatan lama (sheet Monitoring_FAST) ke sheet MONITORING
@@ -259,9 +264,9 @@ function migrateLegacyKegiatan_(targetSheet) {
       const obj = {};
       oldHeaders.forEach(function (h, i) { obj[h] = r[i]; });
       return KEGIATAN_HEADERS.map(function (h) {
-        if (h === "Kepala Program Studi / Dekan") {
+        if (h === "Penanggung_Jawab") {
           if (obj[h] !== undefined) return obj[h];
-          if (obj["Penanggung_Jawab"] !== undefined) return obj["Penanggung_Jawab"];
+          if (obj["Kepala Program Studi / Dekan"] !== undefined) return obj["Kepala Program Studi / Dekan"];
           if (obj["Penanggung Jawab"] !== undefined) return obj["Penanggung Jawab"];
           return "";
         }

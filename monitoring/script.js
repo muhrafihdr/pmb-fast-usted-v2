@@ -1583,7 +1583,7 @@ const KEGIATAN_CSV_URL =
 let KEG = { headers: [], rows: [], list: [], local: true, mode: "local" };
 
 const kegState = {
-  search: "", program: "", progres: "", bulan: "",
+  search: "", program: "", progres: "", bulanDari: "", bulanSampai: "",
   sortKey: "bulan", sortDir: "desc", page: 1, perPage: 10,
 };
 
@@ -1911,7 +1911,12 @@ function kegFiltered() {
   return KEG.list.filter((r) => {
     if (kegState.program && kegVal(r, "program") !== kegState.program) return false;
     if (kegState.progres && kegVal(r, "progres") !== kegState.progres) return false;
-    if (kegState.bulan && !kegBulanKey(r).startsWith(kegState.bulan)) return false;
+    if (kegState.bulanDari || kegState.bulanSampai) {
+      const key = kegBulanKey(r);
+      if (!key) return false;
+      if (kegState.bulanDari && key < kegState.bulanDari) return false;
+      if (kegState.bulanSampai && key > kegState.bulanSampai) return false;
+    }
     if (q) {
       const hay = ["nama", "program", "pic", "tempat", "catatan", "target", "id"]
         .map((k) => String(kegVal(r, k)).toLowerCase()).join(" ");
@@ -1945,7 +1950,7 @@ function renderKegTable() {
     { key: "bulan", label: "Bulan" },
     { key: "progres", label: "Progres" },
     { key: "prioritas", label: "Prioritas" },
-    { key: "pic", label: "Kepala Program Studi / Dekan" },
+    { key: "pic", label: "Penanggung Jawab" },
     { key: "target", label: "Target" },
     { key: "statusTarget", label: "Status Target" },
     { key: "output", label: "Hasil / Output" },
@@ -2114,7 +2119,7 @@ async function submitKegiatan(e) {
       [H("tahun", "Tahun Laporan")]: data.tahunLaporan,
       [H("periode", "Periode")]: data.periode,
       [H("progres", "Progres")]: data.progres,
-      [H("pic", "Kepala Program Studi / Dekan")]: data.pic,
+      [H("pic", "Penanggung Jawab")]: data.pic,
       [H("tempat", "Tempat")]: data.tempat,
       [H("peserta", "Jumlah Peserta")]: data.jumlahPeserta,
       [H("prioritas", "Prioritas")]: data.prioritas,
@@ -2191,9 +2196,13 @@ function labelFilterKegiatan() {
   const flt = [];
   if (kegState.program) flt.push("Program: " + kegState.program);
   if (kegState.progres) flt.push("Progres: " + kegState.progres);
-  if (kegState.bulan) {
-    const [yy, mm] = kegState.bulan.split("-");
-    flt.push("Bulan: " + new Date(Number(yy), Number(mm) - 1, 1).toLocaleDateString("id-ID", { month: "long", year: "numeric" }));
+  if (kegState.bulanDari || kegState.bulanSampai) {
+    const labelBulan = (v) => {
+      if (!v) return "…";
+      const [yy, mm] = v.split("-");
+      return new Date(Number(yy), Number(mm) - 1, 1).toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+    };
+    flt.push("Bulan: " + labelBulan(kegState.bulanDari) + " s.d. " + labelBulan(kegState.bulanSampai));
   }
   if (kegState.search) flt.push("Cari: \u201C" + kegState.search + "\u201D");
   return flt;
@@ -2337,7 +2346,7 @@ async function exportKegPdf() {
 
   doc.autoTable({
     startY: flt.length ? y + 10 : y + 6,
-    head: [["ID", "Nama Kegiatan", "Program", "Bulan", "Progres", "Prioritas", "Kepala Program Studi / Dekan", "Target", "Status Target", "Hasil / Output"]],
+    head: [["ID", "Nama Kegiatan", "Program", "Bulan", "Progres", "Prioritas", "Penanggung Jawab", "Target", "Status Target", "Hasil / Output"]],
     body,
     theme: "striped",
     styles: { font: "helvetica", fontSize: 7.5, cellPadding: 2, overflow: "linebreak", valign: "middle" },
@@ -2449,7 +2458,7 @@ async function exportKegWord() {
     const border = { style: BorderStyle.SINGLE, size: 4, color: "CBD5E1" };
     const cellBorders = { top: border, bottom: border, left: border, right: border };
     const widths = [8, 19, 12, 9, 8, 7, 13, 12, 7, 5];
-    const labels = ["ID", "Nama Kegiatan", "Program", "Bulan", "Progres", "Prioritas", "Kepala Program Studi / Dekan", "Target", "Status Target", "Hasil / Output"];
+    const labels = ["ID", "Nama Kegiatan", "Program", "Bulan", "Progres", "Prioritas", "Penanggung Jawab", "Target", "Status Target", "Hasil / Output"];
 
     const headerRow = new TableRow({
       tableHeader: true,
@@ -2656,7 +2665,7 @@ async function exportKegWordHtml() {
         <th style="width:9%">Bulan</th>
         <th style="width:8%">Progres</th>
         <th style="width:7%">Prioritas</th>
-        <th style="width:12%">Kepala Program Studi / Dekan</th>
+        <th style="width:12%">Penanggung Jawab</th>
         <th style="width:12%">Target</th>
         <th style="width:7%">Status Target</th>
         <th style="width:6%">Hasil / Output</th>
@@ -2723,7 +2732,7 @@ function exportKegPrintFallback(rows) {
   </div>
   <p>Total data: ${rows.length}</p>
   <button onclick="window.print()">Cetak / Simpan PDF</button>
-  <table><thead><tr><th>ID</th><th>Nama Kegiatan</th><th>Program</th><th>Bulan</th><th>Progres</th><th>Prioritas</th><th>Kepala Program Studi / Dekan</th><th>Target</th><th>Status Target</th><th>Hasil / Output</th></tr></thead><tbody>${trs}</tbody></table>
+  <table><thead><tr><th>ID</th><th>Nama Kegiatan</th><th>Program</th><th>Bulan</th><th>Progres</th><th>Prioritas</th><th>Penanggung Jawab</th><th>Target</th><th>Status Target</th><th>Hasil / Output</th></tr></thead><tbody>${trs}</tbody></table>
   </body></html>`);
   w.document.close();
   w.focus();
@@ -2905,10 +2914,12 @@ document.addEventListener("DOMContentLoaded", () => {
   $("#btnExportKegPdf").addEventListener("click", exportKegPdf);
   $("#btnExportKegWord").addEventListener("click", exportKegWord);
   $("#btnResetKeg").addEventListener("click", () => {
-    kegState.search = ""; kegState.program = ""; kegState.progres = ""; kegState.bulan = "";
+    kegState.search = ""; kegState.program = ""; kegState.progres = "";
+    kegState.bulanDari = ""; kegState.bulanSampai = "";
     kegState.page = 1;
     $("#kegSearch").value = ""; $("#kegFilterProgram").value = "";
-    $("#kegFilterProgres").value = ""; $("#kegFilterBulan").value = "";
+    $("#kegFilterProgres").value = ""; $("#kegFilterBulanDari").value = "";
+    $("#kegFilterBulanSampai").value = "";
     refreshKegSelects();
     renderKegTable();
   });
@@ -2919,7 +2930,8 @@ document.addEventListener("DOMContentLoaded", () => {
   bindKegFilter("search", $("#kegSearch"));
   bindKegFilter("program", $("#kegFilterProgram"));
   bindKegFilter("progres", $("#kegFilterProgres"));
-  bindKegFilter("bulan", $("#kegFilterBulan"));
+  bindKegFilter("bulanDari", $("#kegFilterBulanDari"));
+  bindKegFilter("bulanSampai", $("#kegFilterBulanSampai"));
   $("#kegThead").addEventListener("click", (e) => {
     const th = e.target.closest("th.sortable");
     if (!th) return;

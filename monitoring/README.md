@@ -5,10 +5,10 @@ Dashboard pemantauan **Pencatatan Kegiatan** dan data **PMB (Penerimaan Mahasisw
 ## ✨ Fitur Utama
 
 **🗓️ Pencatatan Kegiatan** (inti monitoring FAST):
-- Form catat kegiatan: nama, tanggal, kategori, Kepala Program Studi / Dekan, tempat, peserta, status, deskripsi, link dokumentasi
+- Form catat kegiatan: nama, tanggal, kategori, Penanggung Jawab, tempat, peserta, status, deskripsi, link dokumentasi
 - KPI: total kegiatan, bulan ini, selesai/belum, total peserta, kategori teratas
 - Grafik: per kategori, per status, tren 6 bulan
-- Rekap tabel: cari, filter kategori/status/bulan, sortir, export CSV
+- Rekap tabel: cari, filter kategori/status/rentang bulan, sortir, export CSV
 - **CRUD lengkap**: tambah, edit (✏️), dan hapus (🗑️) kegiatan langsung dari tabel
 - **Export PDF & Word**: unduh rekap kegiatan (mengikuti filter aktif) sebagai PDF/Word rapi dengan header logo FAST & USTEDI, alamat, website, dan email
 - Mode lokal (tanpa backend) & mode cloud (tersinkron spreadsheet)

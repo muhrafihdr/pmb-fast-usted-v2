@@ -199,7 +199,7 @@
                     <th>Program</th>
                     <th>Progres</th>
                     <th>Prioritas</th>
-                    <th>Kepala Program Studi / Dekan</th>
+                    <th>Penanggung Jawab</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -280,8 +280,8 @@
                     </select>
                   </div>
                   <div class="filter-item">
-                    <label for="kegPic">Kepala Program Studi / Dekan</label>
-                    <input type="text" id="kegPic" placeholder="Nama Kaprodi / Dekan" />
+                    <label for="kegPic">Penanggung Jawab</label>
+                    <input type="text" id="kegPic" placeholder="Nama dosen/staf" />
                   </div>
                   <div class="filter-item">
                     <label for="kegTempat">Tempat / Lokasi</label>
@@ -373,7 +373,7 @@
             </div>
             <div class="filter-grid">
               <div class="filter-item filter-search">
-                <label for="kegSearch">Cari kegiatan, program, kepala prodi/dekan…</label>
+                <label for="kegSearch">Cari kegiatan, program, penanggung jawab…</label>
                 <input type="search" id="kegSearch" placeholder="Ketik untuk mencari…" />
               </div>
               <div class="filter-item">
@@ -385,8 +385,12 @@
                 <select id="kegFilterProgres"><option value="">Semua</option></select>
               </div>
               <div class="filter-item">
-                <label for="kegFilterBulan">Bulan Laporan</label>
-                <input type="month" id="kegFilterBulan" />
+                <label for="kegFilterBulanDari">Bulan Laporan (Dari)</label>
+                <input type="month" id="kegFilterBulanDari" />
+              </div>
+              <div class="filter-item">
+                <label for="kegFilterBulanSampai">Bulan Laporan (Sampai)</label>
+                <input type="month" id="kegFilterBulanSampai" />
               </div>
             </div>
             <div class="table-meta"><span id="kegTableCount">0 data</span></div>
@@ -557,6 +561,6 @@
   <!-- docx untuk Export Word (.docx) -->
   <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
 
-  <script src="script.js?v=20261122k"></script>
+  <script src="script.js?v=20261122l"></script>
 </body>
 </html>
