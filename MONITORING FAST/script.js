@@ -23,7 +23,7 @@ const DATA_SOURCE = {
   // Setelah Code.gs (versi CRUD) di-deploy ulang, Pencatatan Kegiatan dan
   // Data Pendaftar sama-sama menulis ke spreadsheet PMB (1ddnHgb67-...),
   // dengan kegiatan disimpan di sheet "MONITORING".
-  gasUrl: "https://script.google.com/macros/s/AKfycbx6rfVnvF9VDRPG0KRtTclmA1VVRRCdNK5ERWl95udC4rir0G0qCi1stdVTMLYoaG0UQA/exec",
+  gasUrl: "https://script.google.com/macros/s/AKfycby_OA83MsamyETBdGYkvm2ENy89akchQ0K1wjY7pLHVPriVyA6uuDaqi725PKaPuNBd/exec",
 
   // Alternatif: tempel konfigurasi di window.MONITORING_CONFIG
   // (mis. di <script> terpisah) untuk menimpa nilai di atas:

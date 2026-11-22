@@ -93,7 +93,7 @@
     --------------------------------------------------------- */
     monitoring: {
       nama: "Monitoring FAST",
-      url: "/monitoring/?v=20261122g#dashboard",
+      url: "/monitoring/?v=20261122h#dashboard",
       appUrl: "https://script.google.com/macros/s/AKfycbwWswpHsePmGHDAcorw5kSQwCrcqP5Y4PC4yAE71IAafFSbEqBuf-5pXqenXeObRAff9g/exec",
       masaBukaMenit: 120
     },
@@ -101,7 +101,7 @@
     /* ---------- Google Apps Script (data PMB / pendaftar) ---------- */
     gas: {
       webAppUrl:
-        "https://script.google.com/macros/s/AKfycbx6rfVnvF9VDRPG0KRtTclmA1VVRRCdNK5ERWl95udC4rir0G0qCi1stdVTMLYoaG0UQA/exec"
+        "https://script.google.com/macros/s/AKfycby_OA83MsamyETBdGYkvm2ENy89akchQ0K1wjY7pLHVPriVyA6uuDaqi725PKaPuNBd/exec"
     },
 
     /* ---------- SSO (Single Sign-On) ----------
@@ -142,7 +142,7 @@
     },
 
     /* ---------- Versi aset (cache-busting) ---------- */
-    versi: "20261122g"
+    versi: "20261122h"
   };
 
   /* Ekspos sebagai global. */
