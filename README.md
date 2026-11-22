@@ -10,6 +10,7 @@ Situs ini kini memiliki dua fitur baru:
 
 - **Blog FAST** di `/blog/` — daftar artikel, pencarian, kategori, dan halaman detail artikel. Data blog tersimpan di `data/blog/`.
 - **Panel Admin** di `/admin/` — dikunci dengan username dan password. Tautan **🔒 Admin** tersedia di bagian bawah footer setiap halaman. Kata sandi tidak ditampilkan di antarmuka.
+- **Monitoring FAST** — menu **🔒 Monitoring FAST** di navigasi utama membuka dashboard Monitoring FAST setelah memasukkan username dan password yang sama dengan Panel Admin. URL dan pengaturan sesi ada di `assets/js/config.js` (`monitoring`), sedangkan gerbang loginnya di `assets/js/monitoring.js`.
 
 Panel admin dapat mengelola:
 

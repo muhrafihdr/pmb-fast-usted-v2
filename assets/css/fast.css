@@ -224,6 +224,10 @@ legend {
 .fnav-sep { width: 1px; height: 22px; background: var(--garis); margin: 0 6px; }
 .fnav-khusus { background: var(--aksen); color: #3a2c00 !important; }
 .fnav-khusus:hover { background: var(--aksen-gelap) !important; }
+.fnav-monitoring { display: inline-flex; align-items: center; gap: 6px; }
+.fnav-monitoring svg { flex-shrink: 0; opacity: .8; }
+.fnav-monitoring.terbuka { color: var(--hijau); }
+.fnav-monitoring.terbuka:hover { color: var(--hijau); background: var(--hijau-terang); }
 .fnav-user { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .fnav-toggle { display: none; flex-direction: column; gap: 5px; padding: 8px; margin-left: auto; }
 .fnav-toggle span { width: 22px; height: 2.5px; background: var(--teks); border-radius: 2px; transition: var(--transisi); }
@@ -300,6 +304,41 @@ legend {
 .sso-catatan { margin-top: 18px; font-size: .78rem; color: var(--teks-redup); text-align: center; }
 .sso-catatan a { color: var(--utama); font-weight: 600; }
 .sso-belum { font-size: .78rem; color: var(--teks-redup); background: var(--bg-alt); padding: 10px; border-radius: 8px; text-align: center; }
+
+/* Gerbang Monitoring FAST */
+.mon-ikon {
+  width: 58px; height: 58px; margin: 0 auto 14px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--utama-terang); color: var(--utama);
+}
+.mon-ikon svg { width: 26px; height: 26px; }
+.mon-field { margin-bottom: 16px; }
+.mon-field label { display: block; font-weight: 600; font-size: .86rem; margin-bottom: 6px; }
+.mon-field input {
+  width: 100%; padding: 12px 14px; border: 1.5px solid var(--garis-kuat);
+  border-radius: var(--radius-kecil); background: #fff;
+}
+.mon-field input:focus {
+  outline: none; border-color: var(--utama); box-shadow: 0 0 0 4px rgba(13, 59, 140, .1);
+}
+.mon-pass { position: relative; }
+.mon-pass input { padding-right: 50px; }
+.mon-pass button {
+  position: absolute; right: 6px; top: 35px; width: 38px; height: 38px;
+  border-radius: 8px; display: grid; place-items: center; color: var(--teks-redup);
+}
+.mon-pass button:hover { background: var(--bg-alt); color: var(--utama); }
+.mon-pesan {
+  padding: 11px 14px; border-radius: 9px; font-size: .84rem; margin-bottom: 16px;
+  border-left: 4px solid var(--merah); background: var(--merah-terang); color: #8a1c1c;
+}
+.mon-pesan.info { border-color: var(--utama); background: var(--utama-terang); color: var(--utama-gelap); }
+.btn-blok { width: 100%; }
+.mon-sukses { text-align: center; }
+.mon-sukses p { color: var(--teks-redup); font-size: .9rem; margin-bottom: 16px; }
+.mon-catatan {
+  margin-top: 18px; font-size: .76rem; color: var(--teks-redup);
+  text-align: center; line-height: 1.6;
+}
 
 .fast-toasts { position: fixed; bottom: 22px; right: 22px; z-index: 1200; display: flex; flex-direction: column; gap: 10px; max-width: 340px; }
 .fast-toast {

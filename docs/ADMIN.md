@@ -73,4 +73,17 @@ node -e "const c=require('crypto'); for(const s of ['FAST::USER::USERNAME_BARU',
 
 Ganti nilai `HASH_USER` dan `HASH_PASS` dengan hasil perintah tersebut, lalu deploy ulang. Jangan menulis username atau password asli di dokumentasi, commit, atau berkas publik.
 
+> **Penting:** kredensial yang sama juga dipakai oleh menu **Monitoring FAST**. Setelah mengganti hash, perbarui nilai `HASH_USER` dan `HASH_PASS` di `assets/js/monitoring.js` agar menu tersebut tetap bisa dibuka dengan kredensial baru.
+
 > Setelah mengganti hash, sesi admin lama tetap berlaku sampai kedaluwarsa (maksimal 2 jam) atau pengguna menekan tombol keluar.
+
+## Akses Monitoring FAST
+
+Menu **🔒 Monitoring FAST** tampil di navigasi utama setiap halaman publik. Menu ini tidak langsung membuka tautan apa pun; pengguna harus memasukkan **username dan password yang sama dengan Panel Admin** terlebih dahulu.
+
+- Setelah verifikasi berhasil, dashboard dibuka di tab baru.
+- Akses berlaku 2 jam dan disimpan di `sessionStorage` (berakhir saat tab ditutup).
+- Setelah 5 percobaan gagal, akses dikunci selama 60 detik.
+- URL dashboard diatur di `assets/js/config.js` pada bagian `monitoring.url`, sedangkan gerbang loginnya ada di `assets/js/monitoring.js`.
+
+> Karena situs ini statis, gerbang ini melindungi navigasi di sisi klien. Tautan dashboard tetap dapat dibuka langsung apabila seseorang mengetahui URL-nya. Untuk perlindungan penuh, gunakan autentikasi di sisi server atau batasi akses dokumen Google Sites melalui pengaturan berbagi Google.

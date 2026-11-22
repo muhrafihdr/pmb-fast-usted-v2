@@ -82,6 +82,17 @@
       preferLocal: true
     },
 
+    /* ---------- Monitoring FAST (menu terkunci) ----------
+       Menu ini tampil di navigasi utama, tetapi hanya bisa dibuka
+       dengan username & password yang sama dengan Panel Admin
+       (lihat assets/js/monitoring.js).
+    --------------------------------------------------------- */
+    monitoring: {
+      nama: "Monitoring FAST",
+      url: "https://sites.google.com/view/monitoringfast/monitoringfast",
+      masaBukaMenit: 120
+    },
+
     /* ---------- Google Apps Script (data PMB / pendaftar) ---------- */
     gas: {
       webAppUrl:
@@ -126,7 +137,7 @@
     },
 
     /* ---------- Versi aset (cache-busting) ---------- */
-    versi: "20261029b"
+    versi: "20261122a"
   };
 
   /* Ekspos sebagai global. */
