@@ -93,7 +93,7 @@
     --------------------------------------------------------- */
     monitoring: {
       nama: "Monitoring FAST",
-      url: "/monitoring/?v=20261122f#kegiatan",
+      url: "/monitoring/?v=20261122g#dashboard",
       appUrl: "https://script.google.com/macros/s/AKfycbwWswpHsePmGHDAcorw5kSQwCrcqP5Y4PC4yAE71IAafFSbEqBuf-5pXqenXeObRAff9g/exec",
       masaBukaMenit: 120
     },
@@ -142,7 +142,7 @@
     },
 
     /* ---------- Versi aset (cache-busting) ---------- */
-    versi: "20261122f"
+    versi: "20261122g"
   };
 
   /* Ekspos sebagai global. */
