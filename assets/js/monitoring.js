@@ -33,7 +33,7 @@
      "FAST::PASS::<password>" — identik dengan Panel Admin.
      Bila kredensial admin diganti, ganti nilai di sini juga. */
   var HASH_USER = "bc9d601db153add2ff6a87b078e908882038a089caff1afa59b8ea622fed167f";
-  var HASH_PASS = "ad5ea59f76cc5908ec80a22d2104d4a02c24d8498a829abaece2c647d8e96fac";
+  var HASH_PASS = "c91f2c36f9483adeed7c9d884ffd6a46dc85c9e85bb1f46c0361e81496c6f1ed";
 
   var SVG_LOCK =
     '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" ' +

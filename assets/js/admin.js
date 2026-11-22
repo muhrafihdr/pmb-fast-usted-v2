@@ -33,7 +33,7 @@
   /* Sidik SHA-256 dari "FAST::USER::<username>" dan "FAST::PASS::<password>".
      Kredensial asli tidak pernah ditulis di berkas ini. */
   var HASH_USER = "bc9d601db153add2ff6a87b078e908882038a089caff1afa59b8ea622fed167f";
-  var HASH_PASS = "ad5ea59f76cc5908ec80a22d2104d4a02c24d8498a829abaece2c647d8e96fac";
+  var HASH_PASS = "c91f2c36f9483adeed7c9d884ffd6a46dc85c9e85bb1f46c0361e81496c6f1ed";
 
   var SES = bacaSesi();
   var state = {
