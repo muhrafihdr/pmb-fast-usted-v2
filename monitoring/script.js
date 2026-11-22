@@ -20,9 +20,9 @@ const DATA_SOURCE = {
 
   // --- CARA B: URL Web App Apps Script ---
   // Terhubung ke project Apps Script yang sama dengan landing page PMB.
-  // Setelah Code.gs (versi CRUD) di-deploy ulang, fitur Pencatatan Kegiatan
-  // menulis ke spreadsheet "MONITORING FAST TERBARU" (1HG1H9-...) dan
-  // Data Pendaftar menulis ke spreadsheet PMB (1ddnHgb67-...).
+  // Setelah Code.gs (versi CRUD) di-deploy ulang, Pencatatan Kegiatan dan
+  // Data Pendaftar sama-sama menulis ke spreadsheet PMB (1ddnHgb67-...),
+  // dengan kegiatan disimpan di sheet "MONITORING".
   gasUrl: "https://script.google.com/macros/s/AKfycbx6rfVnvF9VDRPG0KRtTclmA1VVRRCdNK5ERWl95udC4rir0G0qCi1stdVTMLYoaG0UQA/exec",
 
   // Alternatif: tempel konfigurasi di window.MONITORING_CONFIG
@@ -1576,9 +1576,9 @@ async function deletePendaftar(key) {
   loadData(true);
 }
 
-/* Sumber baca utama kegiatan — spreadsheet "MONITORING FAST TERBARU" (sheet Monitoring_FAST) */
+/* Sumber baca cadangan kegiatan — spreadsheet PMB, sheet MONITORING */
 const KEGIATAN_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/1HG1H9-_VZBBoml_WXpMqJ7aHuIQCRHH0545q94LqOls/export?format=csv&gid=841580046";
+  "https://docs.google.com/spreadsheets/d/1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0/export?format=csv&sheet=MONITORING";
 
 let KEG = { headers: [], rows: [], list: [], local: true, mode: "local" };
 
@@ -1653,16 +1653,24 @@ async function loadKegiatan(silent) {
       const parsed = parseCSV(text);
       if (parsed.length > 1) {
         const headers = parsed[0].map((h) => String(h).trim());
-        const rows = parsed.slice(1).map((r) => {
-          const obj = {};
-          headers.forEach((h, i) => { obj[h] = r[i] == null ? "" : String(r[i]).trim(); });
-          return obj;
-        });
-        KEG.headers = headers;
-        base = rows;
-        KEG.mode = "csv";
-        KEG.local = false;
-        ok = true;
+        // Pastikan CSV benar-benar sheet kegiatan, bukan sheet Pendaftar.
+        const cocokKegiatan = headers.some((h) =>
+          /^(id monitoring|nama kegiatan|kegiatan|program)$/i.test(
+            String(h).toLowerCase().replace(/[_\-]+/g, " ").trim()
+          )
+        );
+        if (cocokKegiatan) {
+          const rows = parsed.slice(1).map((r) => {
+            const obj = {};
+            headers.forEach((h, i) => { obj[h] = r[i] == null ? "" : String(r[i]).trim(); });
+            return obj;
+          });
+          KEG.headers = headers;
+          base = rows;
+          KEG.mode = "csv";
+          KEG.local = false;
+          ok = true;
+        }
       }
     } catch (err) {
       console.warn("Arsip CSV gagal:", err);
@@ -1690,6 +1698,20 @@ async function loadKegiatan(silent) {
   renderKegCharts();
   renderKegTable();
   renderDashKeg();
+
+  // Peringatan bila backend Apps Script masih versi lama (belum memakai sheet MONITORING).
+  const notice = document.getElementById("kegBackendNotice");
+  if (notice) {
+    const headers = (KEG.headers || []).map((h) =>
+      String(h).toLowerCase().replace(/[_\-]+/g, " ").trim()
+    );
+    const backendBaru = headers.includes("tanggal kegiatan");
+    const lama = KEG.mode === "cloud" && !backendBaru;
+    notice.hidden = !lama;
+    if (lama) {
+      notice.innerHTML = "<strong>Backend Apps Script belum diperbarui.</strong> Data kegiatan masih tersimpan di spreadsheet lama. Perbarui <code>Code.gs</code> lalu Deploy versi baru agar kegiatan tersimpan di sheet <code>MONITORING</code> pada spreadsheet PMB.";
+    }
+  }
 }
 
 function renderKegMode() {

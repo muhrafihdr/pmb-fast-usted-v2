@@ -53,29 +53,30 @@ Dashboard memakai **CSV publik** dari Google Spreadsheet untuk data PMB — tida
 
 ## 🔒 Cara B — Apps Script (untuk Pencatatan Kegiatan)
 
-Fitur **Pencatatan Kegiatan** menyimpan data ke spreadsheet **"MONITORING FAST TERBARU"** (sheet `Monitoring_FAST`) dan **Data Pendaftar** tersambung ke spreadsheet PMB melalui backend Apps Script. `DATA_SOURCE.gasUrl` di `script.js` **sudah terisi** dengan URL Web App berikut (sudah aktif):
+Fitur **Pencatatan Kegiatan** menyimpan data ke spreadsheet PMB yang sama, pada sheet **`MONITORING`**. **Data Pendaftar** tetap tersimpan di sheet `Pendaftar`. `DATA_SOURCE.gasUrl` di `script.js` **sudah terisi** dengan URL Web App berikut (sudah aktif):
 
 ```
 https://script.google.com/macros/s/AKfycbx6rfVnvF9VDRPG0KRtTclmA1VVRRCdNK5ERWl95udC4rir0G0qCi1stdVTMLYoaG0UQA/exec
 ```
 
-Tidak perlu ubah apa pun di `script.js`. Jika suatu saat backend diganti, cukup ganti URL di `DATA_SOURCE.gasUrl` (monitoring) dan `GAS_WEB_APP_URL` (landing page).
+Pastikan project Apps Script sudah memakai **`Code.gs` versi terbaru** (kegiatan → sheet `MONITORING`) lalu **Deploy → Manage deployments → New version**. URL Web App tetap sama. Jika suatu saat backend diganti, cukup ganti URL di `DATA_SOURCE.gasUrl` (monitoring) dan `GAS_WEB_APP_URL` (landing page).
 
 ### 📌 Tujuan penyimpanan data
 
 | Data | Spreadsheet | Sheet |
 |------|-------------|-------|
-| Kegiatan baru | `1HG1H9-_VZBBoml...` (MONITORING FAST TERBARU) | `Monitoring_FAST` |
+| Kegiatan baru | `1ddnHgb67DdQmOfs...` (spreadsheet PMB) | `MONITORING` |
 | PMB (pendaftar) | `1ddnHgb67DdQmOfs...` | `Pendaftar` |
 
 - ID kegiatan dibuat otomatis (`FAST-YYYYMMDD-NNN`), mengikuti pola data lama.
 - Kolom ekstra form (kategori/tempat/peserta/dokumentasi) dirangkum ke kolom `Catatan`.
-- Data lama (35 kegiatan) sudah berada di spreadsheet yang sama → otomatis terbaca, tanpa impor terpisah.
+- Kolom **`Tanggal_Kegiatan`** menyimpan tanggal persis dari formulir.
+- Data kegiatan lama dari spreadsheet `MONITORING FAST TERBARU` otomatis disalin **sekali** ke sheet `MONITORING` saat dashboard pertama kali dibuka setelah backend diperbarui. Untuk menjalankannya manual dari editor Apps Script, jalankan fungsi `migrateKegiatanSekarang`.
 
 ### 💾 CRUD dengan backend (tersinkron spreadsheet)
-Saat backend aktif, semua aksi **tambah / edit (✏️) / hapus (🗑️)** dikirim ke Apps Script dan **langsung ditulis ke spreadsheet** masing-masing:
-- **Kegiatan** → spreadsheet `MONITORING FAST TERBARU` (sheet `Monitoring_FAST`), diidentifikasi lewat kolom `ID_Monitoring`.
-- **Pendaftar** → spreadsheet PMB (sheet `Pendaftar`), diidentifikasi lewat kolom `Timestamp`.
+Saat backend aktif, semua aksi **tambah / edit (✏️) / hapus (🗑️)** dikirim ke Apps Script dan **langsung ditulis ke spreadsheet**:
+- **Kegiatan** → spreadsheet PMB, sheet `MONITORING`, diidentifikasi lewat kolom `ID_Monitoring`.
+- **Pendaftar** → spreadsheet PMB, sheet `Pendaftar`, diidentifikasi lewat kolom `Timestamp`.
 
 ### 💾 Fallback tanpa backend (mode lokal)
 Selama backend belum aktif (belum di-deploy ulang / `gasUrl` kosong), data **tambah/edit/hapus** disimpan di `localStorage` perangkat sebagai *overlay* di atas data spreadsheet:

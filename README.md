@@ -52,16 +52,17 @@ Panduan lengkap: [`docs/ADMIN.md`](docs/ADMIN.md) · Dokumentasi SSO: [`docs/SSO
 2. Hapus kode bawaan di `Code.gs`, lalu **tempel seluruh isi file `Code.gs`** dari folder ini (versi CRUD — melayani form PMB **dan** dashboard Monitoring).
 3. Pastikan ID spreadsheet di dalamnya sudah benar:
    ```
-   PMB_SHEET_ID = "1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0"        // data pendaftar
-   KEGIATAN_SHEET_ID = "1HG1H9-_VZBBoml_WXpMqJ7aHuIQCRHH0545q94LqOls"  // Pencatatan Kegiatan
+   PMB_SHEET_ID = "1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0"  // data pendaftar
+   KEGIATAN_SHEET_ID = PMB_SHEET_ID                              // kegiatan, sheet "MONITORING"
    ```
-   > Spreadsheet tujuan pendaftar: https://docs.google.com/spreadsheets/d/1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0/edit
-   > Spreadsheet tujuan kegiatan (dashboard): https://docs.google.com/spreadsheets/d/1HG1H9-_VZBBoml_WXpMqJ7aHuIQCRHH0545q94LqOls/edit
+   > Spreadsheet tujuan (pendaftar **dan** kegiatan): https://docs.google.com/spreadsheets/d/1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0/edit
 
 4. Jalankan fungsi **`setupHeaders`** sekali:
    - Pilih fungsi `setupHeaders` di dropdown atas → klik **Run**.
    - Saat diminta izin, pilih akun Google yang punya akses ke spreadsheet → **Allow**.
-   - (Opsional) ubah nama sheet/tab, misalnya `Pendaftar` (`PMB_SHEET`) dan `Monitoring_FAST` (`KEGIATAN_SHEET`).
+   - Fungsi ini membuat sheet `Pendaftar` dan sheet baru **`MONITORING`** beserta header kolomnya.
+   - Data kegiatan lama di spreadsheet lama (`Monitoring_FAST`) otomatis disalin **sekali** ke sheet `MONITORING` saat dashboard pertama kali dibuka setelah deploy.
+   - (Opsional) ubah nama sheet/tab, misalnya `Pendaftar` (`PMB_SHEET`) dan `MONITORING` (`KEGIATAN_SHEET`).
 
 5. **Deploy sebagai Web App:**
    - Klik **Deploy** → **New deployment** → ikon ⚙️ → **Web app**.

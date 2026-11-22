@@ -20,9 +20,9 @@ const DATA_SOURCE = {
 
   // --- CARA B: URL Web App Apps Script ---
   // Terhubung ke project Apps Script yang sama dengan landing page PMB.
-  // Setelah Code.gs (versi CRUD) di-deploy ulang, fitur Pencatatan Kegiatan
-  // menulis ke spreadsheet "MONITORING FAST TERBARU" (1HG1H9-...) dan
-  // Data Pendaftar menulis ke spreadsheet PMB (1ddnHgb67-...).
+  // Setelah Code.gs (versi CRUD) di-deploy ulang, Pencatatan Kegiatan dan
+  // Data Pendaftar sama-sama menulis ke spreadsheet PMB (1ddnHgb67-...),
+  // dengan kegiatan disimpan di sheet "MONITORING".
   gasUrl: "https://script.google.com/macros/s/AKfycbx6rfVnvF9VDRPG0KRtTclmA1VVRRCdNK5ERWl95udC4rir0G0qCi1stdVTMLYoaG0UQA/exec",
 
   // Alternatif: tempel konfigurasi di window.MONITORING_CONFIG
@@ -1576,9 +1576,9 @@ async function deletePendaftar(key) {
   loadData(true);
 }
 
-/* Sumber baca utama kegiatan — spreadsheet "MONITORING FAST TERBARU" (sheet Monitoring_FAST) */
+/* Sumber baca cadangan kegiatan — spreadsheet PMB, sheet MONITORING */
 const KEGIATAN_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/1HG1H9-_VZBBoml_WXpMqJ7aHuIQCRHH0545q94LqOls/export?format=csv&gid=841580046";
+  "https://docs.google.com/spreadsheets/d/1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0/export?format=csv&sheet=MONITORING";
 
 let KEG = { headers: [], rows: [], list: [], local: true, mode: "local" };
 

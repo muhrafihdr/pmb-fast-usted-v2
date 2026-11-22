@@ -7,11 +7,11 @@
  *   GET:
  *     ?action=ping        → cek backend aktif ({ok:true,pong:true})
  *     ?action=getAll      → baca data PMB (sheet "Pendaftar")
- *     ?action=getKegiatan → baca data Kegiatan (sheet "Monitoring_FAST")
+ *     ?action=getKegiatan → baca data Kegiatan (sheet "MONITORING")
  *
  *   POST (JSON):
  *     { _tipe:"kegiatan",  _aksi:"create"|"update"|"delete", ... }
- *        → spreadsheet KEGIATAN  (1HG1H9-... / sheet Monitoring_FAST)
+ *        → spreadsheet PMB (1ddnHgb67-... / sheet MONITORING)
  *     { _tipe:"pendaftar", _aksi:"create"|"update"|"delete", ... }
  *        → spreadsheet PMB       (1ddnHgb67-... / sheet Pendaftar)
  *     { ...data PMB landing page (tanpa _tipe) }
@@ -32,9 +32,13 @@
 const PMB_SHEET_ID = "1ddnHgb67DdQmOfs4FTQQIGm1U8Qwah55gH-V1rVOks0";
 const PMB_SHEET = "Pendaftar";
 
-/** ID spreadsheet KEGIATAN (MONITORING FAST TERBARU — otoritatif) */
-const KEGIATAN_SHEET_ID = "1HG1H9-_VZBBoml_WXpMqJ7aHuIQCRHH0545q94LqOls";
-const KEGIATAN_SHEET = "Monitoring_FAST";
+/** Kegiatan disimpan di spreadsheet PMB yang sama, sheet "MONITORING". */
+const KEGIATAN_SHEET_ID = PMB_SHEET_ID;
+const KEGIATAN_SHEET = "MONITORING";
+
+/** Spreadsheet kegiatan lama — hanya untuk migrasi satu kali ke sheet MONITORING. */
+const LEGACY_KEGIATAN_SHEET_ID = "1HG1H9-_VZBBoml_WXpMqJ7aHuIQCRHH0545q94LqOls";
+const LEGACY_KEGIATAN_SHEET = "Monitoring_FAST";
 
 /** Urutan header kolom PMB (jangan diubah — dipakai landing page PMB) */
 const PMB_HEADERS = [
@@ -44,9 +48,9 @@ const PMB_HEADERS = [
   "Asal Sekolah", "Jurusan", "Tahun Lulus", "Jalur Pendaftaran", "Program Studi",
 ];
 
-/** Urutan header kolom Monitoring_FAST (skema asli fakultas) */
+/** Urutan header kolom sheet MONITORING. */
 const KEGIATAN_HEADERS = [
-  "ID_Monitoring", "Timestamp_Input", "Bulan_Laporan", "Tahun_Laporan", "Periode",
+  "ID_Monitoring", "Timestamp_Input", "Tanggal_Kegiatan", "Bulan_Laporan", "Tahun_Laporan", "Periode",
   "Program_Studi", "Program", "Kegiatan", "Progres", "Tindak_Lanjut",
   "Target", "Status_Target", "Prioritas", "Penanggung_Jawab", "Hasil_Output",
   "Catatan", "Evaluasi_Feedback", "Updated_At",
@@ -72,6 +76,9 @@ function doGet(e) {
 
   try {
     if (action === "getKegiatan") {
+      const sheet = getSheet_(KEGIATAN_SHEET_ID, KEGIATAN_SHEET);
+      ensureHeader_(sheet, KEGIATAN_HEADERS);
+      migrateLegacyKegiatan_(sheet);
       return getSheetData_(KEGIATAN_SHEET_ID, KEGIATAN_SHEET);
     }
     return getSheetData_(PMB_SHEET_ID, PMB_SHEET); // getAll (default)
@@ -87,10 +94,11 @@ function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
 
-    /* ---------- KEGIATAN → spreadsheet MONITORING FAST TERBARU ---------- */
+    /* ---------- KEGIATAN → spreadsheet PMB, sheet MONITORING ---------- */
     if (data._tipe === "kegiatan") {
       const sheet = getSheet_(KEGIATAN_SHEET_ID, KEGIATAN_SHEET);
       ensureHeader_(sheet, KEGIATAN_HEADERS);
+      migrateLegacyKegiatan_(sheet);
       const aksi = data._aksi || "create";
       const id = String(data._key || "").replace(/^id:/, "").trim();
 
@@ -127,6 +135,7 @@ function doPost(e) {
       const baris = [
         idMonitoring,                                    // ID_Monitoring
         sekarang,                                        // Timestamp_Input (update: dipertahankan di bawah)
+        data.tanggalKegiatan || "",                      // Tanggal_Kegiatan
         bulan || NAMA_BULAN_[sekarang.getMonth()],       // Bulan_Laporan
         tahun || String(sekarang.getFullYear()),         // Tahun_Laporan
         data.periode || "Bulanan",                       // Periode
@@ -215,6 +224,35 @@ function doPost(e) {
 /* ============================================================
    Helper
    ============================================================ */
+/** Salin sekali data kegiatan lama (sheet Monitoring_FAST) ke sheet MONITORING
+    apabila sheet tujuan masih kosong (hanya header). Aman dipanggil berulang. */
+function migrateLegacyKegiatan_(targetSheet) {
+  if (targetSheet.getLastRow() > 1) return;
+  try {
+    const oldSs = SpreadsheetApp.openById(LEGACY_KEGIATAN_SHEET_ID);
+    const oldSheet = oldSs.getSheetByName(LEGACY_KEGIATAN_SHEET);
+    if (!oldSheet || oldSheet.getLastRow() < 2) return;
+
+    const values = oldSheet.getDataRange().getValues();
+    const oldHeaders = values[0].map(function (h) { return String(h).trim(); });
+    const rows = values.slice(1).map(function (r) {
+      const obj = {};
+      oldHeaders.forEach(function (h, i) { obj[h] = r[i]; });
+      return KEGIATAN_HEADERS.map(function (h) {
+        if (h === "Tanggal_Kegiatan") return obj[h] !== undefined ? obj[h] : "";
+        return obj[h] !== undefined ? obj[h] : "";
+      });
+    }).filter(function (r) { return r.some(function (v) { return String(v).trim() !== ""; }); });
+
+    if (rows.length) {
+      targetSheet.getRange(2, 1, rows.length, KEGIATAN_HEADERS.length).setValues(rows);
+      Logger.log("Migrasi " + rows.length + " kegiatan lama ke sheet MONITORING selesai.");
+    }
+  } catch (err) {
+    Logger.log("Migrasi kegiatan lama dilewati: " + err.message);
+  }
+}
+
 function getSheetData_(spreadsheetId, sheetName) {
   const sheet = getSheet_(spreadsheetId, sheetName);
   const lastRow = sheet.getLastRow();
@@ -348,6 +386,14 @@ function ensureHeader_(sheet, headers) {
   hr.setBackground("#0d3b8c");
   hr.setFontColor("#ffffff");
   sheet.setFrozenRows(1);
+}
+
+/** (Opsional) Salin data kegiatan lama ke sheet MONITORING secara manual. */
+function migrateKegiatanSekarang() {
+  const sheet = getSheet_(KEGIATAN_SHEET_ID, KEGIATAN_SHEET);
+  ensureHeader_(sheet, KEGIATAN_HEADERS);
+  migrateLegacyKegiatan_(sheet);
+  Logger.log("Migrasi selesai. Total baris sheet MONITORING: " + sheet.getLastRow());
 }
 
 /** (Opsional) Buat header kedua sheet — jalankan sekali dari editor. */
