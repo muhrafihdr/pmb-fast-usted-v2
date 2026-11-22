@@ -12,8 +12,9 @@
      - Setelah 5 percobaan gagal, akses dikunci 60 detik.
 
    Catatan: situs ini statis, sehingga gerbang ini melindungi
-   antarmuka/navigasi di sisi klien. URL tujuan tetap dapat
-   diakses langsung apabila seseorang mengetahuinya.
+   antarmuka/navigasi di sisi klien. Halaman lokal
+   /monitoring-fast/ menempelkan (embed) aplikasi dashboard
+   Google Apps Script resmi, bukan mengarahkan ke Google Sites.
    ========================================================= */
 (function () {
   "use strict";
@@ -21,7 +22,7 @@
   var CFG = window.FAST_CONFIG || {};
   var MON = CFG.monitoring || {};
   var NAMA = MON.nama || "Monitoring FAST";
-  var URL_TUJUAN = MON.url || "https://sites.google.com/view/monitoringfast/monitoringfast";
+  var URL_TUJUAN = MON.url || "/monitoring-fast/";
   var MASA_BUKA = (Number(MON.masaBukaMenit) || 120) * 60 * 1000;
 
   var KUNCI_BUKA = "fast_monitoring_buka_v1";
@@ -145,6 +146,11 @@
   function pasangModal() {
     if (modal && document.body.contains(modal)) return modal;
 
+    /* Tautan cadangan: untuk tujuan luar tetap pakai noopener; untuk
+       halaman lokal, opener dipertahankan agar sessionStorage ikut
+       tersalin ke tab dashboard. */
+    var relTautan = /^https?:\/\//i.test(URL_TUJUAN) ? ' rel="noopener"' : "";
+
     modal = document.createElement("div");
     modal.className = "fmodal";
     modal.id = "fastModalMonitoring";
@@ -182,7 +188,7 @@
         '<div class="mon-sukses" id="monSukses" hidden>' +
           "<p>Akses diberikan. Klik tombol berikut untuk membuka dashboard.</p>" +
           '<a class="btn btn-utama btn-blok" id="monTautan" href="' + aman(URL_TUJUAN) + '" ' +
-            'target="_blank" rel="noopener">Buka ' + aman(NAMA) + "</a>" +
+            'target="_blank"' + relTautan + '>Buka ' + aman(NAMA) + "</a>" +
         "</div>" +
         '<p class="mon-catatan">Gunakan username dan password yang sama dengan Panel Admin. ' +
           "Akses berlaku " + Math.round(MASA_BUKA / 60000) + " menit.</p>" +
@@ -289,9 +295,19 @@
   }
 
   function bukaTujuan() {
+    segarkanMenu();
+
+    /* Halaman monitoring lokal dibuka di tab yang sama agar tidak
+       terkena pemblokir popup dan sesi akses pasti terbawa. */
+    var luar = /^https?:\/\//i.test(URL_TUJUAN) &&
+      URL_TUJUAN.indexOf(window.location.origin + "/") !== 0;
+    if (!luar) {
+      window.location.href = URL_TUJUAN;
+      return;
+    }
+
     var jendela = null;
     try { jendela = window.open(URL_TUJUAN, "_blank"); } catch (e) { jendela = null; }
-    segarkanMenu();
     if (jendela) {
       try { jendela.opener = null; } catch (e) { /* abaikan */ }
       tutup();

@@ -86,10 +86,15 @@
        Menu ini tampil di navigasi utama, tetapi hanya bisa dibuka
        dengan username & password yang sama dengan Panel Admin
        (lihat assets/js/monitoring.js).
+
+       `url`    : halaman lokal yang menampilkan dashboard.
+       `appUrl` : aplikasi dashboard Google Apps Script yang
+                  ditempel (embed) di halaman lokal tersebut.
     --------------------------------------------------------- */
     monitoring: {
       nama: "Monitoring FAST",
-      url: "https://sites.google.com/view/monitoringfast/monitoringfast",
+      url: "/monitoring-fast/",
+      appUrl: "https://script.google.com/macros/s/AKfycbwWswpHsePmGHDAcorw5kSQwCrcqP5Y4PC4yAE71IAafFSbEqBuf-5pXqenXeObRAff9g/exec",
       masaBukaMenit: 120
     },
 
@@ -137,7 +142,7 @@
     },
 
     /* ---------- Versi aset (cache-busting) ---------- */
-    versi: "20261122b"
+    versi: "20261122c"
   };
 
   /* Ekspos sebagai global. */

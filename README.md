@@ -3,6 +3,8 @@
 Landing page pendaftaran mahasiswa baru (PMB) FAST USTEDI. Responsif (mobile & desktop), memakai logo FAST, logo USTEDI, dan foto gedung USTEDI, serta menyimpan data pendaftar ke **Google Spreadsheet**.
 
 > 📊 **Dashboard Monitoring FAST** — halaman pemantauan data pendaftar (KPI, grafik, tabel, export CSV) tersedia di folder [`monitoring/`](monitoring/). Setelah deploy, akses di **`/monitoring/`** (mis. `https://muhrafihdr.github.io/pmb-fast-usted-v2/monitoring/`). Panduan setup ada di [`monitoring/README.md`](monitoring/README.md).
+>
+> 🔒 **Monitoring FAST resmi** — menu terkunci di navigasi utama membuka **`/monitoring-fast/`**, yaitu halaman lokal yang menempelkan (embed) aplikasi dashboard Google Apps Script resmi. Tidak ada pengalihan ke Google Sites.
 
 ## ✍️ Blog & Panel Admin
 
@@ -10,7 +12,7 @@ Situs ini kini memiliki dua fitur baru:
 
 - **Blog FAST** di `/blog/` — daftar artikel, pencarian, kategori, dan halaman detail artikel. Data blog tersimpan di `data/blog/`.
 - **Panel Admin** di `/admin/` — dikunci dengan username dan password. Tautan **🔒 Admin** tersedia di bagian bawah footer setiap halaman. Kata sandi tidak ditampilkan di antarmuka.
-- **Monitoring FAST** — menu **🔒 Monitoring FAST** di navigasi utama membuka dashboard Monitoring FAST setelah memasukkan username dan password yang sama dengan Panel Admin. URL dan pengaturan sesi ada di `assets/js/config.js` (`monitoring`), sedangkan gerbang loginnya di `assets/js/monitoring.js`.
+- **Monitoring FAST** — menu **🔒 Monitoring FAST** di navigasi utama membuka halaman lokal **`/monitoring-fast/`** setelah memasukkan username dan password yang sama dengan Panel Admin. Halaman tersebut menempelkan aplikasi dashboard Google Apps Script resmi, bukan mengarahkan ke Google Sites. URL halaman dan aplikasi diatur di `assets/js/config.js` (`monitoring`), sedangkan gerbang loginnya di `assets/js/monitoring.js`.
 
 Panel admin dapat mengelola:
 

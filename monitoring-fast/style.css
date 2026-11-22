@@ -1,0 +1,185 @@
+/* =========================================================
+   Monitoring FAST — halaman pembungkus dashboard
+   ========================================================= */
+:root {
+  --utama: #0d3b8c;
+  --utama-gelap: #071e42;
+  --aksen: #f5b301;
+  --aksen-gelap: #d99a00;
+  --teks: #16233b;
+  --teks-redup: #61708b;
+  --garis: #e2e8f0;
+  --bg: #eef2f8;
+  --font: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--teks);
+  overflow: hidden;
+}
+
+/* ---------- Bilah atas ---------- */
+.mon-topbar {
+  position: relative;
+  z-index: 5;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 0 18px;
+  color: #fff;
+  background: linear-gradient(105deg, var(--utama-gelap) 0%, var(--utama) 78%);
+  box-shadow: 0 2px 14px rgba(7, 30, 66, .22);
+}
+
+.mon-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  color: #fff;
+  text-decoration: none;
+}
+
+.mon-brand img {
+  height: 36px;
+  width: auto;
+  padding: 4px 6px;
+  background: #fff;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.mon-brand strong {
+  display: block;
+  font-size: .96rem;
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.mon-brand small {
+  display: block;
+  margin-top: 2px;
+  font-size: .64rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #b9cbeb;
+  white-space: nowrap;
+}
+
+.mon-aksi {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.mon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 13px;
+  border: 1px solid rgba(255, 255, 255, .24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  color: #eaf1ff;
+  font-family: var(--font);
+  font-size: .78rem;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+.mon-btn:hover {
+  background: rgba(255, 255, 255, .17);
+  border-color: rgba(255, 255, 255, .45);
+}
+
+.mon-btn:active { transform: scale(.97); }
+
+.mon-btn-portal {
+  background: var(--aksen);
+  border-color: var(--aksen);
+  color: #3a2c00;
+}
+
+.mon-btn-portal:hover {
+  background: var(--aksen-gelap);
+  border-color: var(--aksen-gelap);
+}
+
+/* ---------- Area dashboard ---------- */
+.mon-area {
+  position: relative;
+  height: calc(100vh - 58px);
+  height: calc(100dvh - 58px);
+  background: var(--bg);
+}
+
+.mon-area iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+
+/* ---------- Pemuat ---------- */
+.mon-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  background: var(--bg);
+  color: var(--teks-redup);
+  font-size: .9rem;
+  transition: opacity .28s ease, visibility .28s ease;
+}
+
+.mon-loading.siap {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.mon-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid #d8e2f2;
+  border-top-color: var(--utama);
+  border-radius: 50%;
+  animation: monSpin .8s linear infinite;
+}
+
+@keyframes monSpin { to { transform: rotate(360deg); } }
+
+/* ---------- Responsif ---------- */
+@media (max-width: 760px) {
+  .mon-topbar { height: 54px; padding: 0 10px; gap: 8px; }
+  .mon-brand img { height: 32px; }
+  .mon-brand small { display: none; }
+  .mon-area { height: calc(100vh - 54px); height: calc(100dvh - 54px); }
+  .mon-btn { padding: 0 10px; }
+  .mon-btn span:last-child { display: none; }
+}
+
+@media (max-width: 420px) {
+  .mon-brand strong { font-size: .85rem; }
+  .mon-btn { height: 32px; }
+}
