@@ -1,6 +1,6 @@
 {
   "versi": 1,
-  "diperbarui": "2026-11-26T05:16:52.000Z",
+  "diperbarui": "2026-10-29T06:31:11.699Z",
   "kategori": [
     {
       "id": "akademik",
@@ -35,58 +35,6 @@
   ],
   "item": [
     {
-      "slug": "mengenal-tiga-program-studi-fast-ustedi",
-      "judul": "Mengenal Tiga Program Studi di FAST USTEDI",
-      "ringkasan": "Informatika, Sains Data, dan Teknik Industri memiliki karakter yang berbeda. Kenali fokus, prospek, dan kecocokannya untukmu.",
-      "kategori": "akademik",
-      "penulis": "Humas FAST",
-      "tanggal": "2026-02-12",
-      "gambar": "",
-      "tagar": [
-        "Program Studi",
-        "Informatika",
-        "Sains Data",
-        "Teknik Industri"
-      ],
-      "unggulan": false,
-      "status": "publik",
-      "berkas": "mengenal-tiga-program-studi-fast-ustedi.json"
-    },
-    {
-      "slug": "lima-alasan-memilih-kuliah-di-fast-ustedi",
-      "judul": "Lima Alasan Memilih Kuliah di FAST USTEDI",
-      "ringkasan": "Dari kurikulum yang relevan hingga keringanan biaya, ini alasan mengapa FAST USTEDI layak menjadi pilihan studi kamu.",
-      "kategori": "kemahasiswaan",
-      "penulis": "Humas FAST",
-      "tanggal": "2026-02-08",
-      "gambar": "",
-      "tagar": [
-        "PMB",
-        "Kuliah",
-        "Beasiswa"
-      ],
-      "unggulan": false,
-      "status": "publik",
-      "berkas": "lima-alasan-memilih-kuliah-di-fast-ustedi.json"
-    },
-    {
-      "slug": "tips-belajar-data-science-untuk-pemula",
-      "judul": "Tips Belajar Data Science untuk Pemula",
-      "ringkasan": "Tidak perlu langsung jago coding. Mulai dari rasa ingin tahu, data sederhana, dan kebiasaan kecil yang konsisten.",
-      "kategori": "akademik",
-      "penulis": "Prodi Sains Data",
-      "tanggal": "2026-02-03",
-      "gambar": "",
-      "tagar": [
-        "Data Science",
-        "Belajar",
-        "Python"
-      ],
-      "unggulan": false,
-      "status": "publik",
-      "berkas": "tips-belajar-data-science-untuk-pemula.json"
-    },
-    {
       "slug": "fast-usted-buka-pendaftaran-2026-2027",
       "judul": "FAST USTEDI Resmi Membuka Pendaftaran Mahasiswa Baru 2026/2027",
       "ringkasan": "Pendaftaran dibuka setiap hari tanpa gelombang, dengan diskon 50% SPP khusus mahasiswa Fakultas Sains dan Teknologi.",
@@ -101,86 +49,6 @@
       ],
       "unggulan": true,
       "berkas": "fast-usted-buka-pendaftaran-2026-2027.json"
-    },
-    {
-      "slug": "mahasiswa-informatika-juara-hackathon-nasional",
-      "judul": "Mahasiswa Informatika FAST Raih Juara 1 Hackathon Nasional",
-      "ringkasan": "Tim mahasiswa S1 Informatika berhasil menyabet juara pertama dengan aplikasi pemantau kualitas udara berbasis AI.",
-      "kategori": "prestasi",
-      "penulis": "Prodi Informatika",
-      "tanggal": "2026-01-05",
-      "gambar": "",
-      "tagar": [
-        "Informatika",
-        "Prestasi",
-        "AI"
-      ],
-      "unggulan": true,
-      "berkas": "mahasiswa-informatika-juara-hackathon-nasional.json"
-    },
-    {
-      "slug": "kerja-sama-fast-dengan-industri-teknologi",
-      "judul": "FAST USTEDI Jalin Kerja Sama dengan Lima Perusahaan Teknologi",
-      "ringkasan": "Penandatanganan MoU mencakup magang bersertifikat, penelitian bersama, dan rekrutmen lulusan.",
-      "kategori": "kerja-sama",
-      "penulis": "Humas FAST",
-      "tanggal": "2025-12-20",
-      "gambar": "",
-      "tagar": [
-        "MoU",
-        "Magang",
-        "Industri"
-      ],
-      "unggulan": false,
-      "berkas": "kerja-sama-fast-dengan-industri-teknologi.json"
-    },
-    {
-      "slug": "prodi-sains-data-luncurkan-laboratorium-big-data",
-      "judul": "Prodi Sains Data Luncurkan Laboratorium Big Data Terbaru",
-      "ringkasan": "Laboratorium baru dilengkapi klaster komputasi dan perangkat visualisasi data untuk mendukung praktikum mahasiswa.",
-      "kategori": "akademik",
-      "penulis": "Prodi Sains Data",
-      "tanggal": "2025-12-12",
-      "gambar": "",
-      "tagar": [
-        "Sains Data",
-        "Laboratorium",
-        "Big Data"
-      ],
-      "unggulan": false,
-      "berkas": "prodi-sains-data-luncurkan-laboratorium-big-data.json"
-    },
-    {
-      "slug": "fast-academy-buka-kelas-pelatihan-data-analytics",
-      "judul": "Faster Academy Buka Kelas Pelatihan Data Analytics untuk Umum",
-      "ringkasan": "Program pelatihan bersertifikat selama 8 pertemuan, terbuka untuk mahasiswa, guru, dan masyarakat umum.",
-      "kategori": "pelatihan",
-      "penulis": "Faster Academy",
-      "tanggal": "2025-12-01",
-      "gambar": "",
-      "tagar": [
-        "Academy",
-        "Data Analytics",
-        "Sertifikat"
-      ],
-      "unggulan": true,
-      "berkas": "fast-academy-buka-kelas-pelatihan-data-analytics.json"
-    },
-    {
-      "slug": "seminar-nasional-transformasi-digital-pendidikan",
-      "judul": "Seminar Nasional Transformasi Digital Pendidikan Sukses Digelar",
-      "ringkasan": "Lebih dari 300 peserta dari berbagai daerah mengikuti seminar yang menghadirkan pembicara dari akademisi dan industri.",
-      "kategori": "kemahasiswaan",
-      "penulis": "BEM FAST",
-      "tanggal": "2025-11-18",
-      "gambar": "",
-      "tagar": [
-        "Seminar",
-        "Digital",
-        "Pendidikan"
-      ],
-      "unggulan": false,
-      "berkas": "seminar-nasional-transformasi-digital-pendidikan.json"
     }
   ]
 }
