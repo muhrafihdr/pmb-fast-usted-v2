@@ -25,7 +25,7 @@ Panel admin dapat mengelola:
 | PMB | tahun akademik, status, jalur, jadwal, biaya, alur, FAQ |
 | Data & Publikasi | cadangan/impor JSON, unduh, reset, publikasi ke GitHub |
 
-Perubahan disimpan sebagai *override* di `localStorage` browser dan langsung tampil di perangkat tersebut. Untuk membuat perubahan berlaku bagi semua pengunjung, gunakan **Data & Publikasi → Terbitkan ke GitHub** atau unduh cadangan lalu salin berkas JSON ke folder `data/`.
+Perubahan disimpan sebagai *override* di `localStorage` browser dan langsung tampil di perangkat tersebut. Untuk membuat perubahan berlaku bagi semua pengunjung, aktifkan **publikasi otomatis** di **Data & Publikasi** (setiap simpanan langsung dikirim ke GitHub) atau gunakan tombol **Terbitkan ke GitHub**. Panduan lengkap ada di [`docs/ADMIN.md`](docs/ADMIN.md).
 
 Panduan lengkap: [`docs/ADMIN.md`](docs/ADMIN.md) · Dokumentasi SSO: [`docs/SSO.md`](docs/SSO.md).
 

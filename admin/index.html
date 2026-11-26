@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/assets/css/fast.css?v=20261122m" />
-  <link rel="stylesheet" href="/assets/css/admin.css?v=20261122m" />
+  <link rel="stylesheet" href="/assets/css/fast.css?v=20261126a" />
+  <link rel="stylesheet" href="/assets/css/admin.css?v=20261126a" />
 </head>
 <body class="admin-body">
 
@@ -49,7 +49,7 @@
       </form>
 
       <p class="admin-login-catatan">
-        Halaman ini tidak diindeks mesin pencari.<br />
+        Sesi berakhir otomatis setelah 2 jam.<br />
         <a href="/">← Kembali ke Portal FAST</a>
       </p>
     </div>
@@ -57,6 +57,8 @@
 
   <!-- ================= PANEL ADMIN ================= -->
   <div class="admin-shell" id="adminShell" hidden>
+    <div class="admin-overlay" id="adminOverlay" hidden></div>
+
     <aside class="admin-sidebar" id="adminSidebar">
       <div class="admin-merek">
         <img src="/assets/img/logo-fast.png" alt="Logo FAST" />
@@ -64,20 +66,50 @@
           <strong>FAST USTEDI</strong>
           <small>Admin Panel</small>
         </div>
+        <button type="button" class="admin-tutup" id="adminTutup" aria-label="Tutup menu">✕</button>
       </div>
 
       <nav class="admin-nav" id="adminNav" aria-label="Navigasi admin">
-        <a href="#/ringkasan" data-nav="ringkasan">Ringkasan</a>
-        <a href="#/blog" data-nav="blog">Blog <span class="badge" id="badgeBlog" hidden>0</span></a>
-        <a href="#/berita" data-nav="berita">Berita</a>
-        <a href="#/halaman" data-nav="halaman">Halaman &amp; Profil</a>
-        <a href="#/academy" data-nav="academy">Academy</a>
-        <a href="#/pmb" data-nav="pmb">PMB</a>
-        <a href="#/data" data-nav="data">Data &amp; Publikasi <span class="badge" id="badgeData" hidden>0</span></a>
+        <p class="admin-nav-label">Ikhtisar</p>
+        <a href="#/ringkasan" data-nav="ringkasan">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          Ringkasan
+        </a>
+
+        <p class="admin-nav-label">Konten</p>
+        <a href="#/berita" data-nav="berita">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0V8"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg>
+          Berita
+        </a>
+        <a href="#/blog" data-nav="blog">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>
+          Blog <span class="badge" id="badgeBlog" hidden>0</span>
+        </a>
+        <a href="#/academy" data-nav="academy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>
+          Academy
+        </a>
+
+        <p class="admin-nav-label">Pengaturan</p>
+        <a href="#/halaman" data-nav="halaman">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          Halaman &amp; Profil
+        </a>
+        <a href="#/pmb" data-nav="pmb">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+          PMB
+        </a>
+        <a href="#/data" data-nav="data">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+          Data &amp; Publikasi <span class="badge" id="badgeData" hidden>0</span>
+        </a>
       </nav>
 
       <div class="admin-sidebar-bawah">
-        <p>Perubahan tersimpan di browser ini. Gunakan menu <strong>Data &amp; Publikasi</strong> untuk mencadangkan atau menerbitkan ke repositori.</p>
+        <div class="admin-bantuan-kotak">
+          <strong>Butuh bantuan?</strong>
+          <p>Konten yang disimpan hanya tampil di perangkat ini. Aktifkan publikasi otomatis agar tampil untuk semua pengunjung.</p>
+        </div>
         <a href="/" target="_blank" rel="noopener">Lihat Website</a>
         <a href="/docs/ADMIN.md" target="_blank" rel="noopener">Panduan Admin</a>
         <button type="button" class="keluar" id="adminKeluar">Keluar dari Admin</button>
@@ -88,6 +120,7 @@
       <header class="admin-topbar">
         <button type="button" class="admin-menu-toggle" id="adminMenuToggle" aria-label="Buka menu admin"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
         <div class="admin-topbar-judul">
+          <p class="admin-topbar-jejak">Panel Admin <span>/</span> <strong id="adminJejak">Ringkasan</strong></p>
           <h1 id="adminJudul">Ringkasan</h1>
           <p id="adminSubjudul">Selamat datang di panel pengelolaan konten FAST USTEDI.</p>
         </div>
@@ -105,12 +138,12 @@
 
   <script>window.FAST_BASE = "/";</script>
   <script>window.FAST_PAGE = { modul: "admin", nav: [] };</script>
-  <script src="/assets/js/config.js?v=20261122m"></script>
-  <script src="/assets/js/cms.js?v=20261122m"></script>
-  <script src="/assets/js/data.js?v=20261122m"></script>
-  <script src="/assets/js/auth.js?v=20261122m"></script>
-  <script src="/assets/js/markdown.js?v=20261122m"></script>
-  <script src="/assets/js/ui.js?v=20261122m"></script>
-  <script src="/assets/js/admin.js?v=20261122m"></script>
+  <script src="/assets/js/config.js?v=20261126a"></script>
+  <script src="/assets/js/cms.js?v=20261126a"></script>
+  <script src="/assets/js/data.js?v=20261126a"></script>
+  <script src="/assets/js/auth.js?v=20261126a"></script>
+  <script src="/assets/js/markdown.js?v=20261126a"></script>
+  <script src="/assets/js/ui.js?v=20261126a"></script>
+  <script src="/assets/js/admin.js?v=20261126a"></script>
 </body>
 </html>

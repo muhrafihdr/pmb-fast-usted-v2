@@ -52,6 +52,38 @@
 .berita-utama h2 { font-size: clamp(1.25rem, 2.6vw, 1.7rem); font-weight: 800; line-height: 1.28; margin: 12px 0; letter-spacing: -.015em; }
 .berita-utama:hover h2 { color: var(--utama); }
 
+/* ----- Kartu artikel (dipakai Berita, Blog, dan Beranda) ----- */
+.berita-kartu {
+  background: #fff; border: 1px solid var(--garis); border-radius: var(--radius);
+  overflow: hidden; display: flex; flex-direction: column; transition: var(--transisi);
+}
+.berita-kartu:hover { transform: translateY(-5px); box-shadow: var(--bayang-besar); }
+.berita-sampul {
+  height: 168px; background: linear-gradient(135deg, var(--utama) 0%, var(--utama-gelap) 100%);
+  display: grid; place-items: center; font-size: 2.4rem; color: #fff; flex-shrink: 0;
+}
+.berita-isi { padding: 20px; display: flex; flex-direction: column; flex: 1; }
+.berita-meta { display: flex; gap: 10px; align-items: center; font-size: .76rem; color: var(--teks-redup); margin-bottom: 10px; flex-wrap: wrap; }
+.berita-kartu h3 { font-size: 1.05rem; font-weight: 700; line-height: 1.35; margin-bottom: 9px; }
+.berita-kartu:hover h3 { color: var(--utama); }
+.berita-ringkas { color: var(--teks-redup); font-size: .88rem; flex: 1; }
+
+/* Tombol muat artikel berikutnya */
+.muat-bungkus { display: flex; justify-content: center; margin-top: 32px; }
+.muat-bungkus .btn { min-width: 240px; }
+.muat-bungkus[hidden] { display: none; }
+.muat-info { text-align: center; color: var(--teks-redup); font-size: .78rem; margin-top: 10px; }
+
+/* Animasi lembut untuk kartu yang baru dimuat */
+.berita-kartu.baru { animation: kartuMasuk .38s ease both; }
+@keyframes kartuMasuk {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .berita-kartu.baru { animation: none; }
+}
+
 /* ----- Artikel ----- */
 .artikel-sampul { height: 320px; background: linear-gradient(135deg, var(--utama), var(--utama-gelap)); display: grid; place-items: center; color: #fff; font-size: 4rem; border-radius: var(--radius-besar); margin-bottom: 32px; }
 .artikel-judul { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800; line-height: 1.22; letter-spacing: -.025em; margin: 14px 0 18px; }

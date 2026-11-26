@@ -180,8 +180,10 @@
     return D.json("berita/index.json").then(function (idx) {
       var item = (idx && idx.item || []).filter(function (b) { return b.status !== "draf"; });
       item.sort(function (a, b) { return String(b.tanggal).localeCompare(String(a.tanggal)); });
-      var unggulan = item.filter(function (x) { return x.unggulan; });
-      var tampil = (unggulan.length ? unggulan : item).slice(0, 3);
+      /* Tampilkan tiga berita terbaru. Sebelumnya hanya artikel bertanda
+         “unggulan” yang tampil, sehingga berita baru dari panel admin bisa
+         tidak pernah muncul di beranda. */
+      var tampil = item.slice(0, 3);
       if (!tampil.length) {
         host.innerHTML = '<div class="kosong"><h3>Belum ada berita</h3><p>Nantikan kabar terbaru dari fakultas.</p></div>';
         return;
@@ -200,6 +202,7 @@
             '<div class="berita-meta">' +
               '<span class="tag" style="background:' + U.aman(kat.warna) + '1a;color:' + U.aman(kat.warna) + '">' + U.aman(kat.nama) + "</span>" +
               "<span>" + U.tanggal(b.tanggal, "pendek") + "</span>" +
+              (b.unggulan ? '<span class="tag tag-abu">Utama</span>' : "") +
             "</div>" +
             "<h3>" + U.aman(b.judul) + "</h3>" +
             '<p class="berita-ringkas">' + U.aman(b.ringkasan || "") + "</p>" +

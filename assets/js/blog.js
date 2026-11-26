@@ -10,6 +10,7 @@
   var el = U.el;
 
   var PER_HALAMAN = 6;
+  var SEBUTAN = "Artikel";
 
   /* =========================================================
      MODE DAFTAR (blog/index.html)
@@ -18,9 +19,20 @@
     var induk = document.getElementById("daftarBerita");
     if (!induk) return false;
 
-    var state = { semua: [], kategori: "semua", cari: "", tampil: PER_HALAMAN, petaKategori: {} };
+    var state = {
+      semua: [],
+      kategori: "semua",
+      cari: "",
+      tampil: PER_HALAMAN,
+      petaKategori: {},
+      sisa: [],       /* kartu kecil yang belum/ sudah dipasang */
+      terpasang: 0    /* jumlah kartu kecil yang sudah dirender */
+    };
+
     var kotakKategori = document.getElementById("filterKategori");
     var tombolLagi = document.getElementById("muatLagi");
+    var bungkusLagi = document.getElementById("muatBungkus");
+    var infoLagi = document.getElementById("muatInfo");
     var inputCari = document.getElementById("cari");
 
     D.json("blog/index.json").then(function (idx) {
@@ -45,19 +57,18 @@
         });
       }
 
-      gambar();
+      renderUlang();
     }).catch(function () {
       induk.innerHTML = '<div class="kosong"><h3>Gagal memuat artikel</h3><p>Periksa koneksi atau berkas <code>data/blog/index.json</code>.</p></div>';
     });
 
     function pilihKategori(id, tombol) {
       state.kategori = id;
-      state.tampil = PER_HALAMAN;
       if (kotakKategori) {
         kotakKategori.querySelectorAll("button").forEach(function (b) { b.classList.remove("aktif"); });
         tombol.classList.add("aktif");
       }
-      gambar();
+      renderUlang();
     }
 
     function cocok(b) {
@@ -69,29 +80,67 @@
       return teks.indexOf(q) >= 0;
     }
 
-    function gambar() {
-      var hasil = state.semua.filter(cocok);
+    function hasilSaring() {
+      return state.semua.filter(cocok);
+    }
+
+    /* Muat ulang penuh: dipakai saat halaman pertama dibuka,
+       saat kategori diganti, atau saat kata kunci berubah. */
+    function renderUlang() {
+      state.tampil = PER_HALAMAN;
+      var hasil = hasilSaring();
+
       if (!hasil.length) {
         induk.innerHTML = '<div class="kosong"><h3>Tidak ada artikel ditemukan</h3><p>Coba ubah kata kunci atau pilih kategori lain.</p></div>';
-        if (tombolLagi) tombolLagi.hidden = true;
+        state.sisa = [];
+        state.terpasang = 0;
+        perbaruiTombol(0);
         return;
       }
 
-      var potong = hasil.slice(0, state.tampil);
+      /* Artikel utama: utamakan artikel yang ditandai unggulan,
+         jika tidak ada gunakan artikel terbaru. */
+      var utama = hasil.filter(function (x) { return x.unggulan; })[0] || hasil[0];
+      state.sisa = hasil.filter(function (x) { return x !== utama; });
+      state.terpasang = 0;
+
       induk.innerHTML = "";
+      induk.appendChild(kartuUtama(utama));
+      tambahKartu(Math.max(0, state.tampil - 1));
+      perbaruiTombol(hasil.length);
+    }
 
-      /* Artikel utama = item pertama */
-      induk.appendChild(kartuUtama(potong[0]));
-      potong.slice(1).forEach(function (b) { induk.appendChild(kartuKecil(b)); });
+    /* Pasang kartu kecil secara bertahap tanpa menghapus yang sudah ada.
+       Ini mencegah gambar dimuat ulang dan halaman "melompat" saat
+       tombol "Muat Artikel Lainnya" ditekan. */
+    function tambahKartu(batas) {
+      var target = Math.min(state.sisa.length, batas);
+      while (state.terpasang < target) {
+        var kartu = kartuKecil(state.sisa[state.terpasang]);
+        kartu.classList.add("baru");
+        induk.appendChild(kartu);
+        state.terpasang++;
+      }
+    }
 
+    function perbaruiTombol(total) {
+      var terlihat = total ? Math.min(total, 1 + state.terpasang) : 0;
+      var sisa = Math.max(0, total - terlihat);
+
+      if (bungkusLagi) bungkusLagi.hidden = sisa <= 0;
       if (tombolLagi) {
-        tombolLagi.hidden = hasil.length <= state.tampil;
-        tombolLagi.textContent = "Muat Artikel Lainnya (" + (hasil.length - state.tampil) + ")";
+        tombolLagi.hidden = sisa <= 0;
+        tombolLagi.textContent = "Muat " + SEBUTAN + " Lainnya (" + sisa + ")";
+      }
+      if (infoLagi) {
+        infoLagi.textContent = total
+          ? "Menampilkan " + terlihat + " dari " + total + " " + SEBUTAN.toLowerCase() + "."
+          : "";
       }
     }
 
     function labelKategori(b) {
-      return state.petaKategori[b.kategori] || { nama: b.kategori || "Umum", warna: "#0d3b8c" };
+      return state.petaKategori[b.kategori] || { nama: b.kategori || "Umum", warna: "#0891b2" };
     }
 
     function kartuUtama(b) {
@@ -138,15 +187,17 @@
         clearTimeout(jeda);
         jeda = setTimeout(function () {
           state.cari = inputCari.value.trim();
-          state.tampil = PER_HALAMAN;
-          gambar();
+          renderUlang();
         }, 220);
       });
     }
+
     if (tombolLagi) {
       tombolLagi.addEventListener("click", function () {
+        var hasil = hasilSaring();
         state.tampil += PER_HALAMAN;
-        gambar();
+        tambahKartu(Math.max(0, state.tampil - 1));
+        perbaruiTombol(hasil.length);
       });
     }
     return true;

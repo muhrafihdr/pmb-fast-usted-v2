@@ -293,7 +293,7 @@
         "</div>" +
         '<div class="ffoot-bawah"><div class="wadah">' +
           "<p>© <span id=\"fast-tahun\"></span> " + aman(o.fakultas) + " " + aman(o.singkatan) + " · " + aman(o.kampus) + "</p>" +
-          '<p class="ffoot-sso">Sistem terintegrasi SSO · <a href="' + BASE + 'docs/SSO.md">Dokumentasi</a> · <a href="' + BASE + 'admin/" class="ffoot-admin" title="Panel pengelolaan konten">Admin</a></p>' +
+          '<p class="ffoot-sso"><a href="' + BASE + 'admin/" class="ffoot-admin" title="Panel pengelolaan konten">Admin</a></p>' +
         "</div></div>" +
       "</footer>";
     var th = document.getElementById("fast-tahun");
