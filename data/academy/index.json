@@ -1,14 +1,35 @@
 {
   "versi": 1,
-  "diperbarui": "2026-01-08T08:30:00.000Z",
+  "diperbarui": "2026-11-26T04:33:50.022Z",
   "kategori": [
-    { "id": "data", "nama": "Data & Analitik" },
-    { "id": "pemrograman", "nama": "Pemrograman" },
-    { "id": "ai", "nama": "Kecerdasan Artifisial" },
-    { "id": "desain", "nama": "Desain & Multimedia" },
-    { "id": "manajemen", "nama": "Manajemen & Bisnis" },
-    { "id": "keamanan", "nama": "Keamanan Siber" },
-    { "id": "guru", "nama": "Peningkatan Guru" }
+    {
+      "id": "data",
+      "nama": "Data & Analitik"
+    },
+    {
+      "id": "pemrograman",
+      "nama": "Pemrograman"
+    },
+    {
+      "id": "ai",
+      "nama": "Kecerdasan Artifisial"
+    },
+    {
+      "id": "desain",
+      "nama": "Desain & Multimedia"
+    },
+    {
+      "id": "manajemen",
+      "nama": "Manajemen & Bisnis"
+    },
+    {
+      "id": "keamanan",
+      "nama": "Keamanan Siber"
+    },
+    {
+      "id": "guru",
+      "nama": "Peningkatan Guru"
+    }
   ],
   "item": [
     {
@@ -298,41 +319,6 @@
         "AI untuk guru",
         "Asesmen daring",
         "Manajemen kelas digital"
-      ]
-    },
-    {
-      "id": "ACD-EXC-09",
-      "slug": "microsoft-excel-untuk-pekerjaan",
-      "judul": "Microsoft Excel untuk Dunia Kerja",
-      "kategori": "data",
-      "level": "Dasar",
-      "ringkasan": "Kuasai rumus, pivot table, dan dasbor sederhana untuk mempercepat pekerjaan administrasi.",
-      "durasi": "6 pertemuan (24 jam)",
-      "mode": "Tatap Muka",
-      "biaya": 550000,
-      "biayaTampil": "Rp550.000",
-      "kuota": 30,
-      "terdaftar": 30,
-      "mulai": "2026-01-20",
-      "selesai": "2026-02-24",
-      "tutupPendaftaran": "2026-01-15",
-      "pengajar": "Tim Faster Academy",
-      "sertifikat": true,
-      "unggulan": false,
-      "status": "penuh",
-      "manfaat": [
-        "Menguasai rumus penting Excel",
-        "Membuat pivot table",
-        "Merapikan data kotor",
-        "Menyusun dasbor ringkas"
-      ],
-      "silabus": [
-        "Antarmuka & navigasi",
-        "Rumus dasar & logika",
-        "Lookup & referensi",
-        "Pivot table",
-        "Pembersihan data",
-        "Dasbor sederhana"
       ]
     },
     {
