@@ -592,3 +592,74 @@
   .dash-halo .admin-aksi { width: 100%; }
   .dash-halo .admin-aksi .btn { flex: 1 1 auto; }
 }
+
+/* ---------------- Modal publikasi otomatis ---------------- */
+.admin-modal { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 20px; }
+.admin-modal[hidden] { display: none !important; }
+.admin-modal-latar { position: absolute; inset: 0; background: rgba(5, 16, 38, .55); backdrop-filter: blur(3px); }
+.admin-modal-kotak {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 30px 90px rgba(3, 12, 32, .45);
+  animation: modalMasuk .24s ease both;
+}
+@keyframes modalMasuk { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.admin-modal-kotak h2 { font-size: 1.2rem; font-weight: 800; letter-spacing: -.02em; margin-bottom: 8px; padding-right: 34px; }
+.admin-modal-kotak > p { font-size: .86rem; color: var(--teks-redup); line-height: 1.65; margin-bottom: 18px; }
+.admin-modal-tutup {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--bg-alt);
+  color: var(--teks-redup);
+}
+.admin-modal-tutup:hover { background: var(--merah-terang); color: var(--merah); }
+.admin-modal-langkah {
+  background: var(--bg-alt);
+  border: 1px solid var(--garis);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.admin-modal-langkah strong { font-size: .84rem; }
+.admin-modal-langkah small { font-size: .73rem; color: var(--teks-redup); line-height: 1.55; }
+.admin-modal-langkah .btn { align-self: flex-start; }
+.admin-modal-langkah code { background: rgba(13, 59, 140, .08); padding: 1px 5px; border-radius: 5px; }
+.admin-modal-label { display: block; font-size: .82rem; font-weight: 700; margin-bottom: 6px; }
+.admin-modal-input {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1.5px solid var(--garis-kuat);
+  border-radius: 10px;
+  background: #fbfdff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .86rem;
+  letter-spacing: .02em;
+}
+.admin-modal-input:focus { outline: none; border-color: var(--utama); background: #fff; box-shadow: 0 0 0 4px rgba(13, 59, 140, .1); }
+.admin-modal-status { font-size: .8rem; margin-top: 10px; min-height: 1.2em; }
+.admin-modal-status.sukses { color: var(--hijau); font-weight: 600; }
+.admin-modal-status.galat { color: var(--merah); font-weight: 600; }
+.admin-modal-aksi { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.admin-modal-aksi .btn { flex: 1 1 auto; }
+
+.admin-publikasi-ingat { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.admin-publikasi-ingat > span { flex: 1 1 260px; }
+.admin-publikasi-ingat .btn { flex: 0 0 auto; }
+
+@media (max-width: 620px) {
+  .admin-modal-kotak { padding: 22px; border-radius: 16px; }
+  .admin-modal-aksi .btn { flex: 1 1 100%; }
+}

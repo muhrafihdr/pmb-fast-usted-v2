@@ -35,7 +35,13 @@ Artinya:
 - Gunakan **Data & Publikasi → Unduh Cadangan** untuk menyimpan berkas JSON.
 - Gunakan **Terbitkan ke GitHub** untuk mengirim perubahan ke repositori. Setelah deploy GitHub Pages/Netlify selesai, perubahan berlaku untuk semua pengunjung.
 
-> **Publikasi otomatis** — aktifkan opsi *"Publikasikan otomatis setiap kali saya menyimpan konten"* di menu **Data & Publikasi**. Setelah itu, setiap berita/artikel yang disimpan langsung dikirim ke GitHub, sehingga tidak perlu menekan tombol terbit lagi. Perubahan biasanya tampil di website dalam ±1 menit.
+> **Publikasi otomatis** — opsi ini **aktif secara bawaan**. Cukup lengkapi **Personal Access Token GitHub satu kali**:
+>
+> 1. Simpan artikel Blog/Berita. Panel akan menampilkan jendela **“Aktifkan publikasi otomatis”**.
+> 2. Klik **Buka halaman token**, buat token dengan scope `repo`, lalu tempel tokennya di panel.
+> 3. Klik **Aktifkan & Terbitkan**. Setelah itu setiap konten yang disimpan langsung dikirim ke GitHub tanpa langkah tambahan.
+>
+> Token bisa juga diisi lewat **Data & Publikasi**. Setelah aktif, seluruh konten yang tersimpan akan diterbitkan otomatis dan biasanya tampil di website dalam ±1 menit.
 
 > Berita/Artikel baru otomatis tampil di halaman daftar dan beranda berdasarkan tanggal terbaru. Jika konten belum tampil untuk pengunjung lain, pastikan publikasi otomatis aktif atau tekan **Terbitkan Sekarang**.
 

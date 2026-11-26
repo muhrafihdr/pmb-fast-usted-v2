@@ -841,7 +841,7 @@
           kartuStat(blog.length, "Artikel Blog", drafBlog.length + " draf", IKON.blog) +
           kartuStat(berita.length, "Berita", drafBerita.length + " draf", IKON.berita) +
           kartuStat(academy.length, "Kelas Academy", academy.filter(function (x) { return x.status !== "selesai"; }).length + " aktif", IKON.academy) +
-          kartuStat(C.jumlah(), "Perubahan Lokal", otomatis ? "Publikasi otomatis aktif" : "Belum diterbitkan", IKON.lokal) +
+          kartuStat(C.jumlah(), "Perubahan Lokal", otomatis ? "Publikasi otomatis aktif" : "Menunggu diaktifkan", IKON.lokal) +
         "</div>" +
 
         '<div class="admin-kartu mt-3">' +
@@ -876,7 +876,8 @@
             '<p class="dash-kecil">' + aman(site.org && site.org.fakultas || "Fakultas Sains dan Teknologi") + " — " +
               aman(site.org && site.org.kampus || "USTEDI") + "</p>" +
             '<div class="admin-aksi mt-2">' +
-              '<a class="btn btn-utama btn-kecil" href="#/data">Buka Data &amp; Publikasi</a>' +
+              (otomatis ? "" : '<button type="button" class="btn btn-utama btn-kecil" data-aksi="aktifkan-publikasi">Aktifkan Sekarang</button>') +
+              '<a class="btn btn-' + (otomatis ? "utama" : "garis") + ' btn-kecil" href="#/data">Buka Data &amp; Publikasi</a>' +
               '<a class="btn btn-garis btn-kecil" href="#/halaman">Edit Profil</a>' +
             "</div>" +
           "</div>" +
@@ -921,10 +922,12 @@
   /* Pengingat status publikasi di halaman kelola & editor. */
   function catatanPublikasi() {
     if (autoTerbit()) {
-      return '<div class="admin-catatan hijau">Publikasi otomatis <strong>aktif</strong>. Setiap konten yang disimpan langsung dikirim ke website.</div>';
+      return '<div class="admin-catatan hijau">Publikasi otomatis <strong>aktif</strong>. Setiap konten yang disimpan langsung terbit ke website dan terlihat oleh publik.</div>';
     }
-    return '<div class="admin-catatan kuning">Konten yang disimpan baru tampil di <strong>perangkat ini</strong>. ' +
-      '<a href="#/data">Aktifkan publikasi otomatis</a> agar tampil untuk semua pengunjung.</div>';
+    return '<div class="admin-catatan kuning admin-publikasi-ingat">' +
+      '<span>Publikasi otomatis <strong>belum aktif</strong>. Konten baru masih tersimpan di perangkat ini saja.</span>' +
+      '<button type="button" class="btn btn-utama btn-kecil" data-aksi="aktifkan-publikasi">Aktifkan publikasi otomatis</button>' +
+      '</div>';
   }
 
   function daftarPost(jenis) {
@@ -1230,6 +1233,7 @@
         : " Aktifkan publikasi otomatis agar tampil untuk semua pengunjung."),
         "sukses", otomatis ? 4200 : 6400);
       location.hash = "#/" + jenis;
+      tawarkanPublikasi();
     }).catch(function (e) {
       U.toast("Gagal menyimpan: " + e.message, "galat", 5200);
     });
@@ -1792,7 +1796,7 @@
         '<div class="admin-kartu-kepala"><div><h2>Terbitkan ke GitHub</h2>' +
           "<p>Kirim perubahan ke repositori agar berlaku untuk <strong>semua pengunjung</strong>. Diperlukan Personal Access Token dengan izin <strong>Contents: Read and write</strong>.</p></div>" +
           '<span class="admin-pill ' + (gh.auto && gh.token ? "hijau" : "aksen") + '">' +
-            (gh.auto && gh.token ? "Publikasi otomatis aktif" : "Publikasi otomatis nonaktif") + "</span></div>" +
+            (gh.auto && gh.token ? "Publikasi otomatis aktif" : (gh.auto ? "Aktif — token belum diisi" : "Publikasi otomatis nonaktif")) + "</span></div>" +
         '<div class="ed-baris-2">' +
           field("Owner / Organisasi", "ghOwner", gh.owner || CFG.data.owner) +
           field("Repositori", "ghRepo", gh.repo || CFG.data.repo) +
@@ -1882,7 +1886,9 @@
       branch: CFG.data.branch,
       dataDir: CFG.data.dataDir,
       token: "",
-      auto: false
+      /* Publikasi otomatis aktif secara bawaan. Begitu token GitHub
+         tersimpan sekali, setiap penyimpanan langsung terbit ke website. */
+      auto: true
     };
     try {
       var raw = localStorage.getItem(KUNCI_GH_CFG);
@@ -2039,6 +2045,127 @@
           return true;
         });
       });
+  }
+
+  /* Terbitkan seluruh override lokal ke GitHub. */
+  function terbitkanSemua(cfg) {
+    var files = C.semua();
+    var paths = Object.keys(files);
+    if (!paths.length) return Promise.resolve(0);
+    var i = 0;
+    var sukses = 0;
+    function lanjut() {
+      if (i >= paths.length) return sukses;
+      var p = paths[i++];
+      return githubPut(cfg, p, files[p]).then(function () {
+        sukses++;
+        return lanjut();
+      });
+    }
+    return Promise.resolve().then(lanjut);
+  }
+
+  /* Modal sekali-pengaturan untuk mengaktifkan publikasi otomatis. */
+  function modalPublikasi(buka) {
+    var m = document.getElementById("modalPublikasi");
+    if (!m) {
+      m = document.createElement("div");
+      m.className = "admin-modal";
+      m.id = "modalPublikasi";
+      m.hidden = true;
+      m.innerHTML =
+        '<div class="admin-modal-latar" data-tutup="1"></div>' +
+        '<div class="admin-modal-kotak" role="dialog" aria-modal="true" aria-labelledby="modalPublikasiJudul">' +
+          '<button type="button" class="admin-modal-tutup" data-tutup="1" aria-label="Tutup">✕</button>' +
+          '<h2 id="modalPublikasiJudul">Aktifkan publikasi otomatis</h2>' +
+          '<p>Cukup <strong>sekali pengaturan</strong>. Setelah aktif, setiap artikel Blog/Berita yang disimpan langsung dikirim ke website dan terlihat oleh publik (±1 menit).</p>' +
+          '<div class="admin-modal-langkah">' +
+            "<strong>1. Buat token GitHub</strong>" +
+            '<a class="btn btn-garis btn-kecil" href="https://github.com/settings/tokens/new?scopes=repo&description=FAST%20USTEDI%20Panel%20Admin" target="_blank" rel="noopener">Buka halaman token</a>' +
+            '<small>Centang scope <code>repo</code>, klik Generate token, lalu salin tokennya.</small>' +
+          "</div>" +
+          '<label class="admin-modal-label" for="modalGhToken">2. Tempel token di sini</label>' +
+          '<input type="password" id="modalGhToken" class="admin-modal-input" placeholder="ghp_… / github_pat_…" autocomplete="off" spellcheck="false" />' +
+          '<p class="ed-petunjuk">Token hanya disimpan di browser ini dan dikirim langsung ke GitHub API. Jangan gunakan pada komputer bersama.</p>' +
+          '<div class="admin-modal-status" id="modalGhStatus"></div>' +
+          '<div class="admin-modal-aksi">' +
+            '<button type="button" class="btn btn-utama" id="modalGhSimpan">Aktifkan &amp; Terbitkan</button>' +
+            '<button type="button" class="btn btn-garis" data-tutup="1">Nanti saja</button>' +
+          "</div>" +
+        "</div>";
+      document.body.appendChild(m);
+
+      Array.prototype.forEach.call(m.querySelectorAll("[data-tutup]"), function (b) {
+        b.addEventListener("click", function () { modalPublikasi(false); });
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && !m.hidden) modalPublikasi(false);
+      });
+
+      document.getElementById("modalGhSimpan").addEventListener("click", function () {
+        var btn = this;
+        var input = document.getElementById("modalGhToken");
+        var st = document.getElementById("modalGhStatus");
+        var token = String(input.value || "").trim();
+
+        function pesan(t, jenis) {
+          if (!st) return;
+          st.textContent = t;
+          st.className = "admin-modal-status" + (jenis ? " " + jenis : "");
+        }
+        if (!token) { pesan("Token wajib diisi.", "galat"); input.focus(); return; }
+
+        var cfg = bacaGhCfg();
+        cfg.token = token;
+        cfg.auto = true;
+        if (!cfg.owner) cfg.owner = CFG.data.owner;
+        if (!cfg.repo) cfg.repo = CFG.data.repo;
+        if (!cfg.branch) cfg.branch = CFG.data.branch;
+        if (!cfg.dataDir) cfg.dataDir = CFG.data.dataDir;
+        tulisGhCfg(cfg);
+
+        btn.disabled = true;
+        var teksAsli = btn.textContent;
+        btn.textContent = "Menerbitkan…";
+        pesan("Mengirim konten ke GitHub…");
+
+        terbitkanSemua(cfg).then(function (n) {
+          pesan("Berhasil! " + n + " berkas diterbitkan.", "sukses");
+          U.toast("Publikasi otomatis aktif. Konten terbit ke website.", "sukses", 6000);
+          if (input) input.value = "";
+          setTimeout(function () {
+            modalPublikasi(false);
+            btn.disabled = false;
+            btn.textContent = teksAsli;
+            route();
+          }, 1300);
+        }).catch(function (e) {
+          pesan(e.message || "Gagal menerbitkan. Periksa token dan koneksi.", "galat");
+          btn.disabled = false;
+          btn.textContent = teksAsli;
+        });
+      });
+    }
+
+    if (buka) {
+      m.hidden = false;
+      document.body.style.overflow = "hidden";
+      var inp = document.getElementById("modalGhToken");
+      if (inp) setTimeout(function () { inp.focus(); }, 60);
+    } else {
+      m.hidden = true;
+      document.body.style.overflow = "";
+    }
+  }
+
+  /* Tawarkan aktivasi sekali per sesi setelah konten disimpan. */
+  function tawarkanPublikasi() {
+    if (autoTerbit()) return;
+    try {
+      if (sessionStorage.getItem("fast_pub_prompt") === "1") return;
+      sessionStorage.setItem("fast_pub_prompt", "1");
+    } catch (e) { /* abaikan */ }
+    setTimeout(function () { modalPublikasi(true); }, 650);
   }
 
   function terbitkanGitHub(btn) {
@@ -2200,6 +2327,7 @@
     }
     if (aksi === "publish") { terbitkanGitHub(b); return; }
     if (aksi === "simpan-gh") { simpanPengaturanGh(); return; }
+    if (aksi === "aktifkan-publikasi") { modalPublikasi(true); return; }
   }
 
   function tanganiSubmit(ev) {
