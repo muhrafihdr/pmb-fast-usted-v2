@@ -6,26 +6,25 @@ Landing page pendaftaran mahasiswa baru (PMB) FAST USTEDI. Responsif (mobile & d
 >
 > 🔒 **Tampilan modern** — menu Monitoring FAST membuka dashboard lokal bertema baru di **`/monitoring/#kegiatan`**, bukan Google Sites. Versi embed aplikasi Google Apps Script yang lama tetap tersedia sebagai cadangan di **`/monitoring-fast/`**.
 
-## ✍️ Blog & Panel Admin
+## 📰 Berita & Panel Admin
 
-Situs ini kini memiliki dua fitur baru:
+Situs ini memiliki fitur berikut:
 
-- **Blog FAST** di `/blog/` — daftar artikel, pencarian, kategori, dan halaman detail artikel. Data blog tersimpan di `data/blog/`.
-- **Panel Admin** di `/admin/` — dikunci dengan username dan password. Tautan **🔒 Admin** tersedia di bagian bawah footer setiap halaman. Kata sandi tidak ditampilkan di antarmuka.
+- **Berita FAST** di `/berita/` — daftar berita, pencarian, kategori, dan halaman detail. Data berita tersimpan di `data/berita/` dan diperbarui **realtime** (langsung terbaca pengunjung setelah diterbitkan).
+- **Panel Admin** di `/admin/` — dikunci dengan username dan password. Tautan **Admin** tersedia di bagian bawah footer setiap halaman. Kata sandi tidak ditampilkan di antarmuka.
 - **Monitoring FAST** — menu **🔒 Monitoring FAST** di navigasi utama membuka dashboard lokal bertema modern di **`/monitoring/#kegiatan`** setelah memasukkan username dan password yang sama dengan Panel Admin. Dashboard ini membaca spreadsheet PMB dan kegiatan FAST, serta mendukung CRUD, export CSV/PDF, dan tampilan responsif. Versi embed aplikasi Google Apps Script tetap tersimpan sebagai cadangan di `/monitoring-fast/`. Pengaturan URL ada di `assets/js/config.js` (`monitoring`), sedangkan gerbang loginnya di `assets/js/monitoring.js`.
 
 Panel admin dapat mengelola:
 
 | Modul | Cakupan |
 |---|---|
-| Blog | tulis/edit/hapus artikel, kategori, status terbit/draf |
-| Berita | kelola berita fakultas |
+| Berita | tulis/edit/hapus berita, kategori, status terbit/draf |
 | Halaman & Profil | identitas, kontak, hero, pengumuman, statistik, keunggulan, prodi, SEO |
 | Academy | katalog kelas, jadwal, biaya, kuota, silabus |
 | PMB | tahun akademik, status, jalur, jadwal, biaya, alur, FAQ |
 | Data & Publikasi | cadangan/impor JSON, unduh, reset, publikasi ke GitHub |
 
-Perubahan disimpan sebagai *override* di `localStorage` browser dan langsung tampil di perangkat tersebut. Untuk membuat perubahan berlaku bagi semua pengunjung, aktifkan **publikasi otomatis** di **Data & Publikasi** (setiap simpanan langsung dikirim ke GitHub) atau gunakan tombol **Terbitkan ke GitHub**. Panduan lengkap ada di [`docs/ADMIN.md`](docs/ADMIN.md).
+Perubahan disimpan sebagai *override* di `localStorage` browser dan langsung tampil di perangkat tersebut. Untuk membuat perubahan berlaku bagi semua pengunjung, aktifkan **publikasi otomatis** di **Data & Publikasi** (setiap simpanan langsung dikirim ke GitHub) atau gunakan tombol **Terbitkan ke GitHub**. Halaman berita membaca data langsung dari repositori sehingga perubahan tampil dalam hitungan detik. Panduan lengkap ada di [`docs/ADMIN.md`](docs/ADMIN.md).
 
 Panduan lengkap: [`docs/ADMIN.md`](docs/ADMIN.md) · Dokumentasi SSO: [`docs/SSO.md`](docs/SSO.md).
 

@@ -17,8 +17,7 @@ Kredensial tidak ditampilkan di halaman mana pun. Di dalam kode, hanya sidik SHA
 | Modul | Fungsi |
 |---|---|
 | Ringkasan | Statistik konten dan status perubahan |
-| Blog | Membuat, mengedit, menghapus, dan menerbitkan artikel blog; unggah gambar sampul dengan tombol **Choose File** |
-| Berita | Mengelola berita fakultas |
+| Berita | Membuat, mengedit, menghapus, dan menerbitkan berita fakultas; unggah gambar sampul dengan tombol **Choose File** |
 | Halaman & Profil | Identitas, kontak, hero, pengumuman, statistik, keunggulan, program studi, SEO |
 | Academy | Katalog kelas, kuota, jadwal, biaya, manfaat, silabus |
 | PMB | Tahun akademik, status, jadwal, jalur, biaya, alur, berkas, FAQ |
@@ -37,13 +36,15 @@ Artinya:
 
 > **Publikasi otomatis** — opsi ini **aktif secara bawaan**. Cukup lengkapi **Personal Access Token GitHub satu kali**:
 >
-> 1. Simpan artikel Blog/Berita. Panel akan menampilkan jendela **“Aktifkan publikasi otomatis”**.
+> 1. Simpan berita dari menu **Berita**. Panel akan menampilkan jendela **“Aktifkan publikasi otomatis”**.
 > 2. Klik **Buka halaman token**, buat token dengan scope `repo`, lalu tempel tokennya di panel.
 > 3. Klik **Aktifkan & Terbitkan**. Setelah itu setiap konten yang disimpan langsung dikirim ke GitHub tanpa langkah tambahan.
 >
 > Token bisa juga diisi lewat **Data & Publikasi**. Setelah aktif, seluruh konten yang tersimpan akan diterbitkan otomatis dan biasanya tampil di website dalam ±1 menit.
 
-> Berita/Artikel baru otomatis tampil di halaman daftar dan beranda berdasarkan tanggal terbaru. Jika konten belum tampil untuk pengunjung lain, pastikan publikasi otomatis aktif atau tekan **Terbitkan Sekarang**.
+> **Mode realtime** — halaman Berita dan beranda selalu membaca data berita langsung dari repositori GitHub. Setelah publikasi otomatis aktif, berita baru/terbarui tampil untuk pengunjung dalam hitungan detik. Halaman Berita juga memeriksa pembaruan secara berkala (setiap ±20 detik) tanpa perlu memuat ulang halaman.
+
+> Berita baru otomatis tampil di halaman daftar dan beranda berdasarkan tanggal terbaru. Jika konten belum tampil untuk pengunjung lain, pastikan publikasi otomatis aktif atau tekan **Terbitkan Sekarang**.
 
 ## Publikasi ke GitHub
 

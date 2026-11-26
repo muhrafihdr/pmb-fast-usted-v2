@@ -1,7 +1,7 @@
 /* =========================================================
    Panel Admin FAST USTEDI — admin.js
    ---------------------------------------------------------
-   Area pengelolaan konten: blog, berita, halaman/profil,
+   Area pengelolaan konten: berita, halaman/profil,
    academy, PMB, serta cadangan/publikasi data.
 
    Keamanan:
@@ -427,7 +427,12 @@
     state.route = v;
     aktifNav(v);
 
-    if (v === "blog" || v === "berita") {
+    if (v === "blog") {
+      /* Blog sudah dihapus — semua tulisan menggunakan modul Berita. */
+      location.replace("#/berita");
+      return;
+    }
+    if (v === "berita") {
       if (bagian[1] === "baru") return editorPost(v, null);
       if (bagian[1] === "edit" && bagian[2]) return editorPost(v, decodeURIComponent(bagian[2]));
       return daftarPost(v);
@@ -778,7 +783,6 @@
      Ringkasan
      ========================================================= */
   var IKON = {
-    blog: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>',
     berita: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0V8"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg>',
     academy: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>',
     lokal: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>',
@@ -797,49 +801,42 @@
     memuat("Menghitung konten…");
 
     Promise.all([
-      dataEfektif("blog/index.json").catch(function () { return { item: [] }; }),
       dataEfektif("berita/index.json").catch(function () { return { item: [] }; }),
       dataEfektif("academy/index.json").catch(function () { return { item: [] }; }),
       dataEfektif("pmb/config.json").catch(function () { return {}; }),
       dataEfektif("site.json").catch(function () { return {}; })
     ]).then(function (hasil) {
-      var blog = hasil[0].item || [];
-      var berita = hasil[1].item || [];
-      var academy = hasil[2].item || [];
-      var site = hasil[4] || {};
-      var drafBlog = blog.filter(function (x) { return x.status === "draf"; });
+      var berita = hasil[0].item || [];
+      var academy = hasil[1].item || [];
+      var site = hasil[3] || {};
       var drafBerita = berita.filter(function (x) { return x.status === "draf"; });
+      var terbitBerita = berita.length - drafBerita.length;
       var otomatis = autoTerbit();
 
-      var gabungan = blog.map(function (x) { return { jenis: "blog", data: x }; })
-        .concat(berita.map(function (x) { return { jenis: "berita", data: x }; }))
-        .sort(function (a, b) {
-          return String(b.data.tanggal).localeCompare(String(a.data.tanggal));
-        }).slice(0, 6);
+      var terbaru = berita.slice().sort(function (a, b) {
+        return String(b.tanggal).localeCompare(String(a.tanggal));
+      }).slice(0, 6);
 
-      var barisTerbaru = gabungan.length ? gabungan.map(function (p) {
-        var d = p.data;
-        var label = p.jenis === "blog" ? "Blog" : "Berita";
+      var barisTerbaru = terbaru.length ? terbaru.map(function (d) {
         return '<tr><td class="judul-sel"><strong>' + aman(d.judul) + "</strong><small>" +
-          label + " · " + aman(d.penulis || "Humas FAST") + " · " + aman(d.tanggal || "-") + "</small></td>" +
+          aman(d.penulis || "Humas FAST") + " · " + aman(d.tanggal || "-") + "</small></td>" +
           '<td><span class="admin-pill ' + (d.status === "draf" ? "aksen" : "hijau") + '">' +
           (d.status === "draf" ? "Draf" : "Terbit") + "</span></td>" +
-          '<td class="aksi-sel"><a class="btn btn-garis btn-kecil" href="#/' + p.jenis + '/edit/' +
+          '<td class="aksi-sel"><a class="btn btn-garis btn-kecil" href="#/berita/edit/' +
           encodeURIComponent(d.slug) + '">Edit</a></td></tr>';
-      }).join("") : '<tr><td colspan="3"><div class="admin-kosong">Belum ada artikel. Mulai dengan tombol “Tulis Berita”.</div></td></tr>';
+      }).join("") : '<tr><td colspan="3"><div class="admin-kosong">Belum ada berita. Mulai dengan tombol “Tulis Berita”.</div></td></tr>';
 
       isi(
         '<div class="dash-halo">' +
           '<div><p class="dash-label">Panel Admin</p>' +
           "<h2>Halo, selamat datang kembali</h2>" +
-          '<p class="dash-sub">Kelola berita, blog, dan informasi fakultas dari satu tempat.</p></div>' +
-          '<div class="admin-aksi"><a class="btn btn-utama" href="#/berita/baru">+ Tulis Berita</a>' +
-          '<a class="btn btn-garis" href="#/blog/baru">+ Tulis Artikel</a></div>' +
+          '<p class="dash-sub">Kelola berita dan informasi fakultas dari satu tempat.</p></div>' +
+          '<div class="admin-aksi"><a class="btn btn-utama" href="#/berita/baru">+ Tulis Berita</a></div>' +
         "</div>" +
 
         '<div class="admin-grid">' +
-          kartuStat(blog.length, "Artikel Blog", drafBlog.length + " draf", IKON.blog) +
-          kartuStat(berita.length, "Berita", drafBerita.length + " draf", IKON.berita) +
+          kartuStat(berita.length, "Total Berita", berita.length + " tulisan", IKON.berita) +
+          kartuStat(terbitBerita, "Berita Terbit", drafBerita.length + " draf", IKON.berita) +
           kartuStat(academy.length, "Kelas Academy", academy.filter(function (x) { return x.status !== "selesai"; }).length + " aktif", IKON.academy) +
           kartuStat(C.jumlah(), "Perubahan Lokal", otomatis ? "Publikasi otomatis aktif" : "Menunggu diaktifkan", IKON.lokal) +
         "</div>" +
@@ -849,7 +846,7 @@
             "<p>Pilih tindakan yang paling sering dipakai.</p></div></div>" +
           '<div class="quick-grid">' +
             quickTile("#/berita/baru", "Tulis Berita", "Bagikan kabar terbaru fakultas", IKON.berita) +
-            quickTile("#/blog/baru", "Tulis Artikel Blog", "Unggah gagasan dan tips", IKON.blog) +
+            quickTile("#/berita", "Kelola Berita", "Edit, terbitkan, atau hapus berita", IKON.berita) +
             quickTile("#/academy/baru", "Tambah Kelas", "Buat jadwal pelatihan baru", IKON.academy) +
             quickTile("#/halaman", "Edit Profil", "Perbarui identitas dan kontak", IKON.halaman) +
           "</div>" +
@@ -857,8 +854,8 @@
 
         '<div class="admin-dua mt-3">' +
           '<div class="admin-kartu">' +
-            '<div class="admin-kartu-kepala"><div><h2>Konten Terbaru</h2>' +
-              "<p>Enam tulisan terakhir dari blog dan berita.</p></div>" +
+            '<div class="admin-kartu-kepala"><div><h2>Berita Terbaru</h2>' +
+              "<p>Enam berita terakhir yang dikelola.</p></div>" +
               '<a class="btn btn-garis btn-kecil" href="#/berita">Kelola semua</a></div>' +
             '<div class="admin-tabel-bungkus"><table class="admin-tabel"><thead><tr><th>Judul</th><th>Status</th><th class="aksi-sel">Aksi</th></tr></thead><tbody>' +
             barisTerbaru + "</tbody></table></div>" +
@@ -886,7 +883,7 @@
         '<details class="admin-kartu admin-bantuan mt-3">' +
           "<summary>Panduan singkat: bagaimana konten tampil di website?</summary>" +
           '<ol class="dash-langkah">' +
-            "<li><strong>Simpan</strong> artikel dari menu Blog atau Berita. Konten langsung tampil di perangkat ini.</li>" +
+            "<li><strong>Simpan</strong> berita dari menu Berita. Konten langsung tampil di perangkat ini.</li>" +
             "<li><strong>Aktifkan publikasi otomatis</strong> di menu Data &amp; Publikasi agar setiap simpanan langsung dikirim ke website.</li>" +
             "<li>Tanpa publikasi otomatis, klik <strong>Terbitkan Sekarang</strong> untuk mengirim semua perubahan manual.</li>" +
             "<li>Perubahan tampil untuk semua pengunjung sekitar <strong>1 menit</strong> setelah diterbitkan.</li>" +
@@ -894,7 +891,6 @@
         "</details>"
       );
       perbaruiBadge();
-      perbaruiBadgeBlog(blog);
     }).catch(function (e) {
       isi('<div class="admin-catatan merah">Gagal memuat ringkasan: ' + aman(e.message) + "</div>");
     });
@@ -908,16 +904,8 @@
       aman(ket || "") + "</div></div></div>";
   }
 
-  function perbaruiBadgeBlog(blog) {
-    var b = document.getElementById("badgeBlog");
-    if (!b) return;
-    var draf = (blog || []).filter(function (x) { return x.status === "draf"; }).length;
-    b.textContent = draf;
-    b.hidden = !draf;
-  }
-
   /* =========================================================
-     Daftar Blog / Berita
+     Daftar Berita
      ========================================================= */
   /* Pengingat status publikasi di halaman kelola & editor. */
   function catatanPublikasi() {
@@ -931,8 +919,7 @@
   }
 
   function daftarPost(jenis) {
-    var blog = jenis === "blog";
-    var label = blog ? "Blog" : "Berita";
+    var label = "Berita";
     var path = jenis + "/index.json";
     judul("Kelola " + label, "Buat, edit, dan atur status terbit " + label.toLowerCase() + ".");
     memuat("Memuat " + label.toLowerCase() + "…");
@@ -1001,7 +988,6 @@
             path + '">Simpan JSON</button></div>' +
         "</details>"
       );
-      perbaruiBadgeBlog(jenis === "blog" ? idx.item : null);
     }).catch(function (e) {
       isi('<div class="admin-catatan merah">Gagal memuat ' + label.toLowerCase() + ": " + aman(e.message) + "</div>");
     });
@@ -1045,11 +1031,10 @@
   }
 
   /* =========================================================
-     Editor Artikel Blog / Berita
+     Editor Berita
      ========================================================= */
   function editorPost(jenis, slug) {
-    var blog = jenis === "blog";
-    var label = blog ? "Artikel Blog" : "Berita";
+    var label = "Berita";
     judul((slug ? "Edit " : "Tulis ") + label, "Lengkapi judul, ringkasan, dan isi artikel. Format isi mendukung Markdown.");
     memuat("Menyiapkan editor…");
 
@@ -1153,9 +1138,8 @@
 
   function simpanPost(form) {
     var d = bacaForm(form);
-    var jenis = d.jenis || "blog";
-    var blog = jenis === "blog";
-    var label = blog ? "Artikel" : "Berita";
+    var jenis = d.jenis || "berita";
+    var label = "Berita";
 
     if (!d.judul) { U.toast("Judul wajib diisi.", "galat"); return; }
     if (!d.isi) { U.toast("Isi artikel wajib diisi.", "galat"); return; }
@@ -1240,7 +1224,7 @@
   }
 
   function hapusPost(jenis, slug, judulPost) {
-    if (!confirm("Hapus " + (jenis === "blog" ? "artikel" : "berita") + " “" + (judulPost || slug) + "”?\n\nTindakan ini menghapus entri dari daftar. Berkas data bawaan tidak diubah.")) return;
+    if (!confirm("Hapus berita “" + (judulPost || slug) + "”?\n\nTindakan ini menghapus entri dari daftar. Berkas data bawaan tidak diubah.")) return;
     dataEfektif(jenis + "/index.json").then(function (idx) {
       idx.item = (idx.item || []).filter(function (x) { return x.slug !== slug; });
       idx.diperbarui = nowISO();
@@ -1822,7 +1806,7 @@
       "</div>" +
 
       '<div class="admin-catatan mt-3">' +
-        "Ingin menyalin manual? Gunakan tombol <strong>Unduh</strong> pada tiap berkas, lalu letakkan hasilnya di folder <code>data/</code> sesuai nama berkas (mis. <code>blog/index.json</code>)." +
+        "Ingin menyalin manual? Gunakan tombol <strong>Unduh</strong> pada tiap berkas, lalu letakkan hasilnya di folder <code>data/</code> sesuai nama berkas (mis. <code>berita/index.json</code>)." +
       "</div>"
     );
   }
@@ -2078,7 +2062,7 @@
         '<div class="admin-modal-kotak" role="dialog" aria-modal="true" aria-labelledby="modalPublikasiJudul">' +
           '<button type="button" class="admin-modal-tutup" data-tutup="1" aria-label="Tutup">✕</button>' +
           '<h2 id="modalPublikasiJudul">Aktifkan publikasi otomatis</h2>' +
-          '<p>Cukup <strong>sekali pengaturan</strong>. Setelah aktif, setiap artikel Blog/Berita yang disimpan langsung dikirim ke website dan terlihat oleh publik (±1 menit).</p>' +
+          '<p>Cukup <strong>sekali pengaturan</strong>. Setelah aktif, setiap berita yang disimpan langsung dikirim ke website dan terlihat oleh publik (±1 menit).</p>' +
           '<div class="admin-modal-langkah">' +
             "<strong>1. Buat token GitHub</strong>" +
             '<a class="btn btn-garis btn-kecil" href="https://github.com/settings/tokens/new?scopes=repo&description=FAST%20USTEDI%20Panel%20Admin" target="_blank" rel="noopener">Buka halaman token</a>' +

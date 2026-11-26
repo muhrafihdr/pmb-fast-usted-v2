@@ -9,6 +9,9 @@
   var U = window.FAST.ui;
   var CFG = window.FAST_CONFIG;
   var el = U.el;
+  var REALTIME = !!(CFG.data && CFG.data.realtime);
+  var LIVE_MS = Math.max(8000, (CFG.data && CFG.data.realtimeInterval) || 20000);
+  var capBerita = "";
 
   function kartuLayanan() {
     var host = document.getElementById("kartuLayanan");
@@ -137,53 +140,22 @@
     }
   }
 
-  function blogTerbaru() {
-    var host = document.getElementById("blogGrid");
-    if (!host) return;
-    return D.json("blog/index.json").then(function (idx) {
-      var item = (idx && idx.item || []).filter(function (b) { return b.status !== "draf"; });
-      item.sort(function (a, b) { return String(b.tanggal).localeCompare(String(a.tanggal)); });
-      var tampil = item.slice(0, 3);
-      if (!tampil.length) {
-        host.innerHTML = '<div class="kosong"><h3>Belum ada artikel</h3><p>Nantikan tulisan terbaru dari sivitas akademika FAST.</p></div>';
-        return;
-      }
-      var peta = {};
-      (idx.kategori || []).forEach(function (k) { peta[k.id] = k; });
-
-      host.innerHTML = "";
-      tampil.forEach(function (b) {
-        var kat = peta[b.kategori] || { nama: b.kategori || "Umum", warna: "#0891b2" };
-        var kartu = el("a", { href: "/blog/artikel.html?slug=" + encodeURIComponent(b.slug), class: "berita-kartu" });
-        kartu.innerHTML =
-          '<div class="berita-sampul"' + (b.gambar ? ' style="background:url(' + U.aman(b.gambar) + ') center/cover"' : "") + ">" +
-          "</div>" +
-          '<div class="berita-isi">' +
-            '<div class="berita-meta">' +
-              '<span class="tag" style="background:' + U.aman(kat.warna) + '1a;color:' + U.aman(kat.warna) + '">' + U.aman(kat.nama) + "</span>" +
-              "<span>" + U.tanggal(b.tanggal, "pendek") + "</span>" +
-            "</div>" +
-            "<h3>" + U.aman(b.judul) + "</h3>" +
-            '<p class="berita-ringkas">' + U.aman(b.ringkasan || "") + "</p>" +
-            '<div class="berita-meta" style="margin-top:12px"><span>' + U.aman(b.penulis || "Humas FAST") + "</span></div>" +
-          "</div>";
-        host.appendChild(kartu);
-      });
-    }).catch(function () {
-      host.innerHTML = '<div class="kosong"><h3>Gagal memuat artikel</h3><p>Periksa koneksi atau berkas data.</p></div>';
-    });
-  }
-
-  function beritaTerbaru() {
+  function beritaTerbaru(pertama) {
     var host = document.getElementById("beritaGrid");
-    if (!host) return;
-    return D.json("berita/index.json").then(function (idx) {
+    if (!host) return Promise.resolve();
+    return D.json("berita/index.json", REALTIME ? { segar: true } : {}).then(function (idx) {
       var item = (idx && idx.item || []).filter(function (b) { return b.status !== "draf"; });
       item.sort(function (a, b) { return String(b.tanggal).localeCompare(String(a.tanggal)); });
-      /* Tampilkan tiga berita terbaru. Sebelumnya hanya artikel bertanda
-         “unggulan” yang tampil, sehingga berita baru dari panel admin bisa
-         tidak pernah muncul di beranda. */
+      /* Tampilkan tiga berita terbaru agar berita baru dari panel admin
+         selalu muncul di beranda. */
       var tampil = item.slice(0, 3);
+
+      var cap = JSON.stringify(tampil.map(function (b) {
+        return [b.slug, b.tanggal, b.judul, b.ringkasan, b.status].join("|");
+      }));
+      if (!pertama && cap === capBerita) return;
+      capBerita = cap;
+
       if (!tampil.length) {
         host.innerHTML = '<div class="kosong"><h3>Belum ada berita</h3><p>Nantikan kabar terbaru dari fakultas.</p></div>';
         return;
@@ -266,8 +238,16 @@
   /* ---- Jalankan ---- */
   kartuLayanan();
   kontak();
-  beritaTerbaru();
-  blogTerbaru();
+  beritaTerbaru(true);
+  if (REALTIME) {
+    var jamBerita = setInterval(function () {
+      if (!document.hidden) beritaTerbaru(false);
+    }, LIVE_MS);
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) beritaTerbaru(false);
+    });
+    window.addEventListener("pagehide", function () { clearInterval(jamBerita); });
+  }
 
   D.json("site.json").then(function (site) {
     if (site && site.org) {

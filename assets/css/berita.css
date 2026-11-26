@@ -129,3 +129,44 @@
   .tata-artikel { grid-template-columns: 1fr; }
   .artikel-samping { position: static; }
 }
+
+/* ----- Indikator realtime ----- */
+.live-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #e9f9ef;
+  color: #16803c;
+  font-size: .72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: .01em;
+}
+.live-status[hidden] { display: none; }
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #16a34a;
+  animation: livePulse 1.9s ease-out infinite;
+}
+@keyframes livePulse {
+  0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, .55); }
+  70% { box-shadow: 0 0 0 7px rgba(22, 163, 74, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+}
+.live-pil {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .72rem;
+  font-weight: 700;
+  color: #16803c;
+  background: #e9f9ef;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+.live-pil i { width: 6px; height: 6px; border-radius: 50%; background: #16a34a; }
+@media (prefers-reduced-motion: reduce) {
+  .live-dot { animation: none; }
+}

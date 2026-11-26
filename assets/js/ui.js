@@ -216,9 +216,6 @@
     if (A.boleh("berita")) {
       drop.appendChild(el("a", { href: BASE + "admin/#/berita", class: "fnav-drop-item" }, "Kelola Berita"));
     }
-    if (A.boleh("blog")) {
-      drop.appendChild(el("a", { href: BASE + "admin/#/blog", class: "fnav-drop-item" }, "Kelola Blog"));
-    }
     if (A.boleh("academy")) {
       drop.appendChild(el("a", { href: BASE + "admin/#/academy", class: "fnav-drop-item" }, "Kelola Academy"));
     }

@@ -1,6 +1,6 @@
 # Dokumentasi SSO FAST USTEDI
 
-Situs FAST USTEDI menggunakan satu sesi login (Single Sign-On) untuk portal, berita, blog, PMB, academy, dan panel admin.
+Situs FAST USTEDI menggunakan satu sesi login (Single Sign-On) untuk portal, berita, PMB, academy, dan panel admin.
 
 ## Provider yang tersedia
 
@@ -17,7 +17,7 @@ Jika `googleClientId` dan `githubClientId` kosong, situs berjalan dalam **mode d
 | Peran | Akses |
 |---|---|
 | `admin` | Seluruh modul, termasuk panel admin |
-| `berita` | Berita dan blog |
+| `berita` | Berita fakultas |
 | `pmb` | PMB |
 | `academy` | Academy |
 | `viewer` | Portal |
@@ -27,7 +27,7 @@ Peran disimpan di `data/users.json` dengan kunci alamat email:
 ```json
 {
   "admin@ustedi.ac.id": ["admin"],
-  "editor@ustedi.ac.id": ["berita", "blog"]
+  "editor@ustedi.ac.id": ["berita"]
 }
 ```
 

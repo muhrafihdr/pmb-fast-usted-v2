@@ -3,7 +3,7 @@
   "diperbarui": "2026-02-15T08:00:00.000Z",
   "meta": {
     "title": "FAST USTEDI — Fakultas Sains dan Teknologi",
-    "description": "Portal resmi Fakultas Sains dan Teknologi USTEDI — Berita, Blog, Penerimaan Mahasiswa Baru (PMB), dan Faster Academy dalam satu sistem terintegrasi SSO."
+    "description": "Portal resmi Fakultas Sains dan Teknologi USTEDI — Berita, Penerimaan Mahasiswa Baru (PMB), dan Faster Academy dalam satu sistem terintegrasi SSO."
   },
   "org": {
     "kampus": "Universitas Sains Teknologi Ekonomi Digital Indonesia",
@@ -26,7 +26,7 @@
     "label": "Universitas Sains Teknologi Ekonomi Digital Indonesia",
     "judul": "Fakultas Sains & Teknologi",
     "sorot": "USTEDI",
-    "sub": "Satu pintu untuk berita kampus, artikel blog, penerimaan mahasiswa baru, dan pelatihan bersertifikat — terintegrasi dengan satu akun SSO.",
+    "sub": "Satu pintu untuk berita kampus, penerimaan mahasiswa baru, dan pelatihan bersertifikat — terintegrasi dengan satu akun SSO.",
     "cta": [
       { "label": "Daftar Kuliah", "href": "/pmb/", "gaya": "btn-aksen" },
       { "label": "Ikuti Pelatihan", "href": "https://script.google.com/macros/s/AKfycbxTc4rtNssp0LhMGoki5HW8PzXGcHeCmduIZ-xv4vrhisEWEd77s3qkzeuM16XjlFhzEQ/exec", "gaya": "btn-putih" }
@@ -53,7 +53,7 @@
     { "judul": "Fasilitas Lengkap", "teks": "Laboratorium, ruang praktik, dan lingkungan kampus yang nyaman." },
     { "judul": "Kerja Sama Industri", "teks": "Jaringan mitra untuk magang, praktik kerja, dan karier lulusan." },
     { "judul": "Beasiswa", "teks": "Berbagai jalur beasiswa prestasi akademik dan non-akademik." },
-    { "judul": "Serba Digital", "teks": "Pendaftaran, berita, blog, dan pelatihan terintegrasi dalam satu akun SSO." }
+    { "judul": "Serba Digital", "teks": "Pendaftaran, berita, dan pelatihan terintegrasi dalam satu akun SSO." }
   ],
   "programStudi": [
     { "kode": "IF", "nama": "S1 Informatika", "teks": "Pemrograman, kecerdasan artifisial, dan rekayasa perangkat lunak.", "instagram": "https://www.instagram.com/informatika.ustedi/" },

@@ -51,13 +51,6 @@
         url: "https://script.google.com/macros/s/AKfycbxTc4rtNssp0LhMGoki5HW8PzXGcHeCmduIZ-xv4vrhisEWEd77s3qkzeuM16XjlFhzEQ/exec",
         warna: "#16a34a",
         tagline: "Pelatihan, sertifikasi, dan kelas keterampilan digital"
-      },
-      {
-        id: "blog",
-        nama: "Blog FAST",
-        url: "/blog/",
-        warna: "#0891b2",
-        tagline: "Artikel, wawasan, dan gagasan sivitas akademika FAST"
       }
     ],
 
@@ -79,7 +72,16 @@
       privateRepo: "",
       /* Bila true, permintaan data diambil dari situs yang sama (origin),
          bukan raw.githubusercontent.com — lebih cepat & bebas cache CORS. */
-      preferLocal: true
+      preferLocal: true,
+      /* ---- Mode realtime ----
+         Berkas pada folder di bawah ini selalu diambil langsung dari
+         repositori GitHub (raw) dengan pemutus cache, sehingga berita
+         yang baru diterbitkan langsung terbaca pengunjung tanpa menunggu
+         proses deploy situs. Jika gagal, salinan lokal dipakai. */
+      realtime: true,
+      realtimeFolders: ["berita"],
+      /* Interval pemeriksaan otomatis di halaman berita (milidetik). */
+      realtimeInterval: 20000
     },
 
     /* ---------- Monitoring FAST (menu terkunci) ----------
@@ -93,7 +95,7 @@
     --------------------------------------------------------- */
     monitoring: {
       nama: "Monitoring FAST",
-      url: "/monitoring/?v=20261126b#dashboard",
+      url: "/monitoring/?v=20261126c#dashboard",
       appUrl: "https://script.google.com/macros/s/AKfycbwWswpHsePmGHDAcorw5kSQwCrcqP5Y4PC4yAE71IAafFSbEqBuf-5pXqenXeObRAff9g/exec",
       masaBukaMenit: 120
     },
@@ -133,16 +135,15 @@
 
     /* ---------- Peran & Hak Akses ---------- */
     roles: {
-      admin: { label: "Administrator", boleh: ["berita", "blog", "pmb", "academy", "admin"] },
-      berita: { label: "Editor Berita", boleh: ["berita", "blog"] },
-      blog: { label: "Editor Blog", boleh: ["blog"] },
+      admin: { label: "Administrator", boleh: ["berita", "pmb", "academy", "admin"] },
+      berita: { label: "Editor Berita", boleh: ["berita"] },
       pmb: { label: "Operator PMB", boleh: ["pmb"] },
       academy: { label: "Pengelola Academy", boleh: ["academy"] },
       viewer: { label: "Pengguna Terdaftar", boleh: ["portal"] }
     },
 
     /* ---------- Versi aset (cache-busting) ---------- */
-    versi: "20261126b"
+    versi: "20261126c"
   };
 
   /* Ekspos sebagai global. */

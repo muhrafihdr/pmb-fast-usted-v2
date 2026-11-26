@@ -11,7 +11,7 @@
      3. Cache memori + sessionStorage → hemat permintaan
 
    API publik (window.FAST.data):
-     json(path, opsi)      -> Promise<objek>
+     json(path, opsi)      -> Promise<objek>  (opsi.segar = ambil ulang)
      daftar(folder)        -> Promise<array>  (pakai index.json)
      simpan(path,objek,opsi)-> Promise        (butuh SSO GitHub)
      tulisFile(path,teks)  -> Promise
@@ -36,11 +36,35 @@
     });
   }
 
-  /* Urutan URL yang dicoba untuk sebuah berkas data. */
+  /* Pemutus cache: repositori GitHub selalu dibaca versi terbaru. */
+  function denganCacheBuster(url) {
+    var t = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    return url + (url.indexOf("?") >= 0 ? "&" : "?") + "_t=" + t;
+  }
+
+  /* Apakah berkas ini termasuk konten realtime (mis. folder berita)? */
+  function realtime(rel) {
+    var d = CFG.data || {};
+    if (!d.realtime) return false;
+    var folder = d.realtimeFolders || [];
+    return folder.some(function (f) {
+      f = String(f).replace(/^\/+|\/+$/g, "");
+      return rel === f || rel.indexOf(f + "/") === 0;
+    });
+  }
+
+  /* Urutan URL yang dicoba untuk sebuah berkas data.
+     Berkas realtime dibaca langsung dari GitHub (raw) lebih dulu agar
+     berita yang baru diterbitkan langsung terlihat tanpa menunggu deploy. */
   function urls(path, opsi) {
     opsi = opsi || {};
     var daftar = [];
     var rel = String(path).replace(/^\/+/, "");
+    if (realtime(rel)) {
+      daftar.push(denganCacheBuster(CFG.dataUrl(rel)));
+      daftar.push(denganCacheBuster(CFG.localDataUrl(rel)));
+      return daftar;
+    }
     if (CFG.data.preferLocal !== false && !opsi.paksaJauh) {
       daftar.push(CFG.localDataUrl(rel));
     }
@@ -72,7 +96,9 @@
       if (simpanan) return Promise.resolve(simpanan);
     }
 
-    if (opsi.cache !== false && memori[k]) return Promise.resolve(memori[k]);
+    /* opsi.segar = paksa ambil ulang dari sumber (dipakai mode realtime). */
+    if (opsi.segar) delete memori[k];
+    if (opsi.cache !== false && !opsi.segar && memori[k]) return Promise.resolve(memori[k]);
 
     return cobaBerurutan(urls(path, opsi))
       .then(function (teks) {
